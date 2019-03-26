@@ -218,9 +218,9 @@
             (= l 2))
        "vr-overlay-intersection-mask-primitive-data-t")
       ((and (string= f "reserved")
-            (= l 20))
+            (= l 28))
        "vr-event-data-t")
-      (t (error "??")))))
+      (t (error (format nil  "??  ~a" (length fields)))))))
 
 (defun structs ()
   (loop for d in (cdr (assoc :structs *openvr-api*))

@@ -519,6 +519,9 @@
 (defun is-input-focus-captured-by-another-process (&key (system *system*))
   (%is-input-focus-captured-by-another-process (table system)))
 
+(defun is-input-available (&key (system *system*))
+  (%is-input-available (table system)))
+
 ;;; vr-extended-display methods
 
 ;;; vr-tracked-camera methods
@@ -594,8 +597,9 @@
 (defun load-texture-async (name &key (render-models *render-models*))
   (cffi:with-foreign-object (prmt '(:pointer
                                     (:struct render-model-texture-map-t)))
+    ;(format t "render-models: ~a" (table *render-models*))
     (let ((r (check-ret
-              (%load-texture-async (table render-models) name prmt)
+              (%load-texture-async (table *render-models*) name prmt)
               :ok (:none :loading))))
       ;; return NIL for :loading
       (when (eql r :none)

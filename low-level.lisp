@@ -25,11 +25,12 @@
 (defconstant +driver-none+ 4294967295) ;; const uint32_t
 (defconstant +max-driver-debug-response-size+ 32768) ;; const uint32_t
 (defconstant +tracked-device-index-hmd+ 0) ;; const uint32_t
-(defconstant +max-tracked-device-count+ 16) ;; const uint32_t
+(defconstant +max-tracked-device-count+ 64) ;; const uint32_t
 (defconstant +tracked-device-index-other+ 4294967294) ;; const uint32_t
 (defconstant +tracked-device-index-invalid+ 4294967295) ;; const uint32_t
 (defconstant +invalid-property-container+ 0) ;; const PropertyContainerHandle_t
 (defconstant +invalid-property-tag+ 0) ;; const PropertyTypeTag_t
+(defconstant +invalid-driver-handle+ 0) ;; const PropertyContainerHandle_t
 (defconstant +float-property-tag+ 1) ;; const PropertyTypeTag_t
 (defconstant +int32-property-tag+ 2) ;; const PropertyTypeTag_t
 (defconstant +uint64-property-tag+ 3) ;; const PropertyTypeTag_t
@@ -39,34 +40,49 @@
 (defconstant +hmd-matrix-44-property-tag+ 21) ;; const PropertyTypeTag_t
 (defconstant +hmd-vector-3-property-tag+ 22) ;; const PropertyTypeTag_t
 (defconstant +hmd-vector-4-property-tag+ 23) ;; const PropertyTypeTag_t
+(defconstant +hmd-vector-2-property-tag+ 24) ;; const PropertyTypeTag_t
+(defconstant +hmd-quad-property-tag+ 25) ;; const PropertyTypeTag_t
 (defconstant +hidden-area-property-tag+ 30) ;; const PropertyTypeTag_t
+(defconstant +path-handle-info-tag+ 31) ;; const PropertyTypeTag_t
+(defconstant +action-property-tag+ 32) ;; const PropertyTypeTag_t
+(defconstant +input-value-property-tag+ 33) ;; const PropertyTypeTag_t
+(defconstant +wildcard-property-tag+ 34) ;; const PropertyTypeTag_t
+(defconstant +haptic-vibration-property-tag+ 35) ;; const PropertyTypeTag_t
+(defconstant +skeleton-property-tag+ 36) ;; const PropertyTypeTag_t
+(defconstant +spatial-anchor-pose-property-tag+ 40) ;; const PropertyTypeTag_t
+(defconstant +json-property-tag+ 41) ;; const PropertyTypeTag_t
+(defconstant +active-action-set-property-tag+ 42) ;; const PropertyTypeTag_t
 (defconstant +open-vr-internal-reserved-start+ 1000) ;; const PropertyTypeTag_t
 (defconstant +open-vr-internal-reserved-end+ 10000) ;; const PropertyTypeTag_t
 (defconstant +max-property-string-size+ 32768) ;; const uint32_t
+(defconstant +invalid-action-handle+ 0) ;; const VRActionHandle_t
+(defconstant +invalid-action-set-handle+ 0) ;; const VRActionSetHandle_t
+(defconstant +invalid-input-value-handle+ 0) ;; const VRInputValueHandle_t
 (defconstant +controller-state-axis-count+ 5) ;; const uint32_t
 (defconstant +overlay-handle-invalid+ 0) ;; const VROverlayHandle_t
+(defconstant +max-distortion-function-parameters+ 8) ;; const uint32_t
 (defconstant +screenshot-handle-invalid+ 0) ;; const uint32_t
-(alexandria:define-constant +vr-system-version+ "IVRSystem_017" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-system-version+ "IVRSystem_019" :test 'string=) ;; const char *const
 (alexandria:define-constant +vr-extended-display-version+ "IVRExtendedDisplay_001" :test 'string=) ;; const char *const
-(alexandria:define-constant +vr-tracked-camera-version+ "IVRTrackedCamera_003" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-tracked-camera-version+ "IVRTrackedCamera_005" :test 'string=) ;; const char *const
 (defconstant +max-application-key-length+ 128) ;; const uint32_t
 (alexandria:define-constant +mime-type-home-app+ "vr/home" :test 'string=) ;; const char *const
 (alexandria:define-constant +mime-type-game-theater+ "vr/game_theater" :test 'string=) ;; const char *const
 (alexandria:define-constant +vr-applications-version+ "IVRApplications_006" :test 'string=) ;; const char *const
 (alexandria:define-constant +vr-chaperone-version+ "IVRChaperone_003" :test 'string=) ;; const char *const
-(alexandria:define-constant +vr-chaperone-setup-version+ "IVRChaperoneSetup_005" :test 'string=) ;; const char *const
-(alexandria:define-constant +vr-compositor-version+ "IVRCompositor_021" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-chaperone-setup-version+ "IVRChaperoneSetup_006" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-compositor-version+ "IVRCompositor_022" :test 'string=) ;; const char *const
 (defconstant +vr-overlay-max-key-length+ 128) ;; const uint32_t
 (defconstant +vr-overlay-max-name-length+ 128) ;; const uint32_t
 (defconstant +max-overlay-count+ 64) ;; const uint32_t
 (defconstant +max-overlay-intersection-mask-primitives-count+ 32) ;; const uint32_t
-(alexandria:define-constant +vr-overlay-version+ "IVROverlay_016" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-overlay-version+ "IVROverlay_019" :test 'string=) ;; const char *const
 (alexandria:define-constant +controller-component-gdc-2015+ "gdc2015" :test 'string=) ;; const char *const
 (alexandria:define-constant +controller-component-base+ "base" :test 'string=) ;; const char *const
 (alexandria:define-constant +controller-component-tip+ "tip" :test 'string=) ;; const char *const
 (alexandria:define-constant +controller-component-hand-grip+ "handgrip" :test 'string=) ;; const char *const
 (alexandria:define-constant +controller-component-status+ "status" :test 'string=) ;; const char *const
-(alexandria:define-constant +vr-render-models-version+ "IVRRenderModels_005" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-render-models-version+ "IVRRenderModels_006" :test 'string=) ;; const char *const
 (defconstant +notification-text-max-size+ 256) ;; const uint32_t
 (alexandria:define-constant +vr-notifications-version+ "IVRNotifications_002" :test 'string=) ;; const char *const
 (defconstant +max-settings-key-length+ 128) ;; const uint32_t
@@ -90,21 +106,19 @@
 (alexandria:define-constant +steam-vr-play-area-color-string+ "playAreaColor" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-show-stage-bool+ "showStage" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-activate-multiple-drivers-bool+ "activateMultipleDrivers" :test 'string=) ;; const char *const
-(alexandria:define-constant +steam-vr-direct-mode-bool+ "directMode" :test 'string=) ;; const char *const
-(alexandria:define-constant +steam-vr-direct-mode-edid-vid-int32+ "directModeEdidVid" :test 'string=) ;; const char *const
-(alexandria:define-constant +steam-vr-direct-mode-edid-pid-int32+ "directModeEdidPid" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-using-speakers-bool+ "usingSpeakers" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-speakers-forward-yaw-offset-degrees-float+ "speakersForwardYawOffsetDegrees" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-base-station-power-management-bool+ "basestationPowerManagement" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-never-kill-processes-bool+ "neverKillProcesses" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-supersample-scale-float+ "supersampleScale" :test 'string=) ;; const char *const
-(alexandria:define-constant +steam-vr-allow-async-reprojection-bool+ "allowAsyncReprojection" :test 'string=) ;; const char *const
-(alexandria:define-constant +steam-vr-allow-reprojection-bool+ "allowInterleavedReprojection" :test 'string=) ;; const char *const
-(alexandria:define-constant +steam-vr-force-reprojection-bool+ "forceReprojection" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-max-recommended-resolution-int32+ "maxRecommendedResolution" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-motion-smoothing-bool+ "motionSmoothing" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-motion-smoothing-override-int32+ "motionSmoothingOverride" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-force-fade-on-bad-tracking-bool+ "forceFadeOnBadTracking" :test 'string=) ;; const char *const
-(alexandria:define-constant +steam-vr-default-mirror-view-int32+ "defaultMirrorView" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-default-mirror-view-int32+ "mirrorView" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-show-mirror-view-bool+ "showMirrorView" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-mirror-view-geometry-string+ "mirrorViewGeometry" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-mirror-view-geometry-maximized-string+ "mirrorViewGeometryMaximized" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-start-monitor-from-app-launch+ "startMonitorFromAppLaunch" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-start-compositor-from-app-launch-bool+ "startCompositorFromAppLaunch" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-start-dashboard-from-app-launch-bool+ "startDashboardFromAppLaunch" :test 'string=) ;; const char *const
@@ -114,13 +128,36 @@
 (alexandria:define-constant +steam-vr-retail-demo-bool+ "retailDemo" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-ipd-offset-float+ "ipdOffset" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-allow-supersample-filtering-bool+ "allowSupersampleFiltering" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-supersample-manual-override-bool+ "supersampleManualOverride" :test 'string=) ;; const char *const
 (alexandria:define-constant +steam-vr-enable-linux-vulkan-async-bool+ "enableLinuxVulkanAsync" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-allow-display-locked-mode-bool+ "allowDisplayLockedMode" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-have-started-tutorial-for-native-chaperone-driver-bool+ "haveStartedTutorialForNativeChaperoneDriver" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-force-windows-32-bit-vrmonitor+ "forceWindows32BitVRMonitor" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-debug-input+ "debugInput" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-debug-input-binding+ "debugInputBinding" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-input-binding-uiblock+ "inputBindingUI" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-render-camera-mode+ "renderCameraMode" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-enable-shared-resource-journaling+ "enableSharedResourceJournaling" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-enable-safe-mode+ "enableSafeMode" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-preferred-refresh-rate+ "preferredRefreshRate" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-last-version-notice+ "lastVersionNotice" :test 'string=) ;; const char *const
+(alexandria:define-constant +steam-vr-last-version-notice-date+ "lastVersionNoticeDate" :test 'string=) ;; const char *const
+(alexandria:define-constant +direct-mode-section+ "direct_mode" :test 'string=) ;; const char *const
+(alexandria:define-constant +direct-mode-enable-bool+ "enable" :test 'string=) ;; const char *const
+(alexandria:define-constant +direct-mode-count-int32+ "count" :test 'string=) ;; const char *const
+(alexandria:define-constant +direct-mode-edid-vid-int32+ "edidVid" :test 'string=) ;; const char *const
+(alexandria:define-constant +direct-mode-edid-pid-int32+ "edidPid" :test 'string=) ;; const char *const
 (alexandria:define-constant +lighthouse-section+ "driver_lighthouse" :test 'string=) ;; const char *const
 (alexandria:define-constant +lighthouse-disable-imu-bool+ "disableimu" :test 'string=) ;; const char *const
+(alexandria:define-constant +lighthouse-disable-imuexcept-hmd-bool+ "disableimuexcepthmd" :test 'string=) ;; const char *const
 (alexandria:define-constant +lighthouse-use-disambiguation-string+ "usedisambiguation" :test 'string=) ;; const char *const
 (alexandria:define-constant +lighthouse-disambiguation-debug-int32+ "disambiguationdebug" :test 'string=) ;; const char *const
 (alexandria:define-constant +lighthouse-primary-basestation-int32+ "primarybasestation" :test 'string=) ;; const char *const
 (alexandria:define-constant +lighthouse-dbhistory-bool+ "dbhistory" :test 'string=) ;; const char *const
+(alexandria:define-constant +lighthouse-enable-bluetooth-bool+ "enableBluetooth" :test 'string=) ;; const char *const
+(alexandria:define-constant +lighthouse-power-managed-base-stations-string+ "PowerManagedBaseStations" :test 'string=) ;; const char *const
+(alexandria:define-constant +lighthouse-power-managed-base-stations-2-string+ "PowerManagedBaseStations2" :test 'string=) ;; const char *const
+(alexandria:define-constant +lighthouse-enable-imu-fallback-bool+ "enableImuFallback" :test 'string=) ;; const char *const
 (alexandria:define-constant +null-section+ "driver_null" :test 'string=) ;; const char *const
 (alexandria:define-constant +null-serial-number-string+ "serialNumber" :test 'string=) ;; const char *const
 (alexandria:define-constant +null-model-number-string+ "modelNumber" :test 'string=) ;; const char *const
@@ -135,6 +172,7 @@
 (alexandria:define-constant +user-interface-section+ "userinterface" :test 'string=) ;; const char *const
 (alexandria:define-constant +user-interface-status-always-on-top-bool+ "StatusAlwaysOnTop" :test 'string=) ;; const char *const
 (alexandria:define-constant +user-interface-minimize-to-tray-bool+ "MinimizeToTray" :test 'string=) ;; const char *const
+(alexandria:define-constant +user-interface-hide-popups-when-status-minimized-bool+ "HidePopupsWhenStatusMinimized" :test 'string=) ;; const char *const
 (alexandria:define-constant +user-interface-screenshots-bool+ "screenshots" :test 'string=) ;; const char *const
 (alexandria:define-constant +user-interface-screenshot-type-int+ "screenshotType" :test 'string=) ;; const char *const
 (alexandria:define-constant +notifications-section+ "notifications" :test 'string=) ;; const char *const
@@ -148,9 +186,7 @@
 (alexandria:define-constant +keyboard-offset-y+ "OffsetY" :test 'string=) ;; const char *const
 (alexandria:define-constant +keyboard-smoothing+ "Smoothing" :test 'string=) ;; const char *const
 (alexandria:define-constant +perf-section+ "perfcheck" :test 'string=) ;; const char *const
-(alexandria:define-constant +perf-heuristic-active-bool+ "heuristicActive" :test 'string=) ;; const char *const
-(alexandria:define-constant +perf-notify-in-hmd-bool+ "warnInHMD" :test 'string=) ;; const char *const
-(alexandria:define-constant +perf-notify-only-once-bool+ "warnOnlyOnce" :test 'string=) ;; const char *const
+(alexandria:define-constant +perf-perf-graph-in-hmd-bool+ "perfGraphInHMD" :test 'string=) ;; const char *const
 (alexandria:define-constant +perf-allow-timing-store-bool+ "allowTimingStore" :test 'string=) ;; const char *const
 (alexandria:define-constant +perf-save-timings-on-exit-bool+ "saveTimingsOnExit" :test 'string=) ;; const char *const
 (alexandria:define-constant +perf-test-data-float+ "perfTestData" :test 'string=) ;; const char *const
@@ -175,6 +211,7 @@
 (alexandria:define-constant +camera-bounds-color-gamma-b-int32+ "cameraBoundsColorGammaB" :test 'string=) ;; const char *const
 (alexandria:define-constant +camera-bounds-color-gamma-a-int32+ "cameraBoundsColorGammaA" :test 'string=) ;; const char *const
 (alexandria:define-constant +camera-bounds-strength-int32+ "cameraBoundsStrength" :test 'string=) ;; const char *const
+(alexandria:define-constant +camera-room-view-mode-int32+ "cameraRoomViewMode" :test 'string=) ;; const char *const
 (alexandria:define-constant +audio-section+ "audio" :test 'string=) ;; const char *const
 (alexandria:define-constant +audio-on-playback-device-string+ "onPlaybackDevice" :test 'string=) ;; const char *const
 (alexandria:define-constant +audio-on-record-device-string+ "onRecordDevice" :test 'string=) ;; const char *const
@@ -192,11 +229,39 @@
 (alexandria:define-constant +dashboard-section+ "dashboard" :test 'string=) ;; const char *const
 (alexandria:define-constant +dashboard-enable-dashboard-bool+ "enableDashboard" :test 'string=) ;; const char *const
 (alexandria:define-constant +dashboard-arcade-mode-bool+ "arcadeMode" :test 'string=) ;; const char *const
+(alexandria:define-constant +dashboard-enable-web-ui+ "webUI" :test 'string=) ;; const char *const
+(alexandria:define-constant +dashboard-enable-web-uidev-tools+ "webUIDevTools" :test 'string=) ;; const char *const
+(alexandria:define-constant +dashboard-enable-web-uidashboard-replacement+ "webUIDashboard" :test 'string=) ;; const char *const
 (alexandria:define-constant +modelskin-section+ "modelskins" :test 'string=) ;; const char *const
 (alexandria:define-constant +driver-enable-bool+ "enable" :test 'string=) ;; const char *const
+(alexandria:define-constant +web-interface-section+ "WebInterface" :test 'string=) ;; const char *const
+(alexandria:define-constant +web-interface-web-enable-bool+ "WebEnable" :test 'string=) ;; const char *const
+(alexandria:define-constant +web-interface-web-port-string+ "WebPort" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-web-helper-section+ "VRWebHelper" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-web-helper-debugger-enabled-bool+ "DebuggerEnabled" :test 'string=) ;; const char *const
+(alexandria:define-constant +vr-web-helper-debugger-port-int32+ "DebuggerPort" :test 'string=) ;; const char *const
+(alexandria:define-constant +tracking-override-section+ "TrackingOverrides" :test 'string=) ;; const char *const
+(alexandria:define-constant +app-binding-autosave-urlsuffix-string+ "AutosaveURL" :test 'string=) ;; const char *const
+(alexandria:define-constant +app-binding-current-urlsuffix-string+ "CurrentURL" :test 'string=) ;; const char *const
+(alexandria:define-constant +app-need-to-update-autosave-suffix-bool+ "NeedToUpdateAutosave" :test 'string=) ;; const char *const
+(alexandria:define-constant +trackers-section+ "trackers" :test 'string=) ;; const char *const
+(alexandria:define-constant +desktop-ui-section+ "DesktopUI" :test 'string=) ;; const char *const
+(alexandria:define-constant +last-known-section+ "LastKnown" :test 'string=) ;; const char *const
+(alexandria:define-constant +last-known-hmdmanufacturer-string+ "HMDManufacturer" :test 'string=) ;; const char *const
+(alexandria:define-constant +last-known-hmdmodel-string+ "HMDModel" :test 'string=) ;; const char *const
+(alexandria:define-constant +dismissed-warnings-section+ "DismissedWarnings" :test 'string=) ;; const char *const
 (alexandria:define-constant +vr-screenshots-version+ "IVRScreenshots_001" :test 'string=) ;; const char *const
 (alexandria:define-constant +vr-resources-version+ "IVRResources_001" :test 'string=) ;; const char *const
 (alexandria:define-constant +vr-driver-manager-version+ "IVRDriverManager_001" :test 'string=) ;; const char *const
+(defconstant +max-action-name-length+ 64) ;; const uint32_t
+(defconstant +max-action-set-name-length+ 64) ;; const uint32_t
+(defconstant +max-action-origin-count+ 16) ;; const uint32_t
+(defconstant +max-bone-name-length+ 32) ;; const uint32_t
+(alexandria:define-constant +vr-input-version+ "IVRInput_005" :test 'string=) ;; const char *const
+(defconstant +invalid-iobuffer-handle+ 0) ;; const uint64_t
+(alexandria:define-constant +vr-iobuffer-version+ "IVRIOBuffer_002" :test 'string=) ;; const char *
+(defconstant +invalid-spatial-anchor-handle+ 0) ;; const SpatialAnchorHandle_t
+(alexandria:define-constant +vr-spatial-anchors-version+ "IVRSpatialAnchors_001" :test 'string=) ;; const char *const
 
 
 (defcenum vr-eye
@@ -204,11 +269,14 @@
   (:right 1))
 
 (defcenum texture-type
+  (:invalid -1)
   (:direct-x 0)
   (:open-gl 1)
   (:vulkan 2)
   (:osurface 3)
-  (:direct-x-12 4))
+  (:direct-x-12 4)
+  (:dxgi-shared-handle 5)
+  (:metal 6))
 
 (defcenum color-space
   (:auto 0)
@@ -220,7 +288,8 @@
   (:calibrating-in-progress 100)
   (:calibrating-out-of-range 101)
   (:running-ok 200)
-  (:running-out-of-range 201))
+  (:running-out-of-range 201)
+  (:fallback-rotation-only 300))
 
 (defcenum tracked-device-class
   (:invalid 0)
@@ -228,17 +297,27 @@
   (:controller 2)
   (:generic-tracker 3)
   (:tracking-reference 4)
-  (:display-redirect 5))
+  (:display-redirect 5)
+  (:max 6))
 
 (defcenum tracked-controller-role
   (:invalid 0)
   (:left-hand 1)
-  (:right-hand 2))
+  (:right-hand 2)
+  (:opt-out 3)
+  (:treadmill 4)
+  (:max 4))
 
 (defcenum tracking-universe-origin
   (:seated 0)
   (:standing 1)
   (:raw-and-uncalibrated 2))
+
+(defcenum additional-radio-features
+  (:none 0)
+  (:htclink-box 1)
+  (:internal-dongle 2)
+  (:external-dongle 4))
 
 (defcenum tracked-device-property
   (:invalid 0)
@@ -278,6 +357,15 @@
   (:vive-system-button-fix-required-bool 1033)
   (:parent-driver-uint64 1034)
   (:resource-root-string 1035)
+  (:registered-device-type-string 1036)
+  (:input-profile-path-string 1037)
+  (:never-tracked-bool 1038)
+  (:num-cameras-int32 1039)
+  (:camera-frame-layout-int32 1040)
+  (:camera-stream-format-int32 1041)
+  (:additional-device-settings-path-string 1042)
+  (:identifiable-bool 1043)
+  (:bootloader-version-uint64 1044)
   (:reports-time-since-vsync-bool 2000)
   (:seconds-from-vsync-to-photons-float 2001)
   (:display-frequency-float 2002)
@@ -325,6 +413,40 @@
   (:display-debug-mode-bool 2044)
   (:graphics-adapter-luid-uint64 2045)
   (:driver-provided-chaperone-path-string 2048)
+  (:expected-tracking-reference-count-int32 2049)
+  (:expected-controller-count-int32 2050)
+  (:named-icon-path-controller-left-device-off-string 2051)
+  (:named-icon-path-controller-right-device-off-string 2052)
+  (:named-icon-path-tracking-reference-device-off-string 2053)
+  (:do-not-apply-prediction-bool 2054)
+  (:camera-to-head-transforms-matrix-34-array 2055)
+  (:distortion-mesh-resolution-int32 2056)
+  (:driver-is-drawing-controllers-bool 2057)
+  (:driver-requests-application-pause-bool 2058)
+  (:driver-requests-reduced-rendering-bool 2059)
+  (:minimum-ipd-step-meters-float 2060)
+  (:audio-bridge-firmware-version-uint64 2061)
+  (:image-bridge-firmware-version-uint64 2062)
+  (:imu-to-head-transform-matrix-34 2063)
+  (:imu-factory-gyro-bias-vector-3 2064)
+  (:imu-factory-gyro-scale-vector-3 2065)
+  (:imu-factory-accelerometer-bias-vector-3 2066)
+  (:imu-factory-accelerometer-scale-vector-3 2067)
+  (:configuration-includes-lighthouse-20-features-bool 2069)
+  (:additional-radio-features-uint64 2070)
+  (:camera-white-balance-vector-4-array 2071)
+  (:camera-distortion-function-int32-array 2072)
+  (:camera-distortion-coefficients-float-array 2073)
+  (:expected-controller-type-string 2074)
+  (:driver-requested-mura-correction-mode-int32 2200)
+  (:driver-requested-mura-feather-inner-left-int32 2201)
+  (:driver-requested-mura-feather-inner-right-int32 2202)
+  (:driver-requested-mura-feather-inner-top-int32 2203)
+  (:driver-requested-mura-feather-inner-bottom-int32 2204)
+  (:driver-requested-mura-feather-outer-left-int32 2205)
+  (:driver-requested-mura-feather-outer-right-int32 2206)
+  (:driver-requested-mura-feather-outer-top-int32 2207)
+  (:driver-requested-mura-feather-outer-bottom-int32 2208)
   (:attached-device-id-string 3000)
   (:supported-buttons-uint64 3001)
   (:axis-0-type-int32 3002)
@@ -351,6 +473,7 @@
   (:named-icon-path-device-alert-low-string 5008)
   (:display-hidden-area-binary-start 5100)
   (:display-hidden-area-binary-end 5150)
+  (:parent-container 5151)
   (:user-config-path-string 6000)
   (:install-path-string 6001)
   (:has-display-component-bool 6002)
@@ -358,8 +481,13 @@
   (:has-camera-component-bool 6004)
   (:has-driver-direct-mode-component-bool 6005)
   (:has-virtual-display-component-bool 6006)
+  (:has-spatial-anchors-support-bool 6007)
+  (:controller-type-string 7000)
+  (:legacy-input-profile-string 7001)
+  (:controller-hand-selection-priority-int32 7002)
   (:vendor-specific-reserved-start 10000)
-  (:vendor-specific-reserved-end 10999))
+  (:vendor-specific-reserved-end 10999)
+  (:tracked-device-property-max 1000000))
 
 (defcenum tracked-property-error
   (:success 0)
@@ -373,14 +501,17 @@
   (:string-exceeds-maximum-length 8)
   (:not-yet-available 9)
   (:permission-denied 10)
-  (:invalid-operation 11))
+  (:invalid-operation 11)
+  (:cannot-write-to-wildcards 12)
+  (:pcread-failure 13))
 
 (defbitfield vr-submit-flags
   (:default 0)
   (:lens-distortion-already-applied 1)
   (:gl-render-buffer 2)
   (:reserved 4)
-  (:texture-with-pose 8))
+  (:texture-with-pose 8)
+  (:texture-with-depth 16))
 
 (defcenum vr-state
   (:undefined -1)
@@ -413,14 +544,24 @@
   (:button-unpress 201)
   (:button-touch 202)
   (:button-untouch 203)
+  (:dual-analog-press 250)
+  (:dual-analog-unpress 251)
+  (:dual-analog-touch 252)
+  (:dual-analog-untouch 253)
+  (:dual-analog-move 254)
+  (:dual-analog-mode-switch-1 255)
+  (:dual-analog-mode-switch-2 256)
+  (:dual-analog-cancel 257)
   (:mouse-move 300)
   (:mouse-button-down 301)
   (:mouse-button-up 302)
   (:focus-enter 303)
   (:focus-leave 304)
-  (:scroll 305)
+  (:scroll-discrete 305)
   (:touch-pad-move 306)
   (:overlay-focus-changed 307)
+  (:reload-overlays 308)
+  (:scroll-smooth 309)
   (:input-focus-captured 400)
   (:input-focus-released 401)
   (:scene-focus-lost 402)
@@ -429,8 +570,12 @@
   (:scene-focus-changed 405)
   (:input-focus-changed 406)
   (:scene-application-secondary-rendering-started 407)
+  (:scene-application-using-wrong-graphics-adapter 408)
+  (:action-binding-reloaded 409)
   (:hide-render-models 410)
   (:show-render-models 411)
+  (:console-opened 420)
+  (:console-closed 421)
   (:overlay-shown 500)
   (:overlay-hidden 501)
   (:dashboard-activated 502)
@@ -445,17 +590,19 @@
   (:overlay-gamepad-focus-gained 511)
   (:overlay-gamepad-focus-lost 512)
   (:overlay-shared-texture-changed 513)
-  (:dashboard-guide-button-down 514)
-  (:dashboard-guide-button-up 515)
   (:screenshot-triggered 516)
   (:image-failed 517)
   (:dashboard-overlay-created 518)
+  (:switch-gamepad-focus 519)
   (:request-screenshot 520)
   (:screenshot-taken 521)
   (:screenshot-failed 522)
   (:submit-screenshot-to-dashboard 523)
   (:screenshot-progress-to-dashboard 524)
   (:primary-dashboard-device-changed 525)
+  (:room-view-shown 526)
+  (:room-view-hidden 527)
+  (:show-ui 528)
   (:notification-shown 600)
   (:notification-hidden 601)
   (:notification-begin-interaction 602)
@@ -470,6 +617,7 @@
   (:chaperone-temp-data-has-changed 802)
   (:chaperone-settings-have-changed 803)
   (:seated-zero-pose-reset 804)
+  (:chaperone-flush-cache 805)
   (:audio-settings-have-changed 820)
   (:background-setting-has-changed 850)
   (:camera-settings-have-changed 851)
@@ -478,7 +626,20 @@
   (:environment-settings-have-changed 854)
   (:power-settings-have-changed 855)
   (:enable-home-app-settings-have-changed 856)
+  (:steam-vr-section-setting-changed 857)
+  (:lighthouse-section-setting-changed 858)
+  (:null-section-setting-changed 859)
+  (:user-interface-section-setting-changed 860)
+  (:notifications-section-setting-changed 861)
+  (:keyboard-section-setting-changed 862)
+  (:perf-section-setting-changed 863)
+  (:dashboard-section-setting-changed 864)
+  (:web-interface-section-setting-changed 865)
+  (:trackers-section-setting-changed 866)
+  (:last-known-section-setting-changed 867)
+  (:dismissed-warnings-section-setting-changed 868)
   (:status-update 900)
+  (:web-interface-install-driver-completed 950)
   (:mcimage-updated 1000)
   (:firmware-update-started 1100)
   (:firmware-update-finished 1101)
@@ -507,6 +668,18 @@
   (:performance-test-fidelity-level 1602)
   (:message-overlay-closed 1650)
   (:message-overlay-close-requested 1651)
+  (:input-haptic-vibration 1700)
+  (:input-binding-load-failed 1701)
+  (:input-binding-load-successful 1702)
+  (:input-action-manifest-reloaded 1703)
+  (:input-action-manifest-load-failed 1704)
+  (:input-progress-update 1705)
+  (:input-tracker-activated 1706)
+  (:input-bindings-updated 1707)
+  (:spatial-anchors-pose-updated 1800)
+  (:spatial-anchors-descriptor-updated 1801)
+  (:spatial-anchors-request-pose-update 1802)
+  (:spatial-anchors-request-descriptor-update 1803)
   (:vendor-specific-reserved-start 10000)
   (:vendor-specific-reserved-end 19999))
 
@@ -535,12 +708,61 @@
   (:steam-vr-touchpad 32)
   (:steam-vr-trigger 33)
   (:dashboard-back 2)
+  (:knuckles-a 2)
+  (:knuckles-b 1)
+  (:knuckles-joy-stick 35)
   (:max 64))
 
 (defcenum vr-mouse-button
   (:left 1)
   (:right 2)
   (:middle 4))
+
+(defcenum dual-analog-which
+  (:left 0)
+  (:right 1))
+
+(defcenum show-uitype
+  (:controller-binding 0)
+  (:manage-trackers 1)
+  (:quick-start 2)
+  (:pairing 3))
+
+(defcenum vr-input-error
+  (:none 0)
+  (:name-not-found 1)
+  (:wrong-type 2)
+  (:invalid-handle 3)
+  (:invalid-param 4)
+  (:no-steam 5)
+  (:max-capacity-reached 6)
+  (:pcerror 7)
+  (:no-active-action-set 8)
+  (:invalid-device 9)
+  (:invalid-skeleton 10)
+  (:invalid-bone-count 11)
+  (:invalid-compressed-data 12)
+  (:no-data 13)
+  (:buffer-too-small 14)
+  (:mismatched-action-manifest 15)
+  (:missing-skeleton-data 16)
+  (:invalid-bone-index 17))
+
+(defcenum vr-spatial-anchor-error
+  (:success 0)
+  (:internal 1)
+  (:unknown-handle 2)
+  (:array-too-small 3)
+  (:invalid-descriptor-char 4)
+  (:not-yet-available 5)
+  (:not-available-in-this-universe 6)
+  (:permanently-unavailable 7)
+  (:wrong-driver 8)
+  (:descriptor-too-long 9)
+  (:unknown 10)
+  (:no-room-calibration 11)
+  (:invalid-argument 12)
+  (:unknown-driver 13))
 
 (defcenum hidden-area-mesh-type
   (:standard 0)
@@ -587,7 +809,10 @@
   (:keyboard-already-in-use 26)
   (:no-neighbor 27)
   (:too-many-mask-primitives 29)
-  (:bad-mask-primitive 30))
+  (:bad-mask-primitive 30)
+  (:texture-already-locked 31)
+  (:texture-lock-capacity-reached 32)
+  (:texture-not-locked 33))
 
 (defcenum vr-application-type
   (:other 0)
@@ -598,7 +823,8 @@
   (:vr-monitor 5)
   (:steam-watchdog 6)
   (:bootstrapper 7)
-  (:max 8))
+  (:web-helper 8)
+  (:max 9))
 
 (defcenum vr-firmware-error
   (:none 0)
@@ -611,6 +837,17 @@
   (:notification-queue-full 101)
   (:invalid-overlay-handle 102)
   (:system-with-user-value-already-exists 103))
+
+(defcenum vr-skeletal-motion-range
+  (:controller 0)
+  (:out-controller 1))
+
+(defcenum vr-skeletal-tracking-level
+  (:-estimated 0)
+  (:-partial 1)
+  (:-full 2)
+  (:level-count 3)
+  (:level-max 2))
 
 (defcenum vr-init-error
   (:none 0)
@@ -655,6 +892,9 @@
   (:init-rebooting-busy 137)
   (:init-firmware-update-busy 138)
   (:init-firmware-recovery-busy 139)
+  (:init-usbservice-busy 140)
+  (:init-vr-web-helper-startup-failed 141)
+  (:init-tracker-manager-init-failed 142)
   (:driver-failed 200)
   (:driver-unknown 201)
   (:driver-hmd-unknown 202)
@@ -682,7 +922,87 @@
   (:compositor-overlay-init-failed 403)
   (:compositor-screenshots-init-failed 404)
   (:compositor-unable-to-create-device 405)
+  (:compositor-shared-state-is-null 406)
+  (:compositor-notification-manager-is-null 407)
+  (:compositor-resource-manager-client-is-null 408)
+  (:compositor-message-overlay-shared-state-init-failure 409)
+  (:compositor-properties-interface-is-null 410)
+  (:compositor-create-fullscreen-window-failed 411)
+  (:compositor-settings-interface-is-null 412)
+  (:compositor-failed-to-show-window 413)
+  (:compositor-distort-interface-is-null 414)
+  (:compositor-display-frequency-failure 415)
+  (:compositor-renderer-initialization-failed 416)
+  (:compositor-dxgi-factory-interface-is-null 417)
+  (:compositor-dxgi-factory-create-failed 418)
+  (:compositor-dxgi-factory-query-failed 419)
+  (:compositor-invalid-adapter-desktop 420)
+  (:compositor-invalid-hmd-attachment 421)
+  (:compositor-invalid-output-desktop 422)
+  (:compositor-invalid-device-provided 423)
+  (:compositor-d3d11-renderer-initialization-failed 424)
+  (:compositor-failed-to-find-display-mode 425)
+  (:compositor-failed-to-create-swap-chain 426)
+  (:compositor-failed-to-get-back-buffer 427)
+  (:compositor-failed-to-create-render-target 428)
+  (:compositor-failed-to-create-dxgi-2-swap-chain 429)
+  (:compositor-failedto-get-dxgi-2-back-buffer 430)
+  (:compositor-failed-to-create-dxgi-2-render-target 431)
+  (:compositor-failed-to-get-dxgi-device-interface 432)
+  (:compositor-select-display-mode 433)
+  (:compositor-failed-to-create-nv-apirender-targets 434)
+  (:compositor-nv-apiset-display-mode 435)
+  (:compositor-failed-to-create-direct-mode-display 436)
+  (:compositor-invalid-hmd-property-container 437)
+  (:compositor-update-display-frequency 438)
+  (:compositor-create-rasterizer-state 439)
+  (:compositor-create-wireframe-rasterizer-state 440)
+  (:compositor-create-sampler-state 441)
+  (:compositor-create-clamp-to-border-sampler-state 442)
+  (:compositor-create-aniso-sampler-state 443)
+  (:compositor-create-overlay-sampler-state 444)
+  (:compositor-create-panorama-sampler-state 445)
+  (:compositor-create-font-sampler-state 446)
+  (:compositor-create-no-blend-state 447)
+  (:compositor-create-blend-state 448)
+  (:compositor-create-alpha-blend-state 449)
+  (:compositor-create-blend-state-mask-r 450)
+  (:compositor-create-blend-state-mask-g 451)
+  (:compositor-create-blend-state-mask-b 452)
+  (:compositor-create-depth-stencil-state 453)
+  (:compositor-create-depth-stencil-state-no-write 454)
+  (:compositor-create-depth-stencil-state-no-depth 455)
+  (:compositor-create-flush-texture 456)
+  (:compositor-create-distortion-surfaces 457)
+  (:compositor-create-constant-buffer 458)
+  (:compositor-create-hmd-pose-constant-buffer 459)
+  (:compositor-create-hmd-pose-staging-constant-buffer 460)
+  (:compositor-create-shared-frame-info-constant-buffer 461)
+  (:compositor-create-overlay-constant-buffer 462)
+  (:compositor-create-scene-texture-index-constant-buffer 463)
+  (:compositor-create-readable-scene-texture-index-constant-buffer 464)
+  (:compositor-create-layer-graphics-texture-index-constant-buffer 465)
+  (:compositor-create-layer-compute-texture-index-constant-buffer 466)
+  (:compositor-create-layer-compute-scene-texture-index-constant-buffer 467)
+  (:compositor-create-compute-hmd-pose-constant-buffer 468)
+  (:compositor-create-geom-constant-buffer 469)
+  (:compositor-create-panel-mask-constant-buffer 470)
+  (:compositor-create-pixel-sim-ubo 471)
+  (:compositor-create-msaarender-textures 472)
+  (:compositor-create-resolve-render-textures 473)
+  (:compositor-create-compute-resolve-render-textures 474)
+  (:compositor-create-driver-direct-mode-resolve-textures 475)
+  (:compositor-open-driver-direct-mode-resolve-textures 476)
+  (:compositor-create-fallback-sync-texture 477)
+  (:compositor-share-fallback-sync-texture 478)
+  (:compositor-create-overlay-index-buffer 479)
+  (:compositor-create-overlay-vertext-buffer 480)
+  (:compositor-create-text-vertex-buffer 481)
+  (:compositor-create-text-index-buffer 482)
+  (:compositor-create-mirror-textures 483)
+  (:compositor-create-last-frame-render-texture 484)
   (:vendor-specific-unable-to-connect-to-oculus-runtime 1000)
+  (:vendor-specific-windows-not-in-dev-mode 1001)
   (:vendor-specific-hmd-found-cant-open-device 1101)
   (:vendor-specific-hmd-found-unable-to-request-config-start 1102)
   (:vendor-specific-hmd-found-no-stored-config 1103)
@@ -729,11 +1049,40 @@
   (:invalid-argument 114)
   (:invalid-frame-buffer-size 115))
 
+(defcenum vr-tracked-camera-frame-layout
+  (:mono 1)
+  (:stereo 2)
+  (:vertical-layout 16)
+  (:horizontal-layout 32))
+
 (defcenum vr-tracked-camera-frame-type
   (:vr-tracked-camera-frame-type-distorted 0)
   (:vr-tracked-camera-frame-type-undistorted 1)
   (:vr-tracked-camera-frame-type-maximum-undistorted 2)
   (:max-camera-frame-types 3))
+
+(defcenum vr-distortion-function-type
+  (:vr-distortion-function-type-none 0)
+  (:vr-distortion-function-type-ftheta 1)
+  (:vr-distortion-function-type-extended-ftheta 2)
+  (:max-distortion-function-types 3))
+
+(defcenum vsync
+  (:none 0)
+  (:wait-render 1)
+  (:no-wait-render 2))
+
+(defcenum vr-mura-correction-mode
+  (:default 0)
+  (:no-correction 1))
+
+(defcenum imu-off-scale-flags
+  (:accel-x 1)
+  (:accel-y 2)
+  (:accel-z 4)
+  (:gyro-x 8)
+  (:gyro-y 16)
+  (:gyro-z 32))
 
 (defcenum vr-application-error
   (:none 0)
@@ -769,6 +1118,7 @@
   (:news-url-string 51)
   (:image-path-string 52)
   (:source-string 53)
+  (:action-manifest-url-string 54)
   (:is-dashboard-overlay-bool 60)
   (:is-template-bool 61)
   (:is-instanced-bool 62)
@@ -815,9 +1165,15 @@
   (:already-submitted 108)
   (:invalid-bounds 109))
 
+(defcenum vr-compositor-timing-mode
+  (:implicit 0)
+  (:explicit-runtime-performs-post-present-handoff 1)
+  (:explicit-application-performs-post-present-handoff 2))
+
 (defcenum vr-overlay-input-method
   (:none 0)
-  (:mouse 1))
+  (:mouse 1)
+  (:dual-analog 2))
 
 (defcenum vr-overlay-transform-type
   (:absolute 0)
@@ -832,7 +1188,7 @@
   (:no-dashboard-tab 3)
   (:accepts-gamepad-events 4)
   (:show-gamepad-focus 5)
-  (:send-vr-scroll-events 6)
+  (:send-vr-discrete-scroll-events 6)
   (:send-vr-touchpad-events 7)
   (:show-touch-pad-scroll-wheel 8)
   (:transfer-ownership-to-internal-process 9)
@@ -841,7 +1197,9 @@
   (:panorama 12)
   (:stereo-panorama 13)
   (:sort-with-non-scene-overlays 14)
-  (:visible-in-dashboard 15))
+  (:visible-in-dashboard 15)
+  (:make-overlays-interactive-if-visible 16)
+  (:send-vr-smooth-scroll-events 17))
 
 (defcenum vr-message-overlay-response
   (:button-press-0 0)
@@ -922,22 +1280,79 @@
   (:buffer-too-small 102)
   (:screenshot-already-in-progress 108))
 
+(defcenum vr-skeletal-transform-space
+  (:model 0)
+  (:parent 1))
+
+(defcenum vr-skeletal-reference-pose
+  (:bind-pose 0)
+  (:open-hand 1)
+  (:fist 2)
+  (:grip-limit 3))
+
+(defcenum vr-finger
+  (:thumb 0)
+  (:index 1)
+  (:middle 2)
+  (:ring 3)
+  (:pinky 4)
+  (:count 5))
+
+(defcenum vr-finger-splay
+  (:thumb-index 0)
+  (:index-middle 1)
+  (:middle-ring 2)
+  (:ring-pinky 3)
+  (:count 4))
+
+(defcenum vr-input-filter-cancel-type
+  (:timers 0)
+  (:momentum 1))
+
+(defcenum vr-input-string-bits
+  (:hand 1)
+  (:controller-type 2)
+  (:input-source 4)
+  (:all -1))
+
+(defcenum obuffer-error
+  (:success 0)
+  (:operation-failed 100)
+  (:invalid-handle 101)
+  (:invalid-argument 102)
+  (:path-exists 103)
+  (:path-does-not-exist 104)
+  (:permission 105))
+
+(defcenum obuffer-mode
+  (:read 1)
+  (:write 2)
+  (:create 512))
 
 
+
+(defctype spatial-anchor-handle-t :uint32)
 (defctype gl-shared-texture-handle-t (:pointer :void))
 (defctype gl-int-t :int32)
 (defctype gl-uint-t :uint32)
 (defctype shared-texture-handle-t :uint64)
 (defctype driver-id-t :uint32)
 (defctype tracked-device-index-t :uint32)
+(defctype web-console-handle-t :uint64)
 (defctype property-container-handle-t :uint64)
 (defctype property-type-tag-t :uint32)
+(defctype driver-handle-t property-container-handle-t)
+(defctype vr-action-handle-t :uint64)
+(defctype vr-action-set-handle-t :uint64)
+(defctype vr-input-value-handle-t :uint64)
 (defctype vr-overlay-handle-t :uint64)
+(defctype bone-index-t :int32)
 (defctype tracked-camera-handle-t :uint64)
 (defctype screenshot-handle-t :uint32)
 (defctype vr-component-properties :uint32)
 (defctype texture-id-t :int32)
 (defctype vr-notification-id :uint32)
+(defctype obuffer-handle-t :uint64)
 (defctype hmd-error vr-init-error)
 (defctype hmd-eye vr-eye)
 (defctype hmd-tracking-result tracking-result)
@@ -949,6 +1364,9 @@
 
 (defcstruct hmd-matrix-34-t
   (m :float :count #.(* 3 4))) ;; float [3][4]
+
+(defcstruct hmd-matrix-33-t
+  (m :float :count #.(* 3 3))) ;; float [3][3]
 
 (defcstruct hmd-matrix-44-t
   (m :float :count #.(* 4 4))) ;; float [4][4]
@@ -970,6 +1388,12 @@
   (x :double) ;; double
   (y :double) ;; double
   (z :double)) ;; double
+
+(defcstruct hmd-quaternionf-t
+  (w :float) ;; float
+  (x :float) ;; float
+  (y :float) ;; float
+  (z :float)) ;; float
 
 (defcstruct hmd-color-t
   (r :float) ;; float
@@ -1010,6 +1434,17 @@
 
 (defcstruct vr-texture-with-pose-t
   (device-to-absolute-tracking (:struct hmd-matrix-34-t))) ;; struct vr::HmdMatrix34_t
+
+(defcstruct vr-texture-depth-info-t
+  (handle (:pointer :void)) ;; void *
+  (projection (:struct hmd-matrix-44-t)) ;; struct vr::HmdMatrix44_t
+  (range (:struct hmd-vector-2-t))) ;; struct vr::HmdVector2_t
+
+(defcstruct vr-texture-with-depth-t
+  (depth (:struct vr-texture-depth-info-t))) ;; struct vr::VRTextureDepthInfo_t
+
+(defcstruct vr-texture-with-pose-and-depth-t
+  (depth (:struct vr-texture-depth-info-t))) ;; struct vr::VRTextureDepthInfo_t
 
 (defcstruct vr-vulkan-texture-data-t
   (image :uint64) ;; uint64_t
@@ -1056,10 +1491,12 @@
 (defcstruct vr-event-process-t
   (pid :uint32) ;; uint32_t
   (old-pid :uint32) ;; uint32_t
-  (forced :bool)) ;; _Bool
+  (forced :bool) ;; _Bool
+  (connection-lost :bool)) ;; _Bool
 
 (defcstruct vr-event-overlay-t
-  (overlay-handle :uint64)) ;; uint64_t
+  (overlay-handle :uint64) ;; uint64_t
+  (device-path :uint64)) ;; uint64_t
 
 (defcstruct vr-event-status-t
   (status-state :uint32)) ;; uint32_t
@@ -1077,7 +1514,11 @@
 
 (defcstruct vr-event-reserved-t
   (reserved-0 :uint64) ;; uint64_t
-  (reserved-1 :uint64)) ;; uint64_t
+  (reserved-1 :uint64) ;; uint64_t
+  (reserved-2 :uint64) ;; uint64_t
+  (reserved-3 :uint64) ;; uint64_t
+  (reserved-4 :uint64) ;; uint64_t
+  (reserved-5 :uint64)) ;; uint64_t
 
 (defcstruct vr-event-performance-test-t
   (fidelity-level :uint32)) ;; uint32_t
@@ -1107,6 +1548,49 @@
   (container property-container-handle-t) ;; PropertyContainerHandle_t
   (prop tracked-device-property)) ;; enum vr::ETrackedDeviceProperty
 
+(defcstruct vr-event-dual-analog-t
+  (x :float) ;; float
+  (y :float) ;; float
+  (transformed-x :float) ;; float
+  (transformed-y :float) ;; float
+  (which dual-analog-which)) ;; enum vr::EDualAnalogWhich
+
+(defcstruct vr-event-haptic-vibration-t
+  (container-handle :uint64) ;; uint64_t
+  (component-handle :uint64) ;; uint64_t
+  (duration-seconds :float) ;; float
+  (frequency :float) ;; float
+  (amplitude :float)) ;; float
+
+(defcstruct vr-event-web-console-t
+  (web-console-handle web-console-handle-t)) ;; WebConsoleHandle_t
+
+(defcstruct vr-event-input-binding-load-t
+  (app-container property-container-handle-t) ;; vr::PropertyContainerHandle_t
+  (path-message :uint64) ;; uint64_t
+  (path-url :uint64) ;; uint64_t
+  (path-controller-type :uint64)) ;; uint64_t
+
+(defcstruct vr-event-input-action-manifest-load-t
+  (path-app-key :uint64) ;; uint64_t
+  (path-message :uint64) ;; uint64_t
+  (path-message-param :uint64) ;; uint64_t
+  (path-manifest-path :uint64)) ;; uint64_t
+
+(defcstruct vr-event-spatial-anchor-t
+  (handle spatial-anchor-handle-t)) ;; SpatialAnchorHandle_t
+
+(defcstruct vr-event-progress-update-t
+  (application-property-container :uint64) ;; uint64_t
+  (path-device :uint64) ;; uint64_t
+  (path-input-source :uint64) ;; uint64_t
+  (path-progress-action :uint64) ;; uint64_t
+  (path-icon :uint64) ;; uint64_t
+  (progress :float)) ;; float
+
+(defcstruct vr-event-show-ui-t
+  (type show-uitype)) ;; enum vr::EShowUIType
+
 (defcunion vr-event-data-t
   (reserved (:struct vr-event-reserved-t)) ;; struct vr::VREvent_Reserved_t
   (controller (:struct vr-event-controller-t)) ;; struct vr::VREvent_Controller_t
@@ -1127,7 +1611,15 @@
   (application-launch (:struct vr-event-application-launch-t)) ;; struct vr::VREvent_ApplicationLaunch_t
   (camera-surface (:struct vr-event-editing-camera-surface-t)) ;; struct vr::VREvent_EditingCameraSurface_t
   (message-overlay (:struct vr-event-message-overlay-t)) ;; struct vr::VREvent_MessageOverlay_t
-  (property (:struct vr-event-property-t))) ;; struct vr::VREvent_Property_t
+  (property (:struct vr-event-property-t)) ;; struct vr::VREvent_Property_t
+  (dual-analog (:struct vr-event-dual-analog-t)) ;; struct vr::VREvent_DualAnalog_t
+  (haptic-vibration (:struct vr-event-haptic-vibration-t)) ;; struct vr::VREvent_HapticVibration_t
+  (web-console (:struct vr-event-web-console-t)) ;; struct vr::VREvent_WebConsole_t
+  (input-binding (:struct vr-event-input-binding-load-t)) ;; struct vr::VREvent_InputBindingLoad_t
+  (action-manifest (:struct vr-event-input-action-manifest-load-t)) ;; struct vr::VREvent_InputActionManifestLoad_t
+  (spatial-anchor (:struct vr-event-spatial-anchor-t)) ;; struct vr::VREvent_SpatialAnchor_t
+  (progress-update (:struct vr-event-progress-update-t)) ;; struct vr::VREvent_ProgressUpdate_t
+  (show-ui (:struct vr-event-show-ui-t))) ;; struct vr::VREvent_ShowUI_t
 
 (defcstruct vr-event-t
   (event-type :uint32) ;; uint32_t
@@ -1165,13 +1657,31 @@
   (grid-scale :float) ;; float
   (transform (:struct hmd-matrix-44-t))) ;; struct vr::HmdMatrix44_t
 
+(defcstruct vr-bone-transform-t
+  (position (:struct hmd-vector-4-t)) ;; struct vr::HmdVector4_t
+  (orientation (:struct hmd-quaternionf-t))) ;; struct vr::HmdQuaternionf_t
+
 (defcstruct camera-video-stream-frame-header-t
   (frame-type vr-tracked-camera-frame-type) ;; enum vr::EVRTrackedCameraFrameType
   (width :uint32) ;; uint32_t
   (height :uint32) ;; uint32_t
   (bytes-per-pixel :uint32) ;; uint32_t
   (frame-sequence :uint32) ;; uint32_t
-  (standing-tracked-device-pose (:struct tracked-device-pose-t))) ;; struct vr::TrackedDevicePose_t
+  (standing-tracked-device-pose (:struct tracked-device-pose-t)) ;; struct vr::TrackedDevicePose_t
+  (frame-exposure-time :uint64)) ;; uint64_t
+
+(defcstruct driver-direct-mode-frame-timing
+  (size :uint32) ;; uint32_t
+  (num-frame-presents :uint32) ;; uint32_t
+  (num-mis-presented :uint32) ;; uint32_t
+  (num-dropped-frames :uint32) ;; uint32_t
+  (reprojection-flags :uint32)) ;; uint32_t
+
+(defcstruct imu-sample-t
+  (sample-time :double) ;; double
+  (accel (:struct hmd-vector-3-d-t)) ;; struct vr::HmdVector3d_t
+  (gyro (:struct hmd-vector-3-d-t)) ;; struct vr::HmdVector3d_t
+  (off-scale-flags :uint32)) ;; uint32_t
 
 (defcstruct app-override-keys-t
   (key :string) ;; const char *
@@ -1201,7 +1711,9 @@
   (compositor-update-start-ms :float) ;; float
   (compositor-update-end-ms :float) ;; float
   (compositor-render-start-ms :float) ;; float
-  (hmd-pose (:struct tracked-device-pose-t))) ;; vr::TrackedDevicePose_t
+  (hmd-pose (:struct tracked-device-pose-t)) ;; vr::TrackedDevicePose_t
+  (num-vsyncs-ready-for-use :uint32) ;; uint32_t
+  (num-vsyncs-to-first-view :uint32)) ;; uint32_t
 
 (defcstruct compositor-cumulative-stats
   (pid :uint32) ;; uint32_t
@@ -1281,6 +1793,55 @@
   (height :int32) ;; int32_t
   (bytes-per-pixel :int32)) ;; int32_t
 
+(defcstruct cvr-setting-helper
+  (settings :pointer)) ;; class vr::IVRSettings *
+
+(defcstruct input-analog-action-data-t
+  (active :bool) ;; _Bool
+  (active-origin vr-input-value-handle-t) ;; VRInputValueHandle_t
+  (x :float) ;; float
+  (y :float) ;; float
+  (z :float) ;; float
+  (delta-x :float) ;; float
+  (delta-y :float) ;; float
+  (delta-z :float) ;; float
+  (update-time :float)) ;; float
+
+(defcstruct input-digital-action-data-t
+  (active :bool) ;; _Bool
+  (active-origin vr-input-value-handle-t) ;; VRInputValueHandle_t
+  (state :bool) ;; _Bool
+  (changed :bool) ;; _Bool
+  (update-time :float)) ;; float
+
+(defcstruct input-pose-action-data-t
+  (active :bool) ;; _Bool
+  (active-origin vr-input-value-handle-t) ;; VRInputValueHandle_t
+  (pose (:struct tracked-device-pose-t))) ;; struct vr::TrackedDevicePose_t
+
+(defcstruct input-skeletal-action-data-t
+  (active :bool) ;; _Bool
+  (active-origin vr-input-value-handle-t)) ;; VRInputValueHandle_t
+
+(defcstruct input-origin-info-t
+  (device-path vr-input-value-handle-t) ;; VRInputValueHandle_t
+  (tracked-device-index tracked-device-index-t) ;; TrackedDeviceIndex_t
+  (rch-render-model-component-name :char :count 128)) ;; char [128]
+
+(defcstruct vr-active-action-set-t
+  (action-set vr-action-set-handle-t) ;; VRActionSetHandle_t
+  (restricted-to-device vr-input-value-handle-t) ;; VRInputValueHandle_t
+  (secondary-action-set vr-action-set-handle-t) ;; VRActionSetHandle_t
+  (padding :uint32) ;; uint32_t
+  (priority :int32)) ;; int32_t
+
+(defcstruct vr-skeletal-summary-data-t
+  (finger-curl :float :count 5) ;; float [5]
+  (finger-splay :float :count 4)) ;; float [4]
+
+(defcstruct spatial-anchor-pose-t
+  (anchor-to-absolute-tracking (:struct hmd-matrix-34-t))) ;; struct vr::HmdMatrix34_t
+
 (defcstruct copen-vr-context
   (vr-system :pointer) ;; class vr::IVRSystem *
   (vr-chaperone :pointer) ;; class vr::IVRChaperone *
@@ -1294,7 +1855,11 @@
   (vr-applications :pointer) ;; class vr::IVRApplications *
   (vr-tracked-camera :pointer) ;; class vr::IVRTrackedCamera *
   (vr-screenshots :pointer) ;; class vr::IVRScreenshots *
-  (vr-driver-manager :pointer)) ;; class vr::IVRDriverManager *
+  (vr-driver-manager :pointer) ;; class vr::IVRDriverManager *
+  (vr-input :pointer) ;; class vr::IVRInput *
+  (vr-iobuffer :pointer) ;; class vr::IVRIOBuffer *
+  (vr-spatial-anchors :pointer) ;; class vr::IVRSpatialAnchors *
+  (vr-notifications :pointer)) ;; class vr::IVRNotifications *
 
 
 
@@ -1302,8 +1867,8 @@
   ((table :reader table)))
 (defmethod initialize-instance :after ((o vr-system) &key)
   (let ((p (vr-get-generic-interface +vr-system-version+)))
-    (setf (slot-value o 'table) (make-array 45))
-    (loop for i below 45
+    (setf (slot-value o 'table) (make-array 47))
+    (loop for i below 47
           do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
 (defun %get-recommended-render-target-size (table pnWidth pnHeight)
   (foreign-funcall-pointer (aref table 0) nil (:pointer :uint32) pnwidth
@@ -1430,43 +1995,50 @@
                            (:pointer tracked-property-error) perror
                            (:struct hmd-matrix-34-t)))
 
-(defun %get-string-tracked-device-property (table unDeviceIndex prop pchValue unBufferSize pError)
+(defun %get-array-tracked-device-property (table unDeviceIndex prop propType pBuffer unBufferSize pError)
   (foreign-funcall-pointer (aref table 27) nil tracked-device-index-t
+                           undeviceindex tracked-device-property prop
+                           property-type-tag-t proptype (:pointer :void)
+                           pbuffer :uint32 unbuffersize
+                           (:pointer tracked-property-error) perror :uint32))
+
+(defun %get-string-tracked-device-property (table unDeviceIndex prop pchValue unBufferSize pError)
+  (foreign-funcall-pointer (aref table 28) nil tracked-device-index-t
                            undeviceindex tracked-device-property prop :string
                            pchvalue :uint32 unbuffersize
                            (:pointer tracked-property-error) perror :uint32))
 
 (defun %get-prop-error-name-from-enum (table error)
-  (foreign-funcall-pointer (aref table 28) nil tracked-property-error error
+  (foreign-funcall-pointer (aref table 29) nil tracked-property-error error
                            :string))
 
 (defun %poll-next-event (table pEvent uncbVREvent)
-  (foreign-funcall-pointer (aref table 29) nil (:pointer (:struct vr-event-t))
+  (foreign-funcall-pointer (aref table 30) nil (:pointer (:struct vr-event-t))
                            pevent :uint32 uncbvrevent :bool))
 
 (defun %poll-next-event-with-pose (table eOrigin pEvent uncbVREvent pTrackedDevicePose)
-  (foreign-funcall-pointer (aref table 30) nil tracking-universe-origin eorigin
+  (foreign-funcall-pointer (aref table 31) nil tracking-universe-origin eorigin
                            (:pointer (:struct vr-event-t)) pevent :uint32
                            uncbvrevent
                            (:pointer (:struct tracked-device-pose-t))
                            ptrackeddevicepose :bool))
 
 (defun %get-event-type-name-from-enum (table eType)
-  (foreign-funcall-pointer (aref table 31) nil vr-event-type etype :string))
+  (foreign-funcall-pointer (aref table 32) nil vr-event-type etype :string))
 
 (defun %get-hidden-area-mesh (table eEye type)
-  (foreign-funcall-pointer (aref table 32) nil vr-eye eeye
+  (foreign-funcall-pointer (aref table 33) nil vr-eye eeye
                            hidden-area-mesh-type type
                            (:struct hidden-area-mesh-t)))
 
 (defun %get-controller-state (table unControllerDeviceIndex pControllerState unControllerStateSize)
-  (foreign-funcall-pointer (aref table 33) nil tracked-device-index-t
+  (foreign-funcall-pointer (aref table 34) nil tracked-device-index-t
                            uncontrollerdeviceindex
                            (:pointer (:struct vr-controller-state-001-t))
                            pcontrollerstate :uint32 uncontrollerstatesize :bool))
 
 (defun %get-controller-state-with-pose (table eOrigin unControllerDeviceIndex pControllerState unControllerStateSize pTrackedDevicePose)
-  (foreign-funcall-pointer (aref table 34) nil tracking-universe-origin eorigin
+  (foreign-funcall-pointer (aref table 35) nil tracking-universe-origin eorigin
                            tracked-device-index-t uncontrollerdeviceindex
                            (:pointer (:struct vr-controller-state-001-t))
                            pcontrollerstate :uint32 uncontrollerstatesize
@@ -1474,41 +2046,44 @@
                            ptrackeddevicepose :bool))
 
 (defun %trigger-haptic-pulse (table unControllerDeviceIndex unAxisId usDurationMicroSec)
-  (foreign-funcall-pointer (aref table 35) nil tracked-device-index-t
+  (foreign-funcall-pointer (aref table 36) nil tracked-device-index-t
                            uncontrollerdeviceindex :uint32 unaxisid :uint16
                            usdurationmicrosec :void))
 
 (defun %get-button-id-name-from-enum (table eButtonId)
-  (foreign-funcall-pointer (aref table 36) nil vr-button-id ebuttonid :string))
+  (foreign-funcall-pointer (aref table 37) nil vr-button-id ebuttonid :string))
 
 (defun %get-controller-axis-type-name-from-enum (table eAxisType)
-  (foreign-funcall-pointer (aref table 37) nil vr-controller-axis-type
+  (foreign-funcall-pointer (aref table 38) nil vr-controller-axis-type
                            eaxistype :string))
 
-(defun %capture-input-focus (table)
-  (foreign-funcall-pointer (aref table 38) nil :bool))
+(defun %is-input-available (table)
+  (foreign-funcall-pointer (aref table 39) nil :bool))
 
-(defun %release-input-focus (table)
-  (foreign-funcall-pointer (aref table 39) nil :void))
-
-(defun %is-input-focus-captured-by-another-process (table)
+(defun %is-steam-vr-drawing-controllers (table)
   (foreign-funcall-pointer (aref table 40) nil :bool))
 
+(defun %should-application-pause (table)
+  (foreign-funcall-pointer (aref table 41) nil :bool))
+
+(defun %should-application-reduce-rendering-work (table)
+  (foreign-funcall-pointer (aref table 42) nil :bool))
+
 (defun %driver-debug-request (table unDeviceIndex pchRequest pchResponseBuffer unResponseBufferSize)
-  (foreign-funcall-pointer (aref table 41) nil tracked-device-index-t
+  (foreign-funcall-pointer (aref table 43) nil tracked-device-index-t
                            undeviceindex :string pchrequest :string
                            pchresponsebuffer :uint32 unresponsebuffersize
                            :uint32))
 
 (defun %perform-firmware-update (table unDeviceIndex)
-  (foreign-funcall-pointer (aref table 42) nil tracked-device-index-t
+  (foreign-funcall-pointer (aref table 44) nil tracked-device-index-t
                            undeviceindex vr-firmware-error))
 
 (defun %acknowledge-quit-exiting (table)
-  (foreign-funcall-pointer (aref table 43) nil :void))
+  (foreign-funcall-pointer (aref table 45) nil :void))
 
 (defun %acknowledge-quit-user-prompt (table)
-  (foreign-funcall-pointer (aref table 44) nil :void))
+  (foreign-funcall-pointer (aref table 46) nil :void))
 
 (defclass vr-extended-display ()
   ((table :reader table)))
@@ -1554,17 +2129,19 @@
                            pnheight (:pointer :uint32) pnframebuffersize
                            vr-tracked-camera-error))
 
-(defun %get-camera-intrinsics (table nDeviceIndex eFrameType pFocalLength pCenter)
+(defun %get-camera-intrinsics (table nDeviceIndex nCameraIndex eFrameType pFocalLength pCenter)
   (foreign-funcall-pointer (aref table 3) nil tracked-device-index-t
-                           ndeviceindex vr-tracked-camera-frame-type eframetype
+                           ndeviceindex :uint32 ncameraindex
+                           vr-tracked-camera-frame-type eframetype
                            (:pointer (:struct hmd-vector-2-t)) pfocallength
                            (:pointer (:struct hmd-vector-2-t)) pcenter
                            vr-tracked-camera-error))
 
-(defun %get-camera-projection (table nDeviceIndex eFrameType flZNear flZFar pProjection)
+(defun %get-camera-projection (table nDeviceIndex nCameraIndex eFrameType flZNear flZFar pProjection)
   (foreign-funcall-pointer (aref table 4) nil tracked-device-index-t
-                           ndeviceindex vr-tracked-camera-frame-type eframetype
-                           :float flznear :float flzfar
+                           ndeviceindex :uint32 ncameraindex
+                           vr-tracked-camera-frame-type eframetype :float
+                           flznear :float flzfar
                            (:pointer (:struct hmd-matrix-44-t)) pprojection
                            vr-tracked-camera-error))
 
@@ -1791,8 +2368,8 @@
   ((table :reader table)))
 (defmethod initialize-instance :after ((o vr-chaperone-setup) &key)
   (let ((p (vr-get-generic-interface +vr-chaperone-setup-version+)))
-    (setf (slot-value o 'table) (make-array 20))
-    (loop for i below 20
+    (setf (slot-value o 'table) (make-array 19))
+    (loop for i below 19
           do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
 (defun %commit-working-copy (table configFile)
   (foreign-funcall-pointer (aref table 0) nil chaperone-config-file configfile
@@ -1834,55 +2411,50 @@
   (foreign-funcall-pointer (aref table 9) nil (:pointer (:struct hmd-quad-t))
                            pquadsbuffer :uint32 unquadscount :void))
 
-(defun %set-working-seated-zero-pose-to-raw-tracking-pose (table pMatSeatedZeroPoseToRawTrackingPose)
+(defun %set-working-perimeter (table pPointBuffer unPointCount)
   (foreign-funcall-pointer (aref table 10) nil
+                           (:pointer (:struct hmd-vector-2-t)) ppointbuffer
+                           :uint32 unpointcount :void))
+
+(defun %set-working-seated-zero-pose-to-raw-tracking-pose (table pMatSeatedZeroPoseToRawTrackingPose)
+  (foreign-funcall-pointer (aref table 11) nil
                            (:pointer (:struct hmd-matrix-34-t))
                            pmatseatedzeroposetorawtrackingpose :void))
 
 (defun %set-working-standing-zero-pose-to-raw-tracking-pose (table pMatStandingZeroPoseToRawTrackingPose)
-  (foreign-funcall-pointer (aref table 11) nil
+  (foreign-funcall-pointer (aref table 12) nil
                            (:pointer (:struct hmd-matrix-34-t))
                            pmatstandingzeroposetorawtrackingpose :void))
 
 (defun %reload-from-disk (table configFile)
-  (foreign-funcall-pointer (aref table 12) nil chaperone-config-file configfile
+  (foreign-funcall-pointer (aref table 13) nil chaperone-config-file configfile
                            :void))
 
 (defun %get-live-seated-zero-pose-to-raw-tracking-pose (table pmatSeatedZeroPoseToRawTrackingPose)
-  (foreign-funcall-pointer (aref table 13) nil
+  (foreign-funcall-pointer (aref table 14) nil
                            (:pointer (:struct hmd-matrix-34-t))
                            pmatseatedzeroposetorawtrackingpose :bool))
 
-(defun %set-working-collision-bounds-tags-info (table pTagsBuffer unTagCount)
-  (foreign-funcall-pointer (aref table 14) nil (:pointer :uint8) ptagsbuffer
-                           :uint32 untagcount :void))
-
-(defun %get-live-collision-bounds-tags-info (table pTagsBuffer punTagCount)
-  (foreign-funcall-pointer (aref table 15) nil (:pointer :uint8) ptagsbuffer
-                           (:pointer :uint32) puntagcount :bool))
-
-(defun %set-working-physical-bounds-info (table pQuadsBuffer unQuadsCount)
-  (foreign-funcall-pointer (aref table 16) nil (:pointer (:struct hmd-quad-t))
-                           pquadsbuffer :uint32 unquadscount :bool))
-
-(defun %get-live-physical-bounds-info (table pQuadsBuffer punQuadsCount)
-  (foreign-funcall-pointer (aref table 17) nil (:pointer (:struct hmd-quad-t))
-                           pquadsbuffer (:pointer :uint32) punquadscount :bool))
-
 (defun %export-live-to-buffer (table pBuffer pnBufferLength)
-  (foreign-funcall-pointer (aref table 18) nil :string pbuffer
+  (foreign-funcall-pointer (aref table 15) nil :string pbuffer
                            (:pointer :uint32) pnbufferlength :bool))
 
 (defun %import-from-buffer-to-working (table pBuffer nImportFlags)
-  (foreign-funcall-pointer (aref table 19) nil :string pbuffer :uint32
+  (foreign-funcall-pointer (aref table 16) nil :string pbuffer :uint32
                            nimportflags :bool))
+
+(defun %show-working-set-preview (table)
+  (foreign-funcall-pointer (aref table 17) nil :void))
+
+(defun %hide-working-set-preview (table)
+  (foreign-funcall-pointer (aref table 18) nil :void))
 
 (defclass vr-compositor ()
   ((table :reader table)))
 (defmethod initialize-instance :after ((o vr-compositor) &key)
   (let ((p (vr-get-generic-interface +vr-compositor-version+)))
-    (setf (slot-value o 'table) (make-array 43))
-    (loop for i below 43
+    (setf (slot-value o 'table) (make-array 44))
+    (loop for i below 44
           do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
 (defun %set-tracking-space (table eOrigin)
   (foreign-funcall-pointer (aref table 0) nil tracking-universe-origin eorigin
@@ -2050,18 +2622,22 @@
                            pphysicaldevice :string pchvalue :uint32
                            unbuffersize :uint32))
 
-(defun %set-explicit-timing-mode (table bExplicitTimingMode)
-  (foreign-funcall-pointer (aref table 41) nil :bool bexplicittimingmode :void))
+(defun %set-explicit-timing-mode (table eTimingMode)
+  (foreign-funcall-pointer (aref table 41) nil vr-compositor-timing-mode
+                           etimingmode :void))
 
 (defun %submit-explicit-timing-data (table)
   (foreign-funcall-pointer (aref table 42) nil vr-compositor-error))
+
+(defun %is-motion-smoothing-enabled (table)
+  (foreign-funcall-pointer (aref table 43) nil :bool))
 
 (defclass vr-overlay ()
   ((table :reader table)))
 (defmethod initialize-instance :after ((o vr-overlay) &key)
   (let ((p (vr-get-generic-interface +vr-overlay-version+)))
-    (setf (slot-value o 'table) (make-array 81))
-    (loop for i below 81
+    (setf (slot-value o 'table) (make-array 82))
+    (loop for i below 82
           do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
 (defun %find-overlay (table pchOverlayKey pOverlayHandle)
   (foreign-funcall-pointer (aref table 0) nil :string pchoverlaykey
@@ -2331,52 +2907,59 @@
                            (:pointer (:struct vr-overlay-intersection-results-t))
                            presults :bool))
 
-(defun %handle-controller-overlay-interaction-as-mouse (table ulOverlayHandle unControllerDeviceIndex)
-  (foreign-funcall-pointer (aref table 51) nil vr-overlay-handle-t
-                           uloverlayhandle tracked-device-index-t
-                           uncontrollerdeviceindex :bool))
-
 (defun %is-hover-target-overlay (table ulOverlayHandle)
-  (foreign-funcall-pointer (aref table 52) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 51) nil vr-overlay-handle-t
                            uloverlayhandle :bool))
 
 (defun %get-gamepad-focus-overlay (table)
-  (foreign-funcall-pointer (aref table 53) nil vr-overlay-handle-t))
+  (foreign-funcall-pointer (aref table 52) nil vr-overlay-handle-t))
 
 (defun %set-gamepad-focus-overlay (table ulNewFocusOverlay)
-  (foreign-funcall-pointer (aref table 54) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 53) nil vr-overlay-handle-t
                            ulnewfocusoverlay vr-overlay-error))
 
 (defun %set-overlay-neighbor (table eDirection ulFrom ulTo)
-  (foreign-funcall-pointer (aref table 55) nil overlay-direction edirection
+  (foreign-funcall-pointer (aref table 54) nil overlay-direction edirection
                            vr-overlay-handle-t ulfrom vr-overlay-handle-t ulto
                            vr-overlay-error))
 
 (defun %move-gamepad-focus-to-neighbor (table eDirection ulFrom)
-  (foreign-funcall-pointer (aref table 56) nil overlay-direction edirection
+  (foreign-funcall-pointer (aref table 55) nil overlay-direction edirection
                            vr-overlay-handle-t ulfrom vr-overlay-error))
 
+(defun %set-overlay-dual-analog-transform (table ulOverlay eWhich pvCenter fRadius)
+  (foreign-funcall-pointer (aref table 56) nil vr-overlay-handle-t uloverlay
+                           dual-analog-which ewhich
+                           (:pointer (:struct hmd-vector-2-t)) pvcenter :float
+                           fradius vr-overlay-error))
+
+(defun %get-overlay-dual-analog-transform (table ulOverlay eWhich pvCenter pfRadius)
+  (foreign-funcall-pointer (aref table 57) nil vr-overlay-handle-t uloverlay
+                           dual-analog-which ewhich
+                           (:pointer (:struct hmd-vector-2-t)) pvcenter
+                           (:pointer :float) pfradius vr-overlay-error))
+
 (defun %set-overlay-texture (table ulOverlayHandle pTexture)
-  (foreign-funcall-pointer (aref table 57) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 58) nil vr-overlay-handle-t
                            uloverlayhandle (:pointer (:struct texture-t))
                            ptexture vr-overlay-error))
 
 (defun %clear-overlay-texture (table ulOverlayHandle)
-  (foreign-funcall-pointer (aref table 58) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 59) nil vr-overlay-handle-t
                            uloverlayhandle vr-overlay-error))
 
 (defun %set-overlay-raw (table ulOverlayHandle pvBuffer unWidth unHeight unDepth)
-  (foreign-funcall-pointer (aref table 59) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 60) nil vr-overlay-handle-t
                            uloverlayhandle (:pointer :void) pvbuffer :uint32
                            unwidth :uint32 unheight :uint32 undepth
                            vr-overlay-error))
 
 (defun %set-overlay-from-file (table ulOverlayHandle pchFilePath)
-  (foreign-funcall-pointer (aref table 60) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 61) nil vr-overlay-handle-t
                            uloverlayhandle :string pchfilepath vr-overlay-error))
 
 (defun %get-overlay-texture (table ulOverlayHandle pNativeTextureHandle pNativeTextureRef pWidth pHeight pNativeFormat pAPIType pColorSpace pTextureBounds)
-  (foreign-funcall-pointer (aref table 61) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 62) nil vr-overlay-handle-t
                            uloverlayhandle (:pointer :void)
                            pnativetexturehandle (:pointer :void)
                            pnativetextureref (:pointer :uint32) pwidth
@@ -2387,53 +2970,53 @@
                            ptexturebounds vr-overlay-error))
 
 (defun %release-native-overlay-handle (table ulOverlayHandle pNativeTextureHandle)
-  (foreign-funcall-pointer (aref table 62) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 63) nil vr-overlay-handle-t
                            uloverlayhandle (:pointer :void)
                            pnativetexturehandle vr-overlay-error))
 
 (defun %get-overlay-texture-size (table ulOverlayHandle pWidth pHeight)
-  (foreign-funcall-pointer (aref table 63) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 64) nil vr-overlay-handle-t
                            uloverlayhandle (:pointer :uint32) pwidth
                            (:pointer :uint32) pheight vr-overlay-error))
 
 (defun %create-dashboard-overlay (table pchOverlayKey pchOverlayFriendlyName pMainHandle pThumbnailHandle)
-  (foreign-funcall-pointer (aref table 64) nil :string pchoverlaykey :string
+  (foreign-funcall-pointer (aref table 65) nil :string pchoverlaykey :string
                            pchoverlayfriendlyname
                            (:pointer vr-overlay-handle-t) pmainhandle
                            (:pointer vr-overlay-handle-t) pthumbnailhandle
                            vr-overlay-error))
 
 (defun %is-dashboard-visible (table)
-  (foreign-funcall-pointer (aref table 65) nil :bool))
+  (foreign-funcall-pointer (aref table 66) nil :bool))
 
 (defun %is-active-dashboard-overlay (table ulOverlayHandle)
-  (foreign-funcall-pointer (aref table 66) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 67) nil vr-overlay-handle-t
                            uloverlayhandle :bool))
 
 (defun %set-dashboard-overlay-scene-process (table ulOverlayHandle unProcessId)
-  (foreign-funcall-pointer (aref table 67) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 68) nil vr-overlay-handle-t
                            uloverlayhandle :uint32 unprocessid vr-overlay-error))
 
 (defun %get-dashboard-overlay-scene-process (table ulOverlayHandle punProcessId)
-  (foreign-funcall-pointer (aref table 68) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 69) nil vr-overlay-handle-t
                            uloverlayhandle (:pointer :uint32) punprocessid
                            vr-overlay-error))
 
 (defun %show-dashboard (table pchOverlayToShow)
-  (foreign-funcall-pointer (aref table 69) nil :string pchoverlaytoshow :void))
+  (foreign-funcall-pointer (aref table 70) nil :string pchoverlaytoshow :void))
 
 (defun %get-primary-dashboard-device (table)
-  (foreign-funcall-pointer (aref table 70) nil tracked-device-index-t))
+  (foreign-funcall-pointer (aref table 71) nil tracked-device-index-t))
 
 (defun %show-keyboard (table eInputMode eLineInputMode pchDescription unCharMax pchExistingText bUseMinimalMode uUserValue)
-  (foreign-funcall-pointer (aref table 71) nil gamepad-text-input-mode
+  (foreign-funcall-pointer (aref table 72) nil gamepad-text-input-mode
                            einputmode gamepad-text-input-line-mode
                            elineinputmode :string pchdescription :uint32
                            uncharmax :string pchexistingtext :bool
                            buseminimalmode :uint64 uuservalue vr-overlay-error))
 
 (defun %show-keyboard-for-overlay (table ulOverlayHandle eInputMode eLineInputMode pchDescription unCharMax pchExistingText bUseMinimalMode uUserValue)
-  (foreign-funcall-pointer (aref table 72) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 73) nil vr-overlay-handle-t
                            uloverlayhandle gamepad-text-input-mode einputmode
                            gamepad-text-input-line-mode elineinputmode :string
                            pchdescription :uint32 uncharmax :string
@@ -2441,49 +3024,49 @@
                            uuservalue vr-overlay-error))
 
 (defun %get-keyboard-text (table pchText cchText)
-  (foreign-funcall-pointer (aref table 73) nil :string pchtext :uint32 cchtext
+  (foreign-funcall-pointer (aref table 74) nil :string pchtext :uint32 cchtext
                            :uint32))
 
 (defun %hide-keyboard (table)
-  (foreign-funcall-pointer (aref table 74) nil :void))
+  (foreign-funcall-pointer (aref table 75) nil :void))
 
 (defun %set-keyboard-transform-absolute (table eTrackingOrigin pmatTrackingOriginToKeyboardTransform)
-  (foreign-funcall-pointer (aref table 75) nil tracking-universe-origin
+  (foreign-funcall-pointer (aref table 76) nil tracking-universe-origin
                            etrackingorigin (:pointer (:struct hmd-matrix-34-t))
                            pmattrackingorigintokeyboardtransform :void))
 
 (defun %set-keyboard-position-for-overlay (table ulOverlayHandle avoidRect)
-  (foreign-funcall-pointer (aref table 76) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 77) nil vr-overlay-handle-t
                            uloverlayhandle (:struct hmd-rect-2-t) avoidrect
                            :void))
 
 (defun %set-overlay-intersection-mask (table ulOverlayHandle pMaskPrimitives unNumMaskPrimitives unPrimitiveSize)
-  (foreign-funcall-pointer (aref table 77) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 78) nil vr-overlay-handle-t
                            uloverlayhandle
                            (:pointer (:struct vr-overlay-intersection-mask-primitive-t))
                            pmaskprimitives :uint32 unnummaskprimitives :uint32
                            unprimitivesize vr-overlay-error))
 
 (defun %get-overlay-flags (table ulOverlayHandle pFlags)
-  (foreign-funcall-pointer (aref table 78) nil vr-overlay-handle-t
+  (foreign-funcall-pointer (aref table 79) nil vr-overlay-handle-t
                            uloverlayhandle (:pointer :uint32) pflags
                            vr-overlay-error))
 
 (defun %show-message-overlay (table pchText pchCaption pchButton0Text pchButton1Text pchButton2Text pchButton3Text)
-  (foreign-funcall-pointer (aref table 79) nil :string pchtext :string
+  (foreign-funcall-pointer (aref table 80) nil :string pchtext :string
                            pchcaption :string pchbutton0text :string
                            pchbutton1text :string pchbutton2text :string
                            pchbutton3text vr-message-overlay-response))
 
 (defun %close-message-overlay (table)
-  (foreign-funcall-pointer (aref table 80) nil :void))
+  (foreign-funcall-pointer (aref table 81) nil :void))
 
 (defclass vr-render-models ()
   ((table :reader table)))
 (defmethod initialize-instance :after ((o vr-render-models) &key)
   (let ((p (vr-get-generic-interface +vr-render-models-version+)))
-    (setf (slot-value o 'table) (make-array 18))
-    (loop for i below 18
+    (setf (slot-value o 'table) (make-array 19))
+    (loop for i below 19
           do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
 (defun %load-render-model-async (table pchRenderModelName ppRenderModel)
   (foreign-funcall-pointer (aref table 0) nil :string pchrendermodelname
@@ -2545,8 +3128,17 @@
                            pchcomponentrendermodelname :uint32
                            uncomponentrendermodelnamelen :uint32))
 
-(defun %get-component-state (table pchRenderModelName pchComponentName pControllerState pState pComponentState)
+(defun %get-component-state-for-device-path (table pchRenderModelName pchComponentName devicePath pState pComponentState)
   (foreign-funcall-pointer (aref table 13) nil :string pchrendermodelname
+                           :string pchcomponentname vr-input-value-handle-t
+                           devicepath
+                           (:pointer (:struct render-model-controller-mode-state-t))
+                           pstate
+                           (:pointer (:struct render-model-component-state-t))
+                           pcomponentstate :bool))
+
+(defun %get-component-state (table pchRenderModelName pchComponentName pControllerState pState pComponentState)
+  (foreign-funcall-pointer (aref table 14) nil :string pchrendermodelname
                            :string pchcomponentname
                            (:pointer (:struct vr-controller-state-001-t))
                            pcontrollerstate
@@ -2556,21 +3148,21 @@
                            pcomponentstate :bool))
 
 (defun %render-model-has-component (table pchRenderModelName pchComponentName)
-  (foreign-funcall-pointer (aref table 14) nil :string pchrendermodelname
+  (foreign-funcall-pointer (aref table 15) nil :string pchrendermodelname
                            :string pchcomponentname :bool))
 
 (defun %get-render-model-thumbnail-url (table pchRenderModelName pchThumbnailURL unThumbnailURLLen peError)
-  (foreign-funcall-pointer (aref table 15) nil :string pchrendermodelname
+  (foreign-funcall-pointer (aref table 16) nil :string pchrendermodelname
                            :string pchthumbnailurl :uint32 unthumbnailurllen
                            (:pointer vr-render-model-error) peerror :uint32))
 
 (defun %get-render-model-original-path (table pchRenderModelName pchOriginalPath unOriginalPathLen peError)
-  (foreign-funcall-pointer (aref table 16) nil :string pchrendermodelname
+  (foreign-funcall-pointer (aref table 17) nil :string pchrendermodelname
                            :string pchoriginalpath :uint32 unoriginalpathlen
                            (:pointer vr-render-model-error) peerror :uint32))
 
 (defun %get-render-model-error-name-from-enum (table error)
-  (foreign-funcall-pointer (aref table 17) nil vr-render-model-error error
+  (foreign-funcall-pointer (aref table 18) nil vr-render-model-error error
                            :string))
 
 (defclass vr-notifications ()
@@ -2720,8 +3312,8 @@
   ((table :reader table)))
 (defmethod initialize-instance :after ((o vr-driver-manager) &key)
   (let ((p (vr-get-generic-interface +vr-driver-manager-version+)))
-    (setf (slot-value o 'table) (make-array 2))
-    (loop for i below 2
+    (setf (slot-value o 'table) (make-array 3))
+    (loop for i below 3
           do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
 (defun %get-driver-count (table)
   (foreign-funcall-pointer (aref table 0) nil :uint32))
@@ -2729,4 +3321,219 @@
 (defun %get-driver-name (table nDriver pchValue unBufferSize)
   (foreign-funcall-pointer (aref table 1) nil driver-id-t ndriver :string
                            pchvalue :uint32 unbuffersize :uint32))
+
+(defun %get-driver-handle (table pchDriverName)
+  (foreign-funcall-pointer (aref table 2) nil :string pchdrivername
+                           driver-handle-t))
+
+(defclass vr-input ()
+  ((table :reader table)))
+(defmethod initialize-instance :after ((o vr-input) &key)
+  (let ((p (vr-get-generic-interface +vr-input-version+)))
+    (setf (slot-value o 'table) (make-array 24))
+    (loop for i below 24
+          do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
+(defun %set-action-manifest-path (table pchActionManifestPath)
+  (foreign-funcall-pointer (aref table 0) nil :string pchactionmanifestpath
+                           vr-input-error))
+
+(defun %get-action-set-handle (table pchActionSetName pHandle)
+  (foreign-funcall-pointer (aref table 1) nil :string pchactionsetname
+                           (:pointer vr-action-set-handle-t) phandle
+                           vr-input-error))
+
+(defun %get-action-handle (table pchActionName pHandle)
+  (foreign-funcall-pointer (aref table 2) nil :string pchactionname
+                           (:pointer vr-action-handle-t) phandle vr-input-error))
+
+(defun %get-input-source-handle (table pchInputSourcePath pHandle)
+  (foreign-funcall-pointer (aref table 3) nil :string pchinputsourcepath
+                           (:pointer vr-input-value-handle-t) phandle
+                           vr-input-error))
+
+(defun %update-action-state (table pSets unSizeOfVRSelectedActionSet_t unSetCount)
+  (foreign-funcall-pointer (aref table 4) nil
+                           (:pointer (:struct vr-active-action-set-t)) psets
+                           :uint32 unsizeofvrselectedactionset_t :uint32
+                           unsetcount vr-input-error))
+
+(defun %get-digital-action-data (table action pActionData unActionDataSize ulRestrictToDevice)
+  (foreign-funcall-pointer (aref table 5) nil vr-action-handle-t action
+                           (:pointer (:struct input-digital-action-data-t))
+                           pactiondata :uint32 unactiondatasize
+                           vr-input-value-handle-t ulrestricttodevice
+                           vr-input-error))
+
+(defun %get-analog-action-data (table action pActionData unActionDataSize ulRestrictToDevice)
+  (foreign-funcall-pointer (aref table 6) nil vr-action-handle-t action
+                           (:pointer (:struct input-analog-action-data-t))
+                           pactiondata :uint32 unactiondatasize
+                           vr-input-value-handle-t ulrestricttodevice
+                           vr-input-error))
+
+(defun %get-pose-action-data (table action eOrigin fPredictedSecondsFromNow pActionData unActionDataSize ulRestrictToDevice)
+  (foreign-funcall-pointer (aref table 7) nil vr-action-handle-t action
+                           tracking-universe-origin eorigin :float
+                           fpredictedsecondsfromnow
+                           (:pointer (:struct input-pose-action-data-t))
+                           pactiondata :uint32 unactiondatasize
+                           vr-input-value-handle-t ulrestricttodevice
+                           vr-input-error))
+
+(defun %get-skeletal-action-data (table action pActionData unActionDataSize)
+  (foreign-funcall-pointer (aref table 8) nil vr-action-handle-t action
+                           (:pointer (:struct input-skeletal-action-data-t))
+                           pactiondata :uint32 unactiondatasize vr-input-error))
+
+(defun %get-bone-count (table action pBoneCount)
+  (foreign-funcall-pointer (aref table 9) nil vr-action-handle-t action
+                           (:pointer :uint32) pbonecount vr-input-error))
+
+(defun %get-bone-hierarchy (table action pParentIndices unIndexArayCount)
+  (foreign-funcall-pointer (aref table 10) nil vr-action-handle-t action
+                           (:pointer bone-index-t) pparentindices :uint32
+                           unindexaraycount vr-input-error))
+
+(defun %get-bone-name (table action nBoneIndex pchBoneName unNameBufferSize)
+  (foreign-funcall-pointer (aref table 11) nil vr-action-handle-t action
+                           bone-index-t nboneindex :string pchbonename :uint32
+                           unnamebuffersize vr-input-error))
+
+(defun %get-skeletal-reference-transforms (table action eTransformSpace eReferencePose pTransformArray unTransformArrayCount)
+  (foreign-funcall-pointer (aref table 12) nil vr-action-handle-t action
+                           vr-skeletal-transform-space etransformspace
+                           vr-skeletal-reference-pose ereferencepose
+                           (:pointer (:struct vr-bone-transform-t))
+                           ptransformarray :uint32 untransformarraycount
+                           vr-input-error))
+
+(defun %get-skeletal-tracking-level (table action pSkeletalTrackingLevel)
+  (foreign-funcall-pointer (aref table 13) nil vr-action-handle-t action
+                           (:pointer vr-skeletal-tracking-level)
+                           pskeletaltrackinglevel vr-input-error))
+
+(defun %get-skeletal-bone-data (table action eTransformSpace eMotionRange pTransformArray unTransformArrayCount)
+  (foreign-funcall-pointer (aref table 14) nil vr-action-handle-t action
+                           vr-skeletal-transform-space etransformspace
+                           vr-skeletal-motion-range emotionrange
+                           (:pointer (:struct vr-bone-transform-t))
+                           ptransformarray :uint32 untransformarraycount
+                           vr-input-error))
+
+(defun %get-skeletal-summary-data (table action pSkeletalSummaryData)
+  (foreign-funcall-pointer (aref table 15) nil vr-action-handle-t action
+                           (:pointer (:struct vr-skeletal-summary-data-t))
+                           pskeletalsummarydata vr-input-error))
+
+(defun %get-skeletal-bone-data-compressed (table action eMotionRange pvCompressedData unCompressedSize punRequiredCompressedSize)
+  (foreign-funcall-pointer (aref table 16) nil vr-action-handle-t action
+                           vr-skeletal-motion-range emotionrange
+                           (:pointer :void) pvcompresseddata :uint32
+                           uncompressedsize (:pointer :uint32)
+                           punrequiredcompressedsize vr-input-error))
+
+(defun %decompress-skeletal-bone-data (table pvCompressedBuffer unCompressedBufferSize eTransformSpace pTransformArray unTransformArrayCount)
+  (foreign-funcall-pointer (aref table 17) nil (:pointer :void)
+                           pvcompressedbuffer :uint32 uncompressedbuffersize
+                           vr-skeletal-transform-space etransformspace
+                           (:pointer (:struct vr-bone-transform-t))
+                           ptransformarray :uint32 untransformarraycount
+                           vr-input-error))
+
+(defun %trigger-haptic-vibration-action (table action fStartSecondsFromNow fDurationSeconds fFrequency fAmplitude ulRestrictToDevice)
+  (foreign-funcall-pointer (aref table 18) nil vr-action-handle-t action :float
+                           fstartsecondsfromnow :float fdurationseconds :float
+                           ffrequency :float famplitude vr-input-value-handle-t
+                           ulrestricttodevice vr-input-error))
+
+(defun %get-action-origins (table actionSetHandle digitalActionHandle originsOut originOutCount)
+  (foreign-funcall-pointer (aref table 19) nil vr-action-set-handle-t
+                           actionsethandle vr-action-handle-t
+                           digitalactionhandle
+                           (:pointer vr-input-value-handle-t) originsout
+                           :uint32 originoutcount vr-input-error))
+
+(defun %get-origin-localized-name (table origin pchNameArray unNameArraySize unStringSectionsToInclude)
+  (foreign-funcall-pointer (aref table 20) nil vr-input-value-handle-t origin
+                           :string pchnamearray :uint32 unnamearraysize :int32
+                           unstringsectionstoinclude vr-input-error))
+
+(defun %get-origin-tracked-device-info (table origin pOriginInfo unOriginInfoSize)
+  (foreign-funcall-pointer (aref table 21) nil vr-input-value-handle-t origin
+                           (:pointer (:struct input-origin-info-t)) porigininfo
+                           :uint32 unorigininfosize vr-input-error))
+
+(defun %show-action-origins (table actionSetHandle ulActionHandle)
+  (foreign-funcall-pointer (aref table 22) nil vr-action-set-handle-t
+                           actionsethandle vr-action-handle-t ulactionhandle
+                           vr-input-error))
+
+(defun %show-bindings-for-action-set (table pSets unSizeOfVRSelectedActionSet_t unSetCount originToHighlight)
+  (foreign-funcall-pointer (aref table 23) nil
+                           (:pointer (:struct vr-active-action-set-t)) psets
+                           :uint32 unsizeofvrselectedactionset_t :uint32
+                           unsetcount vr-input-value-handle-t origintohighlight
+                           vr-input-error))
+
+(defclass vr-iobuffer ()
+  ((table :reader table)))
+(defmethod initialize-instance :after ((o vr-iobuffer) &key)
+  (let ((p (vr-get-generic-interface +vr-iobuffer-version+)))
+    (setf (slot-value o 'table) (make-array 6))
+    (loop for i below 6
+          do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
+(defun %open (table pchPath mode unElementSize unElements pulBuffer)
+  (foreign-funcall-pointer (aref table 0) nil :string pchpath obuffer-mode mode
+                           :uint32 unelementsize :uint32 unelements
+                           (:pointer obuffer-handle-t) pulbuffer obuffer-error))
+
+(defun %close (table ulBuffer)
+  (foreign-funcall-pointer (aref table 1) nil obuffer-handle-t ulbuffer
+                           obuffer-error))
+
+(defun %read (table ulBuffer pDst unBytes punRead)
+  (foreign-funcall-pointer (aref table 2) nil obuffer-handle-t ulbuffer
+                           (:pointer :void) pdst :uint32 unbytes
+                           (:pointer :uint32) punread obuffer-error))
+
+(defun %write (table ulBuffer pSrc unBytes)
+  (foreign-funcall-pointer (aref table 3) nil obuffer-handle-t ulbuffer
+                           (:pointer :void) psrc :uint32 unbytes obuffer-error))
+
+(defun %property-container (table ulBuffer)
+  (foreign-funcall-pointer (aref table 4) nil obuffer-handle-t ulbuffer
+                           property-container-handle-t))
+
+(defun %has-readers (table ulBuffer)
+  (foreign-funcall-pointer (aref table 5) nil obuffer-handle-t ulbuffer :bool))
+
+(defclass vr-spatial-anchors ()
+  ((table :reader table)))
+(defmethod initialize-instance :after ((o vr-spatial-anchors) &key)
+  (let ((p (vr-get-generic-interface +vr-spatial-anchors-version+)))
+    (setf (slot-value o 'table) (make-array 4))
+    (loop for i below 4
+          do (setf (aref (table o) i) (cffi:mem-aref p :pointer i)))))
+(defun %create-spatial-anchor-from-descriptor (table pchDescriptor pHandleOut)
+  (foreign-funcall-pointer (aref table 0) nil :string pchdescriptor
+                           (:pointer spatial-anchor-handle-t) phandleout
+                           vr-spatial-anchor-error))
+
+(defun %create-spatial-anchor-from-pose (table unDeviceIndex eOrigin pPose pHandleOut)
+  (foreign-funcall-pointer (aref table 1) nil tracked-device-index-t
+                           undeviceindex tracking-universe-origin eorigin
+                           (:pointer (:struct spatial-anchor-pose-t)) ppose
+                           (:pointer spatial-anchor-handle-t) phandleout
+                           vr-spatial-anchor-error))
+
+(defun %get-spatial-anchor-pose (table unHandle eOrigin pPoseOut)
+  (foreign-funcall-pointer (aref table 2) nil spatial-anchor-handle-t unhandle
+                           tracking-universe-origin eorigin
+                           (:pointer (:struct spatial-anchor-pose-t)) pposeout
+                           vr-spatial-anchor-error))
+
+(defun %get-spatial-anchor-descriptor (table unHandle pchDescriptorOut punDescriptorBufferLenInOut)
+  (foreign-funcall-pointer (aref table 3) nil spatial-anchor-handle-t unhandle
+                           :string pchdescriptorout (:pointer :uint32)
+                           pundescriptorbufferleninout vr-spatial-anchor-error))
 

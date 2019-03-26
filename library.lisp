@@ -18,7 +18,7 @@
 
 (cffi:define-foreign-library openvr-api
   (:windows "openvr_api.dll")
-  (:linux "libopenvr_api.so")
+  (:linux "/home/selwyn/openvr/lib/linux64/libopenvr_api.so")
   (:darwin "libopenvr_api.dylib"))
 
 (cffi:use-foreign-library openvr-api)
