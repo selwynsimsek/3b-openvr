@@ -1,0 +1,3 @@
+#!/bin/sh
+# Convenience shell script to regenerate low-level wrappers.
+sbcl --eval "(ql:quickload '(alexandria cffi cl-json cl-ppcre))" --load generate.lisp --non-interactive --quit
