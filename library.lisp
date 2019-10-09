@@ -17,8 +17,8 @@
 ;; todo: figure out library name/path on linux/osx
 
 (cffi:define-foreign-library openvr-api
-  (:windows "openvr_api.dll")
-  (:linux "/home/selwyn/openvr/lib/linux64/libopenvr_api.so")
-  (:darwin "libopenvr_api.dylib"))
+  (:windows #.(asdf:system-relative-pathname '3b-openvr "lib/win64/openvr_api.dll"))
+  (:linux #.(asdf:system-relative-pathname '3b-openvr "lib/linux64/libopenvr_api.so"))
+  (:darwin #.(asdf:system-relative-pathname '3b-openvr"lib/osx32/libopenvr_api.dylib")))
 
 (cffi:use-foreign-library openvr-api)
