@@ -151,6 +151,12 @@
      :vendor-specific-reserved-start nil
      :vendor-specific-reserved-end nil)))
 
+(defclass vr-event ()
+  ((event-type :initarg :event-type :accessor event-type)
+   (tracked-device-index :initarg :tracked-device-index :accessor tracked-device-index)
+   (event-age :initarg :event-age :accessor event-age)
+   (data :initarg :data :accessor data)))
+
 (defmethod cffi:translate-from-foreign (value (type vr-event-t-tclass))
   (let* ((type (cffi:foreign-enum-keyword
                 'vr-event-type
@@ -174,10 +180,10 @@
                     (loop for i from offset below size
                           collect (cffi:mem-aref value :uint8 i))
                     '(simple-array (unsigned-byte 8) (*))))))
-    (list :event-type type
-          :tracked-device-index tracked-device-index
-          :event-age-seconds event-age-seconds
-          :data data)))
+    (make-instance 'vr-event :event-type type
+                             :tracked-device-index tracked-device-index
+                             :event-age event-age-seconds
+                             :data data)))
 
 (cffi:defcfun (%vr-init-internal "VR_InitInternal") :intptr
   (pe-error (:pointer vr-init-error))
@@ -507,8 +513,7 @@
                               (h :uint32))
     (%get-recommended-render-target-size (table system) w h)
     ;; should this return list, values, or some struct/class or something?
-    (list (cffi:mem-ref w :uint32)
-          (cffi:mem-ref h :uint32))))
+    (values (cffi:mem-ref w :uint32) (cffi:mem-ref h :uint32))))
 
 (defun get-projection-matrix (eye near far &key (system *system*))
   (%get-projection-matrix (table system) eye near far))
@@ -674,8 +679,8 @@
 
 ;;; vr-driver-manager methods
 
+;;vr-input
 
-
-
-
+(defun set-action-manifest-path (pathname &key (input *input*))
+  (%set-action-manifest-path (table input) (namestring pathname)))
 

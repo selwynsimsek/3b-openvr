@@ -8,5 +8,7 @@
                (:file "low-level")
                (:file "wrappers")
                (:file "library")
+               (:file "clos")
+               (:file "screenshots")
                #++
                (:file "foo")))
