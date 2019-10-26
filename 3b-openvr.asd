@@ -26,6 +26,4 @@
                (:file "io-buffer")
                (:file "spatial-anchors")
                (:file "debug")
-               (:file "notifications")
-               #++
-               (:file "foo")))
+               (:file "notifications")))

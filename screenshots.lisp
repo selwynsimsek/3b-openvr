@@ -2,7 +2,6 @@
 ;;;; High level bindings for the IVRScreenshots interface.
 ;;; https://github.com/ValveSoftware/openvr/wiki/IVRScreenshots_Overview
 
-
 (in-package 3b-openvr)
 
 (defun request-screenshot (&key (preview-pathname (merge-pathnames #p"preview.png"
