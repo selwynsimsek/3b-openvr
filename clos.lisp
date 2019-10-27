@@ -1,16 +1,17 @@
 (in-package 3b-openvr)
 
-(defmacro define-clos-wrapper ((class-name struct-name) &rest slot-names)
+(defmacro define-clos-wrapper ((class-name struct-name) direct-superclasses slot-names &rest options)
   (let ((class-slots (mapcar #'first slot-names))
         (cstruct-slots (mapcar #'second slot-names))
         (struct-type (intern (concatenate 'string (princ-to-string struct-name) "-TCLASS"))))
     `(progn
-       (defclass ,class-name ()
+       (defclass ,class-name ,direct-superclasses
          ,(mapcar
            (lambda (class-slot)
              `(,class-slot :initarg ,(intern (princ-to-string class-slot) (find-package "KEYWORD"))
                            :accessor ,class-slot))
-           class-slots))
+           class-slots)
+         ,@options)
        (defmethod cffi:translate-from-foreign (value (type (eql ',struct-type)))
          (cffi:with-foreign-slots (,cstruct-slots value (:struct ,struct-name))
            (make-instance ',class-name

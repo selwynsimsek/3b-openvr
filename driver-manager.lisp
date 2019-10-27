@@ -15,4 +15,4 @@
   (%get-driver-handle (table driver-manager) name))
 
 (defun driver-enabled-p (driver-id &key (driver-manager *driver-manager*))
-  (error "Not implemented yet")) ; where is the function?
+  (%is-enabled (table driver-manager) driver-id))

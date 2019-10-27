@@ -8,6 +8,8 @@
 ;; Creating our own window is also incompatible with the VR compositor
 ;; and is not available when the compositor is running.
 
+(in-package 3b-openvr)
+
 (defun window-bounds (&key (extended-display *extended-display*))
   "Size and position that the window needs to be on the VR display."
   (cffi:with-foreign-objects

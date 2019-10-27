@@ -218,7 +218,7 @@
             (= l 2))
        "vr-overlay-intersection-mask-primitive-data-t")
       ((and (string= f "reserved")
-            (= l 28))
+            (= l 30))
        "vr-event-data-t")
       (t (error (format nil  "??  ~a" (length fields)))))))
 
@@ -348,7 +348,7 @@
                       (format t ")~%~%")))))
 
 
-#++
+
 (with-open-file (*standard-output*
                  (asdf:system-relative-pathname '3b-openvr "low-level.lisp")
                  :direction :output :if-exists :supersede

@@ -3,12 +3,14 @@
 
 ;;; IVR_SpatialAnchors_001
 
-(defun create-spatial-anchor-from-descriptor (descriptor &key (spatial-anchors *spatial-anchors*))
+(in-package 3b-openvr)
+
+(defun spatial-anchor-from-descriptor (descriptor &key (spatial-anchors *spatial-anchors*))
   "Returns a handle for an spatial anchor described by descriptor.
   Caller can wait for an event or occasionally poll spatial-anchor-pose to find the virtual coordinate
   associated with this anchor.")
 
-(defun create-spatial-anchor-from-pose (device-index tracking-universe-origin pose
+(defun spatial-anchor-from-pose (device-index tracking-universe-origin pose
                                         &key (spatial-anchors *spatial-anchors*))
   "Returns a handle for an new spatial anchor at pPose.
   Caller can wait for an event or occasionally
