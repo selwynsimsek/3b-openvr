@@ -5,19 +5,19 @@
 
 (in-package 3b-openvr)
 
-(defun set-action-manifest-path (action-manifest-path &key (input *input*))
-  "Sets the path to the action manifest JSON file that is used by this application. If this
-   information was set on the Steam partner site, calls to this function are ignored. If the Steam 
-   partner site setting and the path provided by this call are different, 
-   VRInputError_MismatchedActionManifest is returned. This call must be made before the first call 
-   to #'update-action-state or #'poll-next-event."
-  (%set-action-manifest-path (table input) action-manifest-path))
-;; (set-action-manifest-path "/home/selwyn/openvr/samples/bin/hellovr_actions.json")
+(defmacro with-input-error (&rest body)
+  (let ((error-name (gensym "error-value")))
+    `(let ((,error-name (progn ,@body)))
+       (if (eq ,error-name :none) t (error "VR input error: ~a" ,error-name)))))
+
 (defclass input-action-data ()
   (active-origin active-p))
 
-(defclass input-binding-info ()
-  (device-pathname input-pathname mode-name slot-name))
+(define-clos-wrapper (input-binding-info input-binding-info-t) ()
+                     ((device-path rch-device-path-name)
+                      (input-path rch-input-path-name)
+                      (mode-name rch-mode-name)
+                      (slot-name rch-slot-name)))
 
 (define-clos-wrapper (input-skeletal-action-data input-skeletal-action-data-t) (input-action-data)
                      ((active-p active) (active-origin active-origin)))
@@ -49,87 +49,154 @@
 
 ;; handle management
 
+(defun set-action-manifest-path (action-manifest-path &key (input *input*))
+  "Sets the path to the action manifest JSON file that is used by this application. If this
+   information was set on the Steam partner site, calls to this function are ignored. If the Steam 
+   partner site setting and the path provided by this call are different, 
+   VRInputError_MismatchedActionManifest is returned. This call must be made before the first call 
+   to #'update-action-state or #'poll-next-event."
+  (with-input-error (%set-action-manifest-path (table input) action-manifest-path)))
+;; (set-action-manifest-path "/home/selwyn/openvr/samples/bin/hellovr_actions.json")
+
+
 (defun action-set (action-set-name &key (input *input*))
   "Returns an integer representing an action set. This object is used for all performance-sensitive calls."
   (cffi:with-foreign-object (handle-pointer 'vr-action-set-handle-t)
-    (let ((result (%get-action-set-handle (table input) action-set-name handle-pointer)))
-      (unless (eq :none result)
-        (error "input error ~a" result)))
+    (with-input-error
+        (%get-action-set-handle (table input) action-set-name handle-pointer))
     (cffi:mem-ref handle-pointer 'vr-action-set-handle-t)))
 
 (defun action (action-name &key (input *input*))
   "Returns an integer representing an action. This handle is used for all performance-sensitive calls."
   (cffi:with-foreign-object (handle-pointer 'vr-action-handle-t)
-    (%get-action-handle (table input) action-name handle-pointer)
+    (with-input-error
+        (%get-action-handle (table input) action-name handle-pointer))
     (cffi:mem-ref handle-pointer 'vr-action-handle-t)))
 
 (defun input-source (input-source-pathname &key (input *input*))
   "Returns an integer representing an input source for any path in the input system. E.g. /user/hand/right"
   (cffi:with-foreign-object (handle-pointer 'vr-input-value-handle-t)
-    (%get-input-source-handle (table input) (namestring input-source-pathname) handle-pointer)
+    (with-input-error
+        (%get-input-source-handle (table input) (namestring input-source-pathname) handle-pointer))
     (cffi:mem-ref handle-pointer 'vr-input-value-handle-t)))
 
 ;; reading action state
 (defun update-action-state (active-action-sets &key (input *input*))
+  "Reads the current state into all actions. After this call, the results of *action-data calls 
+   will be the same until the next call to #'update-action-state."
   (cffi:with-foreign-object (pointer '(:struct vr-active-action-set-t) (length active-action-sets))
     (loop for i below (length active-action-sets)
           do (setf (cffi:mem-ref pointer '(:struct vr-active-action-set-t) i)
                    (nth i active-action-sets)))
-    (%update-action-state (table input) pointer (cffi:foreign-type-size 'vr-active-action-set-t-tclass)
-                          (length active-action-sets))))
+    (with-input-error
+        (%update-action-state (table input) pointer (cffi:foreign-type-size '(:struct
+                                                                              vr-active-action-set-t))
+                              (length active-action-sets)))))
 
 (defun digital-action-data (action &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
-  (%get-digital-action-data (table input)))
+  "Reads the state of a digital action."
+  (cffi:with-foreign-object (pointer '(:struct input-digital-action-data-t))
+    (with-input-error
+        (%get-digital-action-data (table input) action pointer
+                                  (cffi:foreign-type-size '(:struct input-digital-action-data-t))
+                                  restrict-to-device))
+    (cffi:mem-ref pointer '(:struct input-digital-action-data-t))))
 
 (defun analog-action-data (action &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
-  (%get-analog-action-data (table input)))
+  "Reads the state of an analog action given its handle."
+  (cffi:with-foreign-object (pointer '(:struct input-analog-action-data-t))
+    (with-input-error
+        (%get-analog-action-data (table input) action pointer
+                                 (cffi:foreign-type-size '(:struct input-analog-action-data-t))
+                                 restrict-to-device))
+    (cffi:mem-ref pointer '(:struct input-analog-action-data-t))))
 
-(defun pose-action-data-relative-to-now (action tracking-universe-origin
+(defun pose-action-data-relative-to-now (action tracking-universe-origin predicted-seconds-from-now
                                          &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
-  (%get-pose-action-data-relative-to-now (table input)))
+  "Reads the state of a pose action for the number of seconds relative to now. This will generally
+   be called with negative times from the update-time fields in other actions."
+  (cffi:with-foreign-object (pointer '(:struct input-pose-action-data-t))
+    (with-input-error
+        (%get-pose-action-data-relative-to-now (table input) action tracking-universe-origin
+                                               predicted-seconds-from-now pointer
+                                               (cffi:foreign-type-size '(:struct input-pose-action-data-t))
+                                               restrict-to-device))
+    (cffi:mem-ref pointer '(:struct input-pose-action-data-t))))
 
 (defun pose-action-data-for-next-frame (action tracking-universe-origin
                                         &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
-  (%get-pose-action-data-for-next-frame (table input)))
+  "Reads the state of a pose action. The returned values will match the values returned by the last call to
+   #'wait-get-poses."
+  (cffi:with-foreign-object (pointer '(:struct input-pose-action-data-t))
+    (with-input-error
+        (%get-pose-action-data-for-next-frame (table input) action tracking-universe-origin
+                                              pointer (cffi:foreign-type-size '(:struct input-pose-action-data-t))
+                                              restrict-to-device))
+    (cffi:mem-ref pointer '(:struct input-pose-action-data-t))))
 
 (defun skeletal-action-data (action &key (input *input*))
-  (%get-skeletal-action-data (table input)))
+  "Reads the state of a skeletal action given its handle."
+  (cffi:with-foreign-object (pointer '(:struct input-skeletal-action-data-t))
+    (with-input-error
+        (%get-skeletal-action-data (table input) action pointer
+                                   (cffi:foreign-type-size '(:struct input-skeletal-action-data-t))))
+    (cffi:mem-ref pointer '(:struct input-skeletal-action-data-t))))
 
 ;; static skeletal data
 
 (defun bone-count (action &key (input *input*))
   "Reads the number of bones in skeleton associated with the given action."
   (cffi:with-foreign-object (pointer :uint32)
-    (let ((result (%get-bone-count (table input) action pointer)))
-      (unless (eq result :none)
-        (error "Input error: ~a" result)))
+    (with-input-error (%get-bone-count (table input) action pointer))
     (cffi:mem-ref pointer :uint32)))
 
 (defun bone-hierarchy (action &key (input *input*))
   "Returns an array of each bone's parent in the skeleton associated with the given action."
-  (error "implement me"))
+  (let ((count (bone-count action)))
+    (cffi:with-foreign-object (pointer 'bone-index-t count)
+      (with-input-error (%get-bone-hierarchy (table input) action pointer count))
+      (let ((result (make-array (list count))))
+        (loop for i from 0 below count
+              do (setf (aref result i) (cffi:mem-ref pointer 'bone-index-t i))
+              finally (return result))))))
 
-(defun bone-name (action index &key (input *input*))
-  "Returns the name of the bone at the given index in the skeleton associated with the given action."
+(defun bone-name (action bone &key (input *input*))
+  "Returns the name of the bone in the skeleton associated with the given action."
   (cffi:with-foreign-string (foreign-string (make-string 512))
-    (%get-bone-name (table input) action index foreign-string 512)
+    (%get-bone-name (table input) action bone foreign-string 512)
     (cffi:foreign-string-to-lisp foreign-string)))
 
 (defun skeletal-reference-transforms (action skeletal-transform-space skeletal-reference-pose &key (input *input*))
-  "Returns the transforms for a specific static skeletal reference pose."
-  (error "implement me"))
+  "Returns the bone transforms for a specific static skeletal reference pose."
+  (let ((count (bone-count action)))
+    (cffi:with-foreign-object (pointer '(:struct vr-bone-transform-t) count)
+      (with-input-error (%get-skeletal-reference-transforms
+                         (table input) action skeletal-form-space
+                         skeletal-reference-pose pointer count))
+      (let ((result (make-array (list count))))
+        (loop for i below count
+              do (setf (aref result i) (cffi:mem-ref pointer '(:struct vr-bone-transform-t) i))
+              finally (return result))))))
 
 (defun skeletal-tracking-level (action &key (input *input*))
   "Reads the level of accuracy to which the controller is able to track the user to recreate a skeletal pose."
   (cffi:with-foreign-object (pointer '(:pointer vr-skeletal-tracking-level))
-    (%get-skeletal-tracking-level (table input) action pointer)
+    (with-input-error (%get-skeletal-tracking-level (table input) action pointer))
     (cffi:mem-ref pointer 'vr-skeletal-tracking-level)))
 
 ;; dynamic skeletal data
 
 (defun skeletal-bone-data (action skeletal-transform-space motion-range &key (input *input*))
   "Returns the state of the skeletal bone data associated with this action."
-  (error "implement me"))
+  (let ((count (bone-count action)))
+    (cffi:with-foreign-object (pointer '(:struct vr-bone-transform-t) count)
+      (with-input-error
+          (%get-skeletal-bone-data (table input) action skeletal-transform-space
+                                   motion-range pointer count))
+      (let ((result (make-array (list count))))
+        (loop for i below count
+              do (setf (aref result i) (cffi:mem-ref pointer '(:struct vr-bone-transform-t) i))
+              finally (return result))))))
 
 (defun skeletal-summary-data (action &key (input *input*))
   "Reads summary information about the current pose of the skeleton associated with the given action."
@@ -141,22 +208,23 @@
   "Reads the state of the skeletal bone data in a compressed form that is suitable for sending over the network. The
    required buffer size will never exceed ( sizeof(VR_BoneTransform_t)*boneCount + 2).
    Usually the size will be much smaller."
-  (error "implement me"))
+  (error "implement me")) ; how to do this?
 
 (defun decompress-skeletal-bone-data (buffer skeletal-transform-space &key (input *input*))
   "Turns a compressed buffer from #'compressed-skeletal-bone-data and turns it back into a bone transform array."
-  (error "implement me"))
+  (error "implement me")) ; how to do this?
 
 
 ;; haptics
-(defun trigger-haptic-vibration-action (action from-now duration frequency amplitude restrict-to-device &key (input *input*))
+(defun trigger-haptic-vibration-action (action from-now duration frequency amplitude restrict-to-device
+                                        &key (input *input*))
   "Triggers a haptic event as described by the specified action."
   (%trigger-haptic-vibration-action (table input) action from-now duration frequency amplitude restrict-to-device))
 
 ;; action origins
 
 (defun action-origins (action-set action &key (input *input*))
-  "Retrieve origins for an action"
+  "Retrieve origins for an action."
   (cffi:with-foreign-object (pointer '(:pointer vr-input-value-handle-t) 10)
     (%get-action-origins (table input) action-set action pointer 10)
     (let ((result (make-array '(10))))
@@ -164,25 +232,46 @@
             finally (return result)))))
 
 (defun origin-localized-name (origin &key (input *input*))
-  "application to specify which parts of the origin's information it wants a string for. */"
+  "application to specify which parts of the origin's information it wants a string for."
   (cffi:with-foreign-string (foreign-string (make-string 512 :initial-element #\Space))
     (%get-origin-localized-name (table input) origin foreign-string 512 64)
     (cffi:foreign-string-to-lisp foreign-string)))
 
 (defun origin-tracked-device-information (input-source &key (input *input*))
   "Retrieves useful information for the origin of this action."
-  (error "implement me"))
+  (cffi:with-foreign-object (pointer '(:struct input-binding-info-t))
+    (with-input-error
+        (%get-origin-tracked-device-info (table input) input-source
+                                         pointer (cffi:foreign-type-size '(:struct input-origin-info-t))))
+    (cffi:mem-ref pointer '(:struct input-origin-info-t))))
 
-(defun action-binding-information (action)
+(defun action-binding-information (action &key (input *input*))
   "Retrieves useful information about the bindings for an action."
-  (error "implement me"))
+  (cffi:with-foreign-objects ((integer-pointer :uint32)
+                              (origin-info-pointer '(:struct input-binding-info-t) 32))
+    (with-input-error
+        (%get-action-binding-info (table input) action origin-info-pointer
+                                  (cffi:foreign-type-size '(:struct input-binding-info-t))
+                                  32 integer-pointer))
+    (let* ((returned-count (cffi:mem-ref integer-pointer :uint32))
+           (binding-information (make-array (list returned-count))))
+      (loop for i below returned-count
+            do (setf (aref binding-information i) (cffi:mem-ref origin-info-pointer i))
+            finally (return binding-information)))))
 
 (defun show-action-origins (action-set action &key (input *input*))
   "Shows the current binding for the action in the headset."
-  (%show-action-origins (table input) action-set action))
+  (with-input-error (%show-action-origins (table input) action-set action)))
 
 (defun show-bindings-for-action-set (action-sets origin-to-highlight &key (input *input*))
-  (error "implement me"))
+  "Shows the current binding for all the actions in the specified action sets."
+  (cffi:with-foreign-object (pointer '(:struct vr-active-action-set-t) (length action-sets))
+    (loop for i from 0 below (length action-sets)
+          do (setf (cffi:mem-ref pointer '(:struct vr-active-action-set-t))
+                   (aref action-sets i)))
+    (with-input-error
+        (%show-bindings-for-action-set (table input) pointer (cffi:foreign-type-size '(:struct vr-active-action-set-t))
+                                       (length action-sets) origin-to-highlight))))
 
 ;; legacy input
 
