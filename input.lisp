@@ -26,11 +26,12 @@
                      ((active-p active) (active-origin active-origin) (pose pose)))
 
 (define-clos-wrapper (input-digital-action-data input-digital-action-data-t) (input-action-data)
-                     ((active-p active) (active-origin active-origin) (state-p state) (changed-p changed)
-                      (update-time update-time)))
+                     ((active-p active) (active-origin active-origin) (state-p state)
+                      (changed-p changed) (update-time update-time)))
 
 (define-clos-wrapper (input-analog-action-data input-analog-action-data-t) (input-action-data)
-                     ((x x) (y y)(z z) (delta-x delta-x) (delta-y delta-y) (delta-z delta-z) (update-time update-time)
+                     ((x x) (y y)(z z) (delta-x delta-x) (delta-y delta-y) (delta-z delta-z)
+                      (update-time update-time)
                       (active-p active) (active-origin active-origin)))
 
 (define-clos-wrapper (input-origin-info input-origin-info-t) ()
@@ -39,7 +40,8 @@
 
 (define-clos-wrapper (active-action-set vr-active-action-set-t) ()
                      ((action-set-handle action-set) (restricted-to-device restricted-to-device)
-                      (secondary-action-set secondary-action-set) (priority priority) (padding padding)))
+                      (secondary-action-set secondary-action-set) (priority priority)
+                      (padding padding)))
 
 (define-clos-wrapper (skeletal-summary-data vr-skeletal-summary-data-t) ()
                      ((finger-curl finger-curl) (finger-splay finger-splay)))
@@ -60,21 +62,24 @@
 
 
 (defun action-set (action-set-name &key (input *input*))
-  "Returns an integer representing an action set. This object is used for all performance-sensitive calls."
+  "Returns an integer representing an action set. This object is used for all performance-sensitive
+   calls."
   (cffi:with-foreign-object (handle-pointer 'vr-action-set-handle-t)
     (with-input-error
         (%get-action-set-handle (table input) action-set-name handle-pointer))
     (cffi:mem-ref handle-pointer 'vr-action-set-handle-t)))
 
 (defun action (action-name &key (input *input*))
-  "Returns an integer representing an action. This handle is used for all performance-sensitive calls."
+  "Returns an integer representing an action. This handle is used for all performance-sensitive 
+   calls."
   (cffi:with-foreign-object (handle-pointer 'vr-action-handle-t)
     (with-input-error
         (%get-action-handle (table input) action-name handle-pointer))
     (cffi:mem-ref handle-pointer 'vr-action-handle-t)))
 
 (defun input-source (input-source-pathname &key (input *input*))
-  "Returns an integer representing an input source for any path in the input system. E.g. /user/hand/right"
+  "Returns an integer representing an input source for any path in the input system.
+   E.g. /user/hand/right"
   (cffi:with-foreign-object (handle-pointer 'vr-input-value-handle-t)
     (with-input-error
         (%get-input-source-handle (table input) (namestring input-source-pathname) handle-pointer))
@@ -89,11 +94,13 @@
           do (setf (cffi:mem-ref pointer '(:struct vr-active-action-set-t) i)
                    (nth i active-action-sets)))
     (with-input-error
-        (%update-action-state (table input) pointer (cffi:foreign-type-size '(:struct
-                                                                              vr-active-action-set-t))
+        (%update-action-state (table input)
+                              pointer
+                              (cffi:foreign-type-size '(:struct vr-active-action-set-t))
                               (length active-action-sets)))))
 
-(defun digital-action-data (action &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
+(defun digital-action-data (action &key (restrict-to-device +invalid-input-value-handle+)
+                                        (input *input*))
   "Reads the state of a digital action."
   (cffi:with-foreign-object (pointer '(:struct input-digital-action-data-t))
     (with-input-error
@@ -102,7 +109,8 @@
                                   restrict-to-device))
     (cffi:mem-ref pointer '(:struct input-digital-action-data-t))))
 
-(defun analog-action-data (action &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
+(defun analog-action-data (action &key (restrict-to-device +invalid-input-value-handle+)
+                                       (input *input*))
   "Reads the state of an analog action given its handle."
   (cffi:with-foreign-object (pointer '(:struct input-analog-action-data-t))
     (with-input-error
@@ -112,26 +120,33 @@
     (cffi:mem-ref pointer '(:struct input-analog-action-data-t))))
 
 (defun pose-action-data-relative-to-now (action tracking-universe-origin predicted-seconds-from-now
-                                         &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
+                                         &key (restrict-to-device +invalid-input-value-handle+)
+                                              (input *input*))
   "Reads the state of a pose action for the number of seconds relative to now. This will generally
    be called with negative times from the update-time fields in other actions."
   (cffi:with-foreign-object (pointer '(:struct input-pose-action-data-t))
     (with-input-error
         (%get-pose-action-data-relative-to-now (table input) action tracking-universe-origin
                                                predicted-seconds-from-now pointer
-                                               (cffi:foreign-type-size '(:struct input-pose-action-data-t))
+                                               (cffi:foreign-type-size
+                                                '(:struct input-pose-action-data-t))
                                                restrict-to-device))
     (cffi:mem-ref pointer '(:struct input-pose-action-data-t))))
 
 (defun pose-action-data-for-next-frame (action tracking-universe-origin
-                                        &key (restrict-to-device +invalid-input-value-handle+) (input *input*))
-  "Reads the state of a pose action. The returned values will match the values returned by the last call to
-   #'wait-get-poses."
+                                        &key (restrict-to-device +invalid-input-value-handle+)
+                                             (input *input*))
+  "Reads the state of a pose action. The returned values will match the values returned by the 
+   last call to #'wait-get-poses."
   (cffi:with-foreign-object (pointer '(:struct input-pose-action-data-t))
     (with-input-error
-        (%get-pose-action-data-for-next-frame (table input) action tracking-universe-origin
-                                              pointer (cffi:foreign-type-size '(:struct input-pose-action-data-t))
-                                              restrict-to-device))
+        (%get-pose-action-data-for-next-frame
+         (table input)
+         action
+         tracking-universe-origin
+         pointer
+         (cffi:foreign-type-size '(:struct input-pose-action-data-t))
+         restrict-to-device))
     (cffi:mem-ref pointer '(:struct input-pose-action-data-t))))
 
 (defun skeletal-action-data (action &key (input *input*))
@@ -139,7 +154,8 @@
   (cffi:with-foreign-object (pointer '(:struct input-skeletal-action-data-t))
     (with-input-error
         (%get-skeletal-action-data (table input) action pointer
-                                   (cffi:foreign-type-size '(:struct input-skeletal-action-data-t))))
+                                   (cffi:foreign-type-size
+                                    '(:struct input-skeletal-action-data-t))))
     (cffi:mem-ref pointer '(:struct input-skeletal-action-data-t))))
 
 ;; static skeletal data
@@ -166,7 +182,8 @@
     (%get-bone-name (table input) action bone foreign-string 512)
     (cffi:foreign-string-to-lisp foreign-string)))
 
-(defun skeletal-reference-transforms (action skeletal-transform-space skeletal-reference-pose &key (input *input*))
+(defun skeletal-reference-transforms (action skeletal-transform-space skeletal-reference-pose
+                                      &key (input *input*))
   "Returns the bone transforms for a specific static skeletal reference pose."
   (let ((count (bone-count action)))
     (cffi:with-foreign-object (pointer '(:struct vr-bone-transform-t) count)
@@ -179,7 +196,8 @@
               finally (return result))))))
 
 (defun skeletal-tracking-level (action &key (input *input*))
-  "Reads the level of accuracy to which the controller is able to track the user to recreate a skeletal pose."
+  "Reads the level of accuracy to which the controller is able to track the user to recreate a 
+   skeletal pose."
   (cffi:with-foreign-object (pointer '(:pointer vr-skeletal-tracking-level))
     (with-input-error (%get-skeletal-tracking-level (table input) action pointer))
     (cffi:mem-ref pointer 'vr-skeletal-tracking-level)))
@@ -199,27 +217,31 @@
               finally (return result))))))
 
 (defun skeletal-summary-data (action &key (input *input*))
-  "Reads summary information about the current pose of the skeleton associated with the given action."
+  "Reads summary information about the current pose of the skeleton associated with the given
+   action."
   (cffi:with-foreign-object (pointer '(:pointer (:struct vr-skeletal-summary-data-t)))
     (%get-skeletal-summary-data (table action) action pointer)
     (cffi:mem-ref pointer '(:struct vr-skeletal-summary-data-t))))
  
 (defun compressed-skeletal-bone-data (action motion-range &key (input *input*))
-  "Reads the state of the skeletal bone data in a compressed form that is suitable for sending over the network. The
-   required buffer size will never exceed ( sizeof(VR_BoneTransform_t)*boneCount + 2).
+  "Reads the state of the skeletal bone data in a compressed form that is suitable for sending over
+   the network.
+   The required buffer size will never exceed (sizeof(VR_BoneTransform_t)*boneCount + 2).
    Usually the size will be much smaller."
   (error "implement me")) ; how to do this?
 
 (defun decompress-skeletal-bone-data (buffer skeletal-transform-space &key (input *input*))
-  "Turns a compressed buffer from #'compressed-skeletal-bone-data and turns it back into a bone transform array."
+  "Turns a compressed buffer from #'compressed-skeletal-bone-data and turns it back into a bone 
+   transform array."
   (error "implement me")) ; how to do this?
 
 
 ;; haptics
-(defun trigger-haptic-vibration-action (action from-now duration frequency amplitude restrict-to-device
-                                        &key (input *input*))
+(defun trigger-haptic-vibration-action (action from-now duration frequency amplitude
+                                        restrict-to-device &key (input *input*))
   "Triggers a haptic event as described by the specified action."
-  (%trigger-haptic-vibration-action (table input) action from-now duration frequency amplitude restrict-to-device))
+  (%trigger-haptic-vibration-action (table input) action from-now duration frequency amplitude
+                                    restrict-to-device))
 
 ;; action origins
 
@@ -228,7 +250,8 @@
   (cffi:with-foreign-object (pointer '(:pointer vr-input-value-handle-t) 10)
     (%get-action-origins (table input) action-set action pointer 10)
     (let ((result (make-array '(10))))
-      (loop for i below 10 do (setf (aref result i) (cffi:mem-ref pointer 'vr-input-value-handle-t i))
+      (loop for i below 10 do (setf (aref result i)
+                                    (cffi:mem-ref pointer 'vr-input-value-handle-t i))
             finally (return result)))))
 
 (defun origin-localized-name (origin &key (input *input*))
@@ -242,7 +265,8 @@
   (cffi:with-foreign-object (pointer '(:struct input-binding-info-t))
     (with-input-error
         (%get-origin-tracked-device-info (table input) input-source
-                                         pointer (cffi:foreign-type-size '(:struct input-origin-info-t))))
+                                         pointer
+                                         (cffi:foreign-type-size '(:struct input-origin-info-t))))
     (cffi:mem-ref pointer '(:struct input-origin-info-t))))
 
 (defun action-binding-information (action &key (input *input*))
@@ -270,7 +294,8 @@
           do (setf (cffi:mem-ref pointer '(:struct vr-active-action-set-t))
                    (aref action-sets i)))
     (with-input-error
-        (%show-bindings-for-action-set (table input) pointer (cffi:foreign-type-size '(:struct vr-active-action-set-t))
+        (%show-bindings-for-action-set (table input) pointer
+                                       (cffi:foreign-type-size '(:struct vr-active-action-set-t))
                                        (length action-sets) origin-to-highlight))))
 
 ;; legacy input
