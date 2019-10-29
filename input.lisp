@@ -19,6 +19,14 @@
                       (mode-name rch-mode-name)
                       (slot-name rch-slot-name)))
 
+(define-clos-wrapper (tracked-device-pose tracked-device-pose-t) ()
+                     ((device-to-absolute-tracking device-to-absolute-tracking)
+                      (velocity velocity)
+                      (angular-velocity angular-velocity)
+                      (tracking-result tracking-result)
+                      (pose-valid-p pose-is-valid)
+                      (device-connected-p device-is-connected)))
+
 (define-clos-wrapper (input-skeletal-action-data input-skeletal-action-data-t) (input-action-data)
                      ((active-p active) (active-origin active-origin)))
 

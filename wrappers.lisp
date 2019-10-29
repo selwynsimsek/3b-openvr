@@ -36,6 +36,24 @@
         (setf (aref a (+ i (* j 4))) (cffi:mem-aref value :float (+ j (* i 4))))))
     a))
 
+(defmethod cffi:translate-from-foreign (value (type hmd-quaternionf-t-tclass))
+  (cffi:with-foreign-slots ((w x y z) value (:struct hmd-quaternionf-t))
+    (rtg-math:q! w x y z)))
+
+(defmethod cffi:translate-from-foreign (value (type hmd-quaternion-t-tclass))
+  (cffi:with-foreign-slots ((w x y z) value (:struct hmd-quaternion-t))
+    (rtg-math:q! (coerce w 'single-float)
+                 (coerce x 'single-float)
+                 (coerce y 'single-float)
+                 (coerce z 'single-float))))
+
+(defmethod cffi:translate-from-foreign (value (type hmd-vector-3-t-tclass))
+  (let ((a (make-array '(3) :initial-element 0.0)))
+    (setf (aref a 0) (cffi:mem-aref value :float 0)
+          (aref a 1) (cffi:mem-aref value :float 1)
+          (aref a 2) (cffi:mem-aref value :float 2))
+    a))
+
 ;;; fixme: replace this with map to functions instead of types, so
 ;;; they don't need runtime dispatch in cffi
 (defparameter *event-type-map* ;; indexed by event-type
