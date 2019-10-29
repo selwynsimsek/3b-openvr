@@ -12,15 +12,19 @@
                            :accessor ,class-slot))
            class-slots)
          ,@options)
-       (defmethod cffi:translate-from-foreign (value (type (eql ',struct-type)))
+       (defmethod cffi:translate-from-foreign (value (type ,struct-type))
          (cffi:with-foreign-slots (,cstruct-slots value (:struct ,struct-name))
            (make-instance ',class-name
                           ,@(loop for (class-slot cstruct-slot) in slot-names
                                   appending (list (intern (princ-to-string class-slot) (find-package "KEYWORD"))
                                                   cstruct-slot)))))
-       (defmethod cffi:translate-to-foreign (value (type (eql ',struct-type)))
+       (defmethod cffi:translate-to-foreign (value (type ,struct-type))
          (let ((pointer (cffi:foreign-alloc '(:struct ,struct-name))))
            (cffi:with-foreign-slots (,cstruct-slots pointer (:struct ,struct-name))
              ,@(loop for (class-slot cstruct-slot) in slot-names
                      collecting `(setf ,cstruct-slot (slot-value value ',class-slot)))
-             pointer))))))
+             pointer)))
+       (defmethod cffi:translate-into-foreign-memory (value (type ,struct-type) pointer)
+         (cffi:with-foreign-slots (,cstruct-slots pointer (:struct ,struct-name))
+           ,@(loop for (class-slot cstruct-slot) in slot-names
+                   collecting `(setf ,cstruct-slot (slot-value value ',class-slot))))))))

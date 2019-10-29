@@ -86,13 +86,15 @@
     (cffi:mem-ref handle-pointer 'vr-input-value-handle-t)))
 
 ;; reading action state
+
 (defun update-action-state (active-action-sets &key (input *input*))
   "Reads the current state into all actions. After this call, the results of *action-data calls 
    will be the same until the next call to #'update-action-state."
   (cffi:with-foreign-object (pointer '(:struct vr-active-action-set-t) (length active-action-sets))
     (loop for i below (length active-action-sets)
-          do (setf (cffi:mem-ref pointer '(:struct vr-active-action-set-t) i)
-                   (nth i active-action-sets)))
+          do
+          (setf (cffi:mem-aref pointer '(:struct vr-active-action-set-t) i)
+                   (aref active-action-sets i)))
     (with-input-error
         (%update-action-state (table input)
                               pointer
@@ -235,8 +237,8 @@
    transform array."
   (error "implement me")) ; how to do this?
 
-
 ;; haptics
+
 (defun trigger-haptic-vibration-action (action from-now duration frequency amplitude
                                         restrict-to-device &key (input *input*))
   "Triggers a haptic event as described by the specified action."
