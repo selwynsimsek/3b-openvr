@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; High-level bindings to the IVRNotifications API.
 
-;;; version = IVR_Notifications_002
+;;; IVR_Notifications_002
 
 ;; according to openvr.h this interface is not implemented yet anyway...
 
