@@ -102,7 +102,7 @@
 (defun frame-timing (frames-ago &key (compositor *compositor*))
   (cffi:with-foreign-object (timing-pointer '(:struct compositor-frame-timing))
     (cffi:with-foreign-slots ((size) timing-pointer (:struct compositor-frame-timing))
-      (setf size (cffi:foreign-type-size 'compositor-frame-timing-tclass)))
+      (setf size (cffi:foreign-type-size '(:struct compositor-frame-timing))))
     (%get-frame-timing (table compositor) timing-pointer frames-ago)
     (cffi:mem-ref timing-pointer '(:struct compositor-frame-timing))))
 
@@ -133,12 +133,14 @@
   (cffi:with-foreign-object (stats-pointer '(:struct compositor-cumulative-stats))
     (%get-cumulative-stats (table compositor)
                            stats-pointer
-                           (cffi:foreign-type-size 'compositor-cumulative-stats-tclass))
+                           (cffi:foreign-type-size '(:struct compositor-cumulative-stats)))
     (cffi:mem-ref stats-pointer '(:struct compositor-cumulative-stats))))
 
 
 (defun fade-color (&key (background-p nil) (compositor *compositor*))
+  (break)
   (let ((pointer (%get-current-fade-color (table compositor) background-p)))
+    (break)
     (cffi:with-foreign-slots ((r g b a) pointer (:struct hmd-color-t))
       (values r g b a))))
 
@@ -154,6 +156,7 @@
 
 (defun set-tracking-space (origin &key (compositor *compositor*))
   (%set-tracking-space (table compositor) origin))
+
 (defun tracking-space (&key (compositor *compositor*))
   (%get-tracking-space (table compositor)))
 
