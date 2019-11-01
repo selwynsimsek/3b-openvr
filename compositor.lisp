@@ -142,5 +142,108 @@
     (cffi:with-foreign-slots ((r g b a) pointer (:struct hmd-color-t))
       (values r g b a))))
 
-(defun override-skybox (textures &key (compositor *compositor*))
+(defun override-skybox (textures &key (color-space :gamma) (texture-type :open-gl) (compositor *compositor*))
+  (cffi:with-foreign-object (texture-pointer '(:struct texture-t) (length textures))
+    (let ((space color-space)) ;ugly
+      (loop for i below (length textures)
+            do (cffi:with-foreign-slots ((handle type color-space) (:struct texture-t))
+                 (setf type texture-type
+                       handle (cffi:make-pointer (aref textures i))
+                       color-space space))))
+    (%set-skybox-override (table compositor) texture-pointer (length textures))))
+
+(defun set-tracking-space (origin &key (compositor *compositor*))
+  (%set-tracking-space (table compositor) origin))
+(defun tracking-space (&key (compositor *compositor*))
+  (%get-tracking-space (table compositor)))
+
+(defun clear-last-submitted-frame (&key (compositor *compositor*))
+  (%clear-last-submitted-frame (table compositor)))
+
+(defun post-present-handoff (&key (compositor *compositor*))
+  (%post-present-handoff (table compositor)))
+
+(defun frame-time-remaining (&key (compositor *compositor*))
+  (%get-frame-time-remaining (table compositor)))
+
+(defun fade-to-color (time red green blue alpha background-p &key (compositor *compositor*))
+  (%fade-to-color (table compositor) time red green blue alpha background-p))
+
+(defun fade-grid (seconds fade-in-p &key (compositor *compositor*))
+  (%fade-grid (table compositor) seconds fade-in-p))
+
+(defun grid-alpha (&key (compositor *compositor*))
+  (%get-current-grid-alpha (table compositor)))
+
+(defun clear-skybox-override (&key (compositor *compositor*))
+  (%clear-skybox-override (table compositor)))
+
+(defun bring-to-front (&key (compositor *compositor*))
+  (%compositor-bring-to-front (table compositor)))
+
+(defun go-to-back (&key (compositor *compositor*))
+  (%compositor-go-to-back (table compositor)))
+
+(defun quit-compositor (&key (compositor *compositor*))
+  (%compositor-quit (table compositor)))
+
+(defun fullscreen-p (&key (compositor *compositor*))
+  (%is-fullscreen (table compositor)))
+
+(defun current-scene-focus-process (&key (compositor *compositor*))
+  (%get-current-scene-focus-process (table compositor)))
+
+(defun last-frame-renderer (&key (compositor *compositor*))
+  (%get-last-frame-renderer (table compositor)))
+
+(defun can-render-scene-p (&key (compositor *compositor*))
+  (%can-render-scene (table compositor)))
+
+(defun show-mirror-window (&key (compositor *compositor*))
+  (%show-mirror-window (table compositor)))
+(defun hide-mirror-window (&key (compositor *compositor*))
+  (%hide-mirror-window (table compositor)))
+(defun mirror-window-visible-p (&key (compositor *compositor*))
+  (%is-mirror-window-visible (table compositor)))
+
+(defun dump-images (&key (compositor *compositor*))
+  (%compositor-dump-images (table compositor)))
+
+(defun should-app-render-with-low-resources-p (&key (compositor *compositor*))
+  (%should-app-render-with-low-resources (table compositor)))
+
+(defun force-interleaved-reprojection (override-p &key (compositor *compositor*))
+  (%force-interleaved-reprojection-on (table compositor) override-p))
+
+(defun force-reconnect-process (&key (compositor *compositor*))
+  (%force-reconnect-process (table compositor)))
+
+(defun suspend-rendering (&key (suspend-p t) (compositor *compositor*))
+  (%suspend-rendering (table compositor) suspend-p))
+
+(defun mirror-gl-texture (&key (compositor *compositor*))
   (error "implement me"))
+
+(defun release-shared-gl-texture (&key (compositor *compositor*))
+  (error "implement me"))
+
+(defun lock-gl-shared-texture (&key (compositor *compositor*))
+  (error "implement me"))
+
+(defun unlock-gl-shared-texture (&key (compositor *compositor*))
+  (error "implement me"))
+
+(defun set-explicit-timing-mode (timing-mode &key (compositor *compositor*))
+  (%set-explicit-timing-mode (table compositor) timing-mode))
+
+(defun submit-explicit-timing-data (&key (compositor *compositor*))
+  (%submit-explicit-timing-data (table compositor)))
+
+(defun motion-smoothing-enabled-p (&key (compositor *compositor*))
+  (%is-motion-smoothing-enabled (table compositor)))
+
+(defun motion-smoothing-supported-p (&key (compositor *compositor*))
+  (%is-motion-smoothing-supported (table compositor)))
+
+(defun current-scene-focus-app-loading-p (&key (compositor *compositor*))
+  (%is-current-scene-focus-app-loading (table compositor)))
