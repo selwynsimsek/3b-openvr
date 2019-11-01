@@ -13,15 +13,15 @@
 (defun begin-profiler-event (profiler-event &key (debug *debug*))
   "Create an vr profiler duration event (line). The current time will be used as the timestamp for 
    the start of the line. On success, returns a handle valid for terminating this event."
-  (cffi:with-foreign-object (handle-pointer '(:struct vr-profiler-event-handle-t))
-    (setf (cffi:mem-ref handle-pointer '(:struct vr-profiler-event-handle-t)) profiler-event)
+  (cffi:with-foreign-object (handle-pointer 'vr-profiler-event-handle-t)
+    (setf (cffi:mem-ref handle-pointer 'vr-profiler-event-handle-t) profiler-event)
     (%begin-vr-profiler-event (table debug) handle-pointer)))
 
 (defun finish-profiler-event (profiler-event message &key (debug *debug*))
   "Terminate a vr profiler event. The event associated with profiler-event-handle will be considered
    completed when this method is called. The current time will be used as the termination time of
    the event, and message will be used as the event title."
-  (%finish-vr-profiler-event (table profiler-event) profiler-event message))
+  (%finish-vr-profiler-event (table debug) profiler-event message))
 
 (defun driver-debug-request (tracked-device-index request &key (debug *debug*)
                                                                (max-buffer-size 2048))

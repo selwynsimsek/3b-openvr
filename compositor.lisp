@@ -146,7 +146,7 @@
   (cffi:with-foreign-object (texture-pointer '(:struct texture-t) (length textures))
     (let ((space color-space)) ;ugly
       (loop for i below (length textures)
-            do (cffi:with-foreign-slots ((handle type color-space) (:struct texture-t))
+            do (cffi:with-foreign-slots ((handle type color-space) texture-pointer (:struct texture-t))
                  (setf type texture-type
                        handle (cffi:make-pointer (aref textures i))
                        color-space space))))
