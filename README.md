@@ -5,7 +5,7 @@ It is intended that at least most of the OpenVR API will be exposed to a fairly 
 Interface | Percentage of interface exposed
 --- | ---
 System | 50%
-Chaperone | 50%
+Chaperone | 85%
 ChaperoneSetup | 90%
 Compositor | 90%
 Overlay | 0%
