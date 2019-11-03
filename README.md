@@ -6,7 +6,7 @@ Interface | Percentage of interface exposed
 --- | ---
 System | 50%
 Chaperone | 50%
-ChaperoneSetup | 60%
+ChaperoneSetup | 90%
 Compositor | 90%
 Overlay | 0%
 Resources | 90%
