@@ -6,26 +6,26 @@
 
 (defclass render-model ()
   ((name :initarg :name :accessor name)
-   (vertices :initarg :vertices :accessor vertices)
-   (indices :initarg :indices :accessor indices)
-   (diffuse-texture :initarg :diffuse-texture :accessor diffuse-texture)
-   (loaded-p :initarg :loaded-p :accessor loaded-p)
-   (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer)
-   (components :initarg :components :accessor components)))
+   (vertices :initarg :vertices :accessor vertices :initform nil)
+   (indices :initarg :indices :accessor indices :initform nil)
+   (diffuse-texture :initarg :diffuse-texture :accessor diffuse-texture :initform nil)
+   (loaded-p :initarg :loaded-p :accessor loaded-p :initform nil)
+   (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer :initform nil)
+   (components :initarg :components :accessor components :initform nil)))
 
 (defclass texture-map ()
-  ((handle :initarg :handle :accessor handle)
-   (width :initarg :width :accessor width)
-   (height :initarg :height :accessor height)
-   (data :initarg :data :accessor data)
-   (loaded-p :initarg :loaded-p :accessor loaded-p)
-   (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer)))
+  ((handle :initarg :handle :accessor handle :initform nil)
+   (width :initarg :width :accessor width :initform nil)
+   (height :initarg :height :accessor height :initform nil)
+   (data :initarg :data :accessor data :initform nil)
+   (loaded-p :initarg :loaded-p :accessor loaded-p :initform nil)
+   (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer :initform nil)))
 
 (defclass component ()
-  ((button-mask :initarg :button-mask :accessor button-mask)
-   (name :initarg :name :accessor name)
-   (render-model-name :initarg :render-model-name :accessor render-model-name)
-   (state :initarg :state :accessor state)))
+  ((button-mask :initarg :button-mask :accessor button-mask :initform nil)
+   (name :initarg :name :accessor name :initform nil)
+   (render-model-name :initarg :render-model-name :accessor render-model-name :initform nil)
+   (state :initarg :state :accessor state :initform nil)))
 
 (defun load-render-model (name &key (render-models *render-models*))
   "Loads and returns a render model for use in the application. name should be a 
@@ -42,60 +42,62 @@
 
 (defun try-to-load-model (render-model &key (render-models *render-models*))
   "Tries to load the model asynchronously. Returns T on success and NIL if still loading."
-  (with-slots (name vertices indices diffuse-texture loaded-p foreign-pointer components)
-      render-model
-    (when loaded-p (return t))
-    (unless foreign-pointer
-      (setf foreign-pointer (cffi:foreign-alloc '(:pointer (:struct render-model-t)))))
-    (let ((error-value
-            (%load-render-model-async (table render-models) name foreign-pointer)))
-      (when (eq error-value :loading)
-        (return nil))
-      (unless (eq error-value :none)
-        (error "Render models error: ~a" error-value))
+  (or (loaded-p render-model)
+      (with-slots (name vertices indices diffuse-texture loaded-p foreign-pointer components)
+          render-model
+        (cffi:with-foreign-object (p1 '(:pointer (:struct render-model-t)))
+          (let ((error-value
+                  (%load-render-model-async (table render-models) name p1)))
+            (format t "~a~%" error-value)
+            (unless (eq error-value :loading)
+              (unless (eq error-value :none)
+                (error "Render models error: ~a" error-value))
                                         ; continue loading
-      (cffi:with-foreign-slots ((vertex-data vertex-count index-data triangle-count
-                                             diffuse-texture-id)
-                                (cffi:mem-ref foreign-pointer :pointer)
-                                '(:struct render-model-t))
-        (setf vertices (make-array (list vertex-count)))
-        (setf indices (make-array (list (* 3 triangle-count))))
-        (setf diffuse-texture (make-instance 'texture-map :handle diffuse-texture-id))
-        (loop for i from 0 below (length indices)
-              do (setf (aref indices i) (cffi:mem-ref index-data :uint16 i)))
-        (loop for i from 0 below (length vertices)
-              do (setf (aref vertices i) (cffi:mem-ref vertex-data '(:struct render-model-vertex-t)
-                                                       i)))
-        (setf loaded-p (try-to-load-texture-map diffuse-texture))
-        (when loaded-p
-          (%free-render-model (table render-models)
-                              (cffi:mem-ref foreign-pointer :pointer))
-          (cffi:foreign-free foreign-pointer))
-        loaded-p))))
+
+              (format t "~a~%"
+                      (cffi:mem-ref
+                       (cffi:mem-ref p1 '(:pointer (:struct render-model-t)))
+                       '(:struct render-model-t)))
+              (cffi:with-foreign-slots ((vertex-data vertex-count index-data triangle-count
+                                                     diffuse-texture-id)
+                                         (cffi:mem-ref p1 '(:pointer (:struct render-model-t))) 
+                                        (:struct render-model-t))
+                (format t "v-c: ~a, t-c: ~a, d-t-i: ~a~%" vertex-count triangle-count diffuse-texture-id)
+                (setf vertices (make-array (list vertex-count)))
+                (setf indices (make-array (list (* 3 triangle-count))))
+                (setf diffuse-texture (make-instance 'texture-map :handle diffuse-texture-id))
+                (loop for i from 0 below (length indices)
+                      do (setf (aref indices i) (cffi:mem-ref index-data :uint16 i)))
+                (loop for i from 0 below (length vertices)
+                      do (setf (aref vertices i) (cffi:mem-ref vertex-data '(:struct render-model-vertex-t)
+                                                               i)))
+                (%free-render-model (table render-models) foreign-pointer)
+                (cffi:foreign-free foreign-pointer)
+                (setf loaded-p t))))))))
 
 (defun try-to-load-texture-map (texture-map &key (render-models *render-models*))
   "Loads the texture map asynchronously. Returns T on success and NIL if still loading."
-  (with-slots (handle (texture-width width) (texture-height height) data loaded-p foreign-pointer) texture-map
-    (when loaded-p (return t))
-    (unless foreign-pointer
-      (setf foreign-pointer
-            (cffi:foreign-alloc '(:pointer (:struct render-model-texture-map-t)))))
-    (let ((error-value (%load-texture-async (table render-models) handle foreign-pointer)))
-      (when (eq error-value :loading) (return nil))
-      (unless (eq error-value :none)
-        (error "Render models error: ~a" error-value))
-      (cffi:with-foreign-slots ((width height texture-map-data) (cffi:mem-ref foreign-pointer :pointer) '(:struct render-model-texture-map-t))
-        (setf texture-width width)
-        (setf texture-height height)
-        (setf data (make-array (list (* 4 width height))))
-        (loop for i from 0 below (length data)
-              do (setf (aref data i) (cffi:mem-aref texture-map-data :uint8 i)))
-        (setf loaded-p t)
-        (%free-texture (table render-models) (cffi:mem-ref foreign-pointer :pointer))
-        (cffi:foreign-free foreign-pointer)
-        t))))
+  (or (loaded-p texture-map) 
+      (with-slots (handle (texture-width width) (texture-height height) data loaded-p foreign-pointer) texture-map
+        (unless foreign-pointer
+          (setf foreign-pointer
+                (cffi:foreign-alloc '(:pointer (:struct render-model-texture-map-t)))))
+        (let ((error-value (%load-texture-async (table render-models) handle foreign-pointer)))
+          (unless (eq error-value :loading) 
+            (unless (eq error-value :none)
+              (error "Render models error: ~a" error-value))
+            (cffi:with-foreign-slots ((width height texture-map-data) (cffi:mem-ref foreign-pointer :pointer) (:struct render-model-texture-map-t))
+              (setf texture-width width)
+              (setf texture-height height)
+              (setf data (make-array (list (* 4 width height))))
+              (loop for i from 0 below (length data)
+                    do (setf (aref data i) (cffi:mem-aref texture-map-data :uint8 i)))
+              (setf loaded-p t)
+              (%free-texture (table render-models) (cffi:mem-ref foreign-pointer :pointer))
+              (cffi:foreign-free foreign-pointer)
+              t))))))
 
-(defun render-model-names (render-model-index &key (render-models *render-models*))
+(defun render-model-names ( &key (render-models *render-models*))
   "Returns an array of available render models. The index used in the array does not necessarily
    correspond to a tracked device index."
   (let ((names (make-array (list (%get-render-model-count (table render-models))))))
@@ -141,3 +143,9 @@
       (if (eq error-pointer :none)
           (load-render-model (cffi:foreign-string-to-lisp foreign-string))
           (error "Render model error: ~a" (cffi:mem-ref error-pointer 'vr-render-model-error))))))
+
+(define-clos-wrapper (render-model-vertex render-model-vertex-t) ()
+                     ((location position)
+                      (normal normal)
+                      (texture-coordinate texture-coord)))
+
