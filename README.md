@@ -18,7 +18,7 @@ TrackedCamera | 0%
 Screenshots | 90%
 DriverManager | 90%
 Input | 80%
-IOBuffer | 0%
+IOBuffer | 60%
 SpatialAnchors | 75%
 Debug | 90%
 Notifications | 40%
