@@ -31,17 +31,69 @@
   "Loads and returns a render model for use in the application. name should be a 
    render model name from the Prop_RenderModelName_String property or an absolute path name to a
    render model on disk."
-  (error "implement me"))
+  (let ((render-model (make-instance 'render-model :name name)))
+    (try-to-load-model render-model :render-models *render-models*)
+    render-model))
 
-(defun wait-until-loaded (render-model &key (render-models *render-models*))
+(defun wait-until-loaded (render-model &key (render-models *render-models*) (sleep-time 0.1))
   "Blocks until the render model is loaded or until an error occurs."
-  (error "implement me"))
+  (loop while (not (try-to-load-model render-model :render-models render-models))
+        do (sleep sleep-time)))
 
 (defun try-to-load-model (render-model &key (render-models *render-models*))
-  (error "implement me"))
+  "Tries to load the model asynchronously. Returns T on success and NIL if still loading."
+  (with-slots (name vertices indices diffuse-texture loaded-p foreign-pointer components)
+      render-model
+    (when loaded-p (return t))
+    (unless foreign-pointer
+      (setf foreign-pointer (cffi:foreign-alloc '(:pointer (:struct render-model-t)))))
+    (let ((error-value
+            (%load-render-model-async (table render-models) name foreign-pointer)))
+      (when (eq error-value :loading)
+        (return nil))
+      (unless (eq error-value :none)
+        (error "Render models error: ~a" error-value))
+                                        ; continue loading
+      (cffi:with-foreign-slots ((vertex-data vertex-count index-data triangle-count
+                                             diffuse-texture-id)
+                                (cffi:mem-ref foreign-pointer :pointer)
+                                '(:struct render-model-t))
+        (setf vertices (make-array (list vertex-count)))
+        (setf indices (make-array (list (* 3 triangle-count))))
+        (setf diffuse-texture (make-instance 'texture-map :handle diffuse-texture-id))
+        (loop for i from 0 below (length indices)
+              do (setf (aref indices i) (cffi:mem-ref index-data :uint16 i)))
+        (loop for i from 0 below (length vertices)
+              do (setf (aref vertices i) (cffi:mem-ref vertex-data '(:struct render-model-vertex-t)
+                                                       i)))
+        (setf loaded-p (try-to-load-texture-map diffuse-texture))
+        (when loaded-p
+          (%free-render-model (table render-models)
+                              (cffi:mem-ref foreign-pointer :pointer))
+          (cffi:foreign-free foreign-pointer))
+        loaded-p))))
 
 (defun try-to-load-texture-map (texture-map &key (render-models *render-models*))
-  (error "implement me"))
+  "Loads the texture map asynchronously. Returns T on success and NIL if still loading."
+  (with-slots (handle (texture-width width) (texture-height height) data loaded-p foreign-pointer) texture-map
+    (when loaded-p (return t))
+    (unless foreign-pointer
+      (setf foreign-pointer
+            (cffi:foreign-alloc '(:pointer (:struct render-model-texture-map-t)))))
+    (let ((error-value (%load-texture-async (table render-models) handle foreign-pointer)))
+      (when (eq error-value :loading) (return nil))
+      (unless (eq error-value :none)
+        (error "Render models error: ~a" error-value))
+      (cffi:with-foreign-slots ((width height texture-map-data) (cffi:mem-ref foreign-pointer :pointer) '(:struct render-model-texture-map-t))
+        (setf texture-width width)
+        (setf texture-height height)
+        (setf data (make-array (list (* 4 width height))))
+        (loop for i from 0 below (length data)
+              do (setf (aref data i) (cffi:mem-aref texture-map-data :uint8 i)))
+        (setf loaded-p t)
+        (%free-texture (table render-models) (cffi:mem-ref foreign-pointer :pointer))
+        (cffi:foreign-free foreign-pointer)
+        t))))
 
 (defun render-model-names (render-model-index &key (render-models *render-models*))
   "Returns an array of available render models. The index used in the array does not necessarily
