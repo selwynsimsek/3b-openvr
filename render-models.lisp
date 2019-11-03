@@ -4,124 +4,88 @@
 
 (in-package 3b-openvr)
 
-(defclass render-model-vertex ()
-  ((location :initarg :position :accessor location)
-   (normal :initarg :normal :accessor normal)
-   (texture-coordinate :initarg :texture-coordinate :accessor texture-coordinate)))
-
-(defclass render-model-texture-map ()
-  ((width :initarg :width :accessor width)
-   (height :initarg :height :accessor height)
-   (data :initarg :data :accessor data)))
-
 (defclass render-model ()
-  ((internal-handle :initarg :internal-handle :accessor internal-handle)
-   (vertex-data :initarg :vertex-data :accessor vertex-data)
-   (index-data :initarg :index-data :accessor index-data)
-   (diffuse-texture :initarg :diffuse-texture :accessor diffuse-texture)))
+  ((name :initarg :name :accessor name)
+   (vertices :initarg :vertices :accessor vertices)
+   (indices :initarg :indices :accessor indices)
+   (diffuse-texture :initarg :diffuse-texture :accessor diffuse-texture)
+   (loaded-p :initarg :loaded-p :accessor loaded-p)
+   (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer)
+   (components :initarg :components :accessor components)))
 
-;; (defun async-render-model (name &key (render-models *render-models*))
-;;   "Loads and returns a render model for use in the application."
-;;   (let ((render-model (make-instance 'render-model)))
-;;     (cffi:with-foreign-object (model-pointer '(:pointer vr-render-model-t-tclass))
-;;       (let ((status (%load-render-model-async (table render-models) name model-pointer)))
-;;         (when (eq status :loading) (return :loading))
-;;         (unless (eq status :none) (error "VR render model error status: ~a" status)))
-;;       ; fill in slots here
-;;       (%free-render-model (table render-models) model-pointer))
-;;     render-model))
+(defclass texture-map ()
+  ((handle :initarg :handle :accessor handle)
+   (width :initarg :width :accessor width)
+   (height :initarg :height :accessor height)
+   (data :initarg :data :accessor data)
+   (loaded-p :initarg :loaded-p :accessor loaded-p)
+   (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer)))
 
-(defun render-model-name (index &key (render-models *render-models*))
-  "Returns the name of the Nth render model that is provided by the OpenVR runtime."
-  (cffi:with-foreign-string (buffer (make-string 512 :initial-element #\space))
-    (let ((return-val (%get-render-model-name (table render-models) index buffer 512)))
-      (unless (zerop return-val)
-        (cffi:foreign-string-to-lisp buffer)))))
+(defclass component ()
+  ((button-mask :initarg :button-mask :accessor button-mask)
+   (name :initarg :name :accessor name)
+   (render-model-name :initarg :render-model-name :accessor render-model-name)
+   (state :initarg :state :accessor state)))
 
-(defun render-model-count (&key (render-models *render-models*))
-  "Returns the number of render models provided by the OpenVR runtime."
-  (%get-render-model-count (table render-models)))
+(defun load-render-model (name &key (render-models *render-models*))
+  "Loads and returns a render model for use in the application. name should be a 
+   render model name from the Prop_RenderModelName_String property or an absolute path name to a
+   render model on disk."
+  (error "implement me"))
 
+(defun wait-until-loaded (render-model &key (render-models *render-models*))
+  "Blocks until the render model is loaded or until an error occurs."
+  (error "implement me"))
 
-(defun load-render-model-async (name &key (render-models *render-models*))
-  (cffi:with-foreign-object (prm '(:pointer (:struct render-model-t)))
-    (let ((r (check-ret
-              (%load-render-model-async (table render-models) name prm)
-              :ok (:none :loading))))
-      ;; return NIL to indicate :loading for now. possibly should
-      ;; error w/restarts, but that sounds annoying for general case,
-      ;; since :loading is probably most common return value.
-      (when (eql r :none)
-        (cffi:mem-ref
-         (cffi:mem-ref prm '(:pointer (:struct render-model-t)))
-         '(:struct render-model-t))))))
+(defun try-to-load-model (render-model &key (render-models *render-models*))
+  (error "implement me"))
 
-(defun load-texture-async (name &key (render-models *render-models*))
-  (cffi:with-foreign-object (prmt '(:pointer
-                                    (:struct render-model-texture-map-t)))
-    (let ((r (check-ret
-              (%load-texture-async (table *render-models*) name prmt)
-              :ok (:none :loading))))
-      ;; return NIL for :loading
-      (when (eql r :none)
-        (cffi:mem-ref
-         (cffi:mem-ref prmt '(:pointer (:struct render-model-texture-map-t)))
-         '(:struct render-model-texture-map-t))))))
+(defun try-to-load-texture-map (texture-map &key (render-models *render-models*))
+  (error "implement me"))
 
-(defun free-render-model (model &key (render-models *render-models*))
-  (cffi:with-foreign-object (prm '(:struct render-model-t))
-    (setf (cffi:mem-ref prm '(:struct render-model-t))
-          model)
-    (%free-render-model (table render-models) prm)))
+(defun render-model-names (render-model-index &key (render-models *render-models*))
+  "Returns an array of available render models. The index used in the array does not necessarily
+   correspond to a tracked device index."
+  (let ((names (make-array (list (%get-render-model-count (table render-models))))))
+    (loop for i below (length names)
+          do (cffi:with-foreign-string (foreign-string (make-string 512))
+               (%get-render-model-name (table render-models) i foreign-string 512)
+               (setf (aref names i) (cffi:foreign-string-to-lisp foreign-string)))
+          finally (return names))))
 
-(defun free-texture (texture &key (render-models *render-models*))
-  (cffi:with-foreign-object (prmt '(:struct render-model-texture-map-t))
-    (setf (cffi:mem-ref prmt '(:struct render-model-texture-map-t))
-          texture)
-    (%free-texture (table render-models) prmt)))
+(defun update-component-states-for-device (render-model
+                                           input-device
+                                           &key (render-models *render-models*)
+                                                (scroll-wheel-visible-p nil))
+  "Updates the component states of the render model given the specified input device.
+   For dynamic controller components (ex: trigger) values will reflect component motions."
+  (error "implement me"))
 
-(defun get-render-model-count (&key (render-models *render-models*))
-  (%get-render-model-count (table render-models)))
+(defun thumbnail-url (render-model &key (render-models *render-models*))
+  "Returns the URL of the thumbnail image for render-model."
+  (cffi:with-foreign-string (foreign-string (make-string 512))
+    (cffi:with-foreign-object (error-pointer 'vr-render-model-error)
+      (%get-render-model-thumbnail-url 
+       (table render-models)
+       (name render-model)
+       foreign-string
+       512
+       error-pointer)
+      (if (eq error-pointer :none)
+          (cffi:foreign-string-to-lisp foreign-string)
+          (error "Render model error: ~a" (cffi:mem-ref error-pointer 'vr-render-model-error))))))
 
-(defun get-render-model-name (index &key (render-models *render-models*))
-  (let ((l (%get-render-model-name (table render-models) index
-                                   (null-pointer) 0)))
-    (when (plusp l)
-      (cffi:with-foreign-pointer-as-string (p l)
-        (%get-render-model-name (table render-models) index p l)))))
-
-(defun get-render-model-names (&key (render-models *render-models*))
-  (let ((c (%get-render-model-count (table render-models))))
-    (loop for i below c
-          collect (get-render-model-name i :render-models render-models))))
-
-(defun get-component-count (render-model-name
-                            &key (render-models *render-models*))
-  (%get-component-count (table render-models) render-model-name))
-
-(defun get-component-name (index render-model-name
-                           &key (render-models *render-models*))
-  (let ((l (%get-component-name (table render-models)
-                                render-model-name index
-                                (null-pointer) 0)))
-    (when (plusp l)
-      (cffi:with-foreign-pointer-as-string (p l)
-        (%get-component-name (table render-models)
-                             render-model-name index p l)))))
-
-(defun get-component-render-model-name (render-model-name component-name
-                                        &key (render-models *render-models*))
-  (let ((l (%get-component-render-model-name (table render-models)
-                                             render-model-name component-name
-                                             (null-pointer) 0)))
-    (when (plusp l)
-      (cffi:with-foreign-pointer-as-string (p l)
-        (%get-component-render-model-name (table render-models)
-                                          render-model-name component-name p l)))))
-
-(defun get-component-names (render-model-name
-                            &key (render-models *render-models*))
-  (let ((c (%get-component-count (table render-models) render-model-name)))
-    (loop for i below c
-          collect (get-component-name i render-model-name
-                                      :render-models render-models))))
+(defun original-render-model (render-model &key (render-models *render-models*))
+  "Provides the unskinned model if the name of render-model has been replaced by the user. If the 
+   name hasn't been replaced the returned render-model will still be valid."
+  (cffi:with-foreign-string (foreign-string (make-string 512))
+    (cffi:with-foreign-object (error-pointer 'vr-render-model-error)
+      (%get-render-model-original-path
+       (table render-models)
+       (name render-model)
+       foreign-string
+       512
+       error-pointer)
+      (if (eq error-pointer :none)
+          (load-render-model (cffi:foreign-string-to-lisp foreign-string))
+          (error "Render model error: ~a" (cffi:mem-ref error-pointer 'vr-render-model-error))))))
