@@ -9,7 +9,7 @@ Chaperone | 50%
 ChaperoneSetup | 0%
 Compositor | 90%
 Overlay | 0%
-Resources | 25%
+Resources | 90%
 RenderModels | 25% 
 ExtendedDisplay | 100%
 Settings | 0%
