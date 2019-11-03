@@ -38,14 +38,14 @@
 
 (defmethod cffi:translate-from-foreign (value (type hmd-quaternionf-t-tclass))
   (cffi:with-foreign-slots ((w x y z) value (:struct hmd-quaternionf-t))
-    (rtg-math:q! w x y z)))
+    (vector w x y z)))
 
 (defmethod cffi:translate-from-foreign (value (type hmd-quaternion-t-tclass))
   (cffi:with-foreign-slots ((w x y z) value (:struct hmd-quaternion-t))
-    (rtg-math:q! (coerce w 'single-float)
-                 (coerce x 'single-float)
-                 (coerce y 'single-float)
-                 (coerce z 'single-float))))
+    (vector (coerce w 'single-float)
+            (coerce x 'single-float)
+            (coerce y 'single-float)
+            (coerce z 'single-float))))
 
 (defmethod cffi:translate-from-foreign (value (type hmd-vector-3-t-tclass))
   (let ((a (make-array '(3) :initial-element 0.0)))
