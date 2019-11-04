@@ -13,7 +13,7 @@ Resources | 90%
 RenderModels | 25% 
 ExtendedDisplay | 100%
 Settings | 95%
-Applications | 0%
+Applications | 80%
 TrackedCamera | 0%
 Screenshots | 90%
 DriverManager | 90%
