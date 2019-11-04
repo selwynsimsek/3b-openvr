@@ -14,8 +14,8 @@ RenderModels | 25%  | N
 ExtendedDisplay | 100% | Y
 Settings | 95% | N
 Applications | 80% | N
-TrackedCamera | 0% | N
-Screenshots | 90% | N
+TrackedCamera | 100% | N
+Screenshots | 100% | N
 DriverManager | 90% | N
 Input | 80% | N
 IOBuffer | 60% | N

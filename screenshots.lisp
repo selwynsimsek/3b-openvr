@@ -65,5 +65,6 @@
                               (namestring preview-pathname)
                               (namestring vr-pathname))))
     (unless (eq error-value :none) (error "VR screenshot error ~a" error-value))))
+
 (export '(request-screenshot hook-screenshot screenshot-property-type screenshot-property-filename
           update-screenshot-progress take-stereo-screenshot submit-screenshot))
