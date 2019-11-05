@@ -2,23 +2,23 @@
 
 It is intended that at least most of the OpenVR API will be exposed to a fairly high level, still a work in progress.
 
-Interface | Percentage of interface exposed | Tested?
---- | --- | ---
-System | 50% | N
-Chaperone | 85% | N
-ChaperoneSetup | 90% | N
-Compositor | 90% | N
-Overlay | 0% | N
-Resources | 90% | N
-RenderModels | 25%  | N
-ExtendedDisplay | 100% | Y
-Settings | 95% | N
-Applications | 80% | N
-TrackedCamera | 100% | N
-Screenshots | 100% | N
-DriverManager | 90% | N
-Input | 80% | N
-IOBuffer | 60% | N
-SpatialAnchors | 75% | N
-Debug | 90% | N
-Notifications | 40% | N
+Interface | Percentage of interface exposed | Tested? | Version
+--- | --- | --- | ---
+System | 50% | N | IVRSystem_020
+Chaperone | 85% | N | IVRChaperone_003
+ChaperoneSetup | 90% | N | IVRChaperoneSetup_006
+Compositor | 90% | N | IVRCompositor_022
+Overlay | 0% | N | IVROverlay_020
+Resources | 90% | N | IVRResources_001
+RenderModels | 25%  | N | IVRRenderModels_006
+ExtendedDisplay | 100% | Y | IVRExtendedDisplay_001
+Settings | 95% | N | IVRSettings_002
+Applications | 80% | N | IVRApplications_006
+TrackedCamera | 100% | N | IVRTrackedCamera_006
+Screenshots | 100% | N | IVRScreenshots_001
+DriverManager | 90% | N | IVRDriverManager_001
+Input | 80% | N | IVRInput_007
+IOBuffer | 60% | N | IVRIOBuffer_002
+SpatialAnchors | 75% | N | IVRSpatialAnchors_001
+Debug | 90% | N | IVRDebug_001
+Notifications | 40% | N | IVRNotifications_002
