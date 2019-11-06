@@ -8,24 +8,22 @@
 
 (defclass screenshot ()
   ((handle :initarg :handle :accessor handle)
-   (screenshot-type :initarg :type :accessor screenshot-type)
-   (preview-pathname :initarg :preview-filename :accessor preview-pathname)
-   (vr-pathname :initarg :vr-filename :accessor vr-pathname)))
+   (screenshot-type :initarg :screenshot-type :accessor screenshot-type)
+   (preview-pathname :initarg :preview-pathname :accessor preview-pathname)
+   (vr-pathname :initarg :vr-pathname :accessor vr-pathname)))
 
-(defun request-screenshot (&key (preview-pathname (merge-pathnames #p"preview.png"
-                                                                   (user-homedir-pathname)))
-                                (vr-pathname (merge-pathnames #p"screenshot.png"
-                                                              (user-homedir-pathname)))
+(defun request-screenshot (&key (preview-pathname #p"preview.png")
+                                (vr-pathname #p"screenshot.png")
                                 (type :stereo) (screenshots *screenshots*))
   "Requests a screenshot. Returns a handle to the screenshot."
   (cffi:with-foreign-object (handle 'screenshot-handle-t)
     (%request-screenshot (table screenshots) handle type
                          (namestring preview-pathname) (namestring vr-pathname))
     (make-instance 'screenshot
-                   :handle (cffi:mem-ref handle 'screenshot-handle-t)
-                   :screenshot-type (screenshot-property-type handle :screenshots screenshots)
-                   :preview-pathname (screenshot-property-filename handle :preview :screenshots screenshots)
-                   :vr-pathname (screenshot-property-filename handle :vr :screenshots screenshots))))
+                   :handle #1=(cffi:mem-ref handle 'screenshot-handle-t)
+                   :screenshot-type (screenshot-property-type #1# :screenshots screenshots)
+                   :preview-pathname (screenshot-property-filename #1# :preview :screenshots screenshots)
+                   :vr-pathname (screenshot-property-filename #1# :vr :screenshots screenshots))))
 
 (defun hook-screenshot (screenshot-type-list &key (screenshots *screenshots*))
   "Called by the running VR application to indicate which screenshots it wishes to support."
@@ -71,7 +69,7 @@
                      :preview-pathname (screenshot-property-filename handle :preview :screenshots screenshots)
                      :vr-pathname (screenshot-property-filename handle :vr :screenshots screenshots)))))
 
-(defun submit-screenshot (screenshot &key *screenshots*)
+(defun submit-screenshot (screenshot &key (screenshots *screenshots*))
   "Submit a new screenshot to the Steam API."
   (let ((error-value
           (%submit-screenshot (table screenshots) (handle screenshot) (screenshot-type screenshot)

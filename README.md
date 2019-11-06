@@ -5,8 +5,8 @@ It is intended that at least most of the OpenVR API will be exposed to a fairly 
 Interface | Percentage of interface exposed | Tested? | Version
 --- | --- | --- | ---
 System | 50% | N | IVRSystem_020
-Chaperone | 85% | N | IVRChaperone_003
-ChaperoneSetup | 90% | N | IVRChaperoneSetup_006
+Chaperone | 75% | Y | IVRChaperone_003
+ChaperoneSetup | 90% | Partly | IVRChaperoneSetup_006
 Compositor | 90% | N | IVRCompositor_022
 Overlay | 0% | N | IVROverlay_020
 Resources | 90% | N | IVRResources_001
