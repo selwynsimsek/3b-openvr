@@ -12,6 +12,19 @@
    (preview-pathname :initarg :preview-pathname :accessor preview-pathname)
    (vr-pathname :initarg :vr-pathname :accessor vr-pathname)))
 
+(defun screenshot-from-handle (handle &key (screenshots *screenshots*))
+  (make-instance 'screenshot
+                 :handle (cffi:mem-ref handle 'screenshot-handle-t)
+                 :screenshot-type (screenshot-property-type
+                                   (cffi:mem-ref handle 'screenshot-handle-t)
+                                   :screenshots screenshots)
+                 :preview-pathname (screenshot-property-filename
+                                    (cffi:mem-ref handle 'screenshot-handle-t)
+                                    :preview :screenshots screenshots)
+                 :vr-pathname (screenshot-property-filename
+                               (cffi:mem-ref handle 'screenshot-handle-t)
+                               :vr :screenshots screenshots)))
+
 (defun request-screenshot (&key (preview-pathname #p"preview.png")
                                 (vr-pathname #p"screenshot.png")
                                 (type :stereo) (screenshots *screenshots*))
@@ -19,11 +32,7 @@
   (cffi:with-foreign-object (handle 'screenshot-handle-t)
     (%request-screenshot (table screenshots) handle type
                          (namestring preview-pathname) (namestring vr-pathname))
-    (make-instance 'screenshot
-                   :handle #1=(cffi:mem-ref handle 'screenshot-handle-t)
-                   :screenshot-type (screenshot-property-type #1# :screenshots screenshots)
-                   :preview-pathname (screenshot-property-filename #1# :preview :screenshots screenshots)
-                   :vr-pathname (screenshot-property-filename #1# :vr :screenshots screenshots))))
+    (screenshot-from-handle handle)))
 
 (defun hook-screenshot (screenshot-type-list &key (screenshots *screenshots*))
   "Called by the running VR application to indicate which screenshots it wishes to support."
@@ -63,11 +72,7 @@
                                      handle (namestring preview-pathname)
                                      (namestring vr-pathname))))
       (unless (eq error-value :none) (error "VR screenshot error ~a" error-value))
-      (make-instance 'screenshot
-                     :handle (cffi:mem-ref handle 'screenshot-handle-t)
-                     :screenshot-type (screenshot-property-type handle :screenshots screenshots)
-                     :preview-pathname (screenshot-property-filename handle :preview :screenshots screenshots)
-                     :vr-pathname (screenshot-property-filename handle :vr :screenshots screenshots)))))
+      (screenshot-from-handle handle))))
 
 (defun submit-screenshot (screenshot &key (screenshots *screenshots*))
   "Submit a new screenshot to the Steam API."
@@ -78,4 +83,5 @@
     (unless (eq error-value :none) (error "VR screenshot error ~a" error-value))))
 
 (export '(request-screenshot hook-screenshot screenshot-property-type screenshot-property-filename
-          update-screenshot-progress take-stereo-screenshot submit-screenshot))
+          update-screenshot-progress take-stereo-screenshot submit-screenshot screenshot handle
+          screenshot-type preview-pathname vr-pathname))
