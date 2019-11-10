@@ -267,18 +267,24 @@
       (cffi:make-pointer r))))
 
 (defun clear ()
-  (setf *system* nil)
-  (setf *chaperone* nil)
-  (setf *chaperone-setup* nil)
-  (setf *compositor* nil)
-  (setf *overlay* nil)
-  (setf *render-models* nil)
-  (setf *extended-display* nil)
-  (setf *settings* nil)
-  (setf *applications* nil)
-  (setf *tracked-camera* nil)
-  (setf *resources* nil)
-  (setf *screenshots* nil))
+  (setf *system* nil
+        *chaperone* nil
+        *chaperone-setup* nil
+        *compositor* nil
+        *overlay* nil
+        *resources* nil
+        *render-models* nil
+        *extended-display* nil
+        *settings* nil
+        *applications* nil
+        *tracked-camera* nil
+        *screenshots* nil
+        *driver-manager* nil
+        *input* nil
+        *io-buffer* nil
+        *spatial-anchors* nil
+        *debug* nil
+        *notifications* nil))
 
 (defun check-clear ()
   (unless (eql *%init* (vr-get-init-token))
