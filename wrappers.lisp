@@ -321,6 +321,12 @@
     (setf *overlay* (make-instance 'vr-overlay)))
   *overlay*)
 
+(defun vr-resources ()
+  (check-clear)
+  (unless *overlay*
+    (setf *overlay* (make-instance 'vr-resources)))
+  *overlay*)
+
 (defun vr-render-models ()
   (check-clear)
   (unless *render-models*
@@ -362,6 +368,42 @@
   (unless *screenshots*
     (setf *screenshots* (make-instance 'vr-screenshots)))
   *screenshots*)
+
+(defun vr-driver-manager ()
+  (check-clear)
+  (unless *driver-manager*
+    (setf *driver-manager* (make-instance 'vr-driver-manager)))
+  *driver-manager*)
+
+(defun vr-input ()
+  (check-clear)
+  (unless *input*
+    (setf *input* (make-instance 'vr-input)))
+  *input*)
+
+(defun vr-io-buffer ()
+  (check-clear)
+  (unless *io-buffer*
+    (setf *io-buffer* (make-instance 'vr-iobuffer)))
+  *io-buffer*)
+
+(defun vr-spatial-anchors ()
+  (check-clear)
+  (unless *spatial-anchors*
+    (setf *spatial-anchors* (make-instance 'vr-spatial-anchors)))
+  *spatial-anchors*)
+
+(defun vr-debug ()
+  (check-clear)
+  (unless *debug*
+    (setf *debug* (make-instance 'vr-debug)))
+  *debug*)
+
+(defun vr-notifications ()
+  (check-clear)
+  (unless *notifications*
+    (setf *notifications* (make-instance 'vr-notifications)))
+  *notifications*)
 
 (defmacro with-vr ((&key (application-type :scene)) &body body)
   `(let ((*%init* (vr-init ,application-type))

@@ -155,10 +155,10 @@
   (%set-tracking-space (table compositor) origin))
 
 (defun tracking-space (&key (compositor *compositor*))
-  (%get-tracking-space (table compositor)))
+  (%get-tracking-space (table compositor))) ; works
 
 (defun clear-last-submitted-frame (&key (compositor *compositor*))
-  (%clear-last-submitted-frame (table compositor)))
+  (%clear-last-submitted-frame (table compositor))) ; works
 
 (defun post-present-handoff (&key (compositor *compositor*))
   (%post-present-handoff (table compositor)))
