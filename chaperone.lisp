@@ -47,3 +47,9 @@
 
 (export '(calibration-state play-area-size play-area-rect reload-chaperone-info set-scene-color
           bounds-color bounds-visible-p force-bounds-visible))
+
+(define-clos-wrapper (color hmd-color-t) ()
+  ((r r)
+   (g g)
+   (b b)
+   (a a)))

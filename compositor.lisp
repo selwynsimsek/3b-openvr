@@ -31,7 +31,6 @@
           (setf type texture-type
                 handle (cffi:make-pointer texture)
                 color-space space)))
-     ; (break)
       (%submit (table compositor)
                eye
                texture-pointer
@@ -138,9 +137,7 @@
 
 
 (defun fade-color (&key (background-p nil) (compositor *compositor*))
-  (break)
   (let ((pointer (%get-current-fade-color (table compositor) background-p)))
-    (break)
     (cffi:with-foreign-slots ((r g b a) pointer (:struct hmd-color-t))
       (values r g b a))))
 
@@ -246,7 +243,7 @@
   (%is-motion-smoothing-enabled (table compositor)))
 
 (defun motion-smoothing-supported-p (&key (compositor *compositor*))
-  (%is-motion-smoothing-supported (table compositor)))
+  (%is-motion-smoothing-supported (table compositor))) 
 
 (defun current-scene-focus-app-loading-p (&key (compositor *compositor*))
   (%is-current-scene-focus-app-loading (table compositor)))
