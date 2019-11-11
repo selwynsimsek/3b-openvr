@@ -75,7 +75,7 @@
   (cffi:with-foreign-object (handle-pointer 'vr-action-set-handle-t)
     (with-input-error
         (%get-action-set-handle (table input) action-set-name handle-pointer))
-    (cffi:mem-ref handle-pointer 'vr-action-set-handle-t)))
+    (cffi:mem-ref handle-pointer 'vr-action-set-handle-t))) ; works
 
 (defun action (action-name &key (input *input*))
   "Returns an integer representing an action. This handle is used for all performance-sensitive 
@@ -107,7 +107,7 @@
         (%update-action-state (table input)
                               pointer
                               (cffi:foreign-type-size '(:struct vr-active-action-set-t))
-                              (length active-action-sets)))))
+                              (length active-action-sets))))) ; works
 
 (defun digital-action-data (action &key (restrict-to-device +invalid-input-value-handle+)
                                         (input *input*))
@@ -117,7 +117,7 @@
         (%get-digital-action-data (table input) action pointer
                                   (cffi:foreign-type-size '(:struct input-digital-action-data-t))
                                   restrict-to-device))
-    (cffi:mem-ref pointer '(:struct input-digital-action-data-t))))
+    (cffi:mem-ref pointer '(:struct input-digital-action-data-t)))) ; works
 
 (defun analog-action-data (action &key (restrict-to-device +invalid-input-value-handle+)
                                        (input *input*))
@@ -278,7 +278,7 @@
         (%get-origin-tracked-device-info (table input) input-source
                                          pointer
                                          (cffi:foreign-type-size '(:struct input-origin-info-t))))
-    (cffi:mem-ref pointer '(:struct input-origin-info-t))))
+    (cffi:mem-ref pointer '(:struct input-origin-info-t)))) ; works - put in render-model component name
 
 (defun action-binding-information (action &key (input *input*))
   "Retrieves useful information about the bindings for an action."
@@ -291,8 +291,10 @@
     (let* ((returned-count (cffi:mem-ref integer-pointer :uint32))
            (binding-information (make-array (list returned-count))))
       (loop for i below returned-count
-            do (setf (aref binding-information i) (cffi:mem-ref origin-info-pointer i))
-            finally (return binding-information)))))
+            do (setf (aref binding-information i) (cffi:mem-ref origin-info-pointer '(:struct
+                                                                                      input-binding-info-t)
+                                                                i))
+            finally (return binding-information))))) ; needs to be improved
 
 (defun show-action-origins (action-set action &key (input *input*))
   "Shows the current binding for the action in the headset."

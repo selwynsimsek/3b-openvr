@@ -17,7 +17,7 @@ Applications | 80% | N | IVRApplications_006
 TrackedCamera | 100% | N | IVRTrackedCamera_006
 Screenshots | 100% | N | IVRScreenshots_001
 DriverManager | 90% | N | IVRDriverManager_001
-Input | 80% | N | IVRInput_007
+Input | 80% | Some | IVRInput_007
 IOBuffer | 60% | N | IVRIOBuffer_002
 SpatialAnchors | 75% | N | IVRSpatialAnchors_001
 Debug | 90% | N | IVRDebug_001
