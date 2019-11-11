@@ -65,7 +65,7 @@
    partner site setting and the path provided by this call are different, 
    VRInputError_MismatchedActionManifest is returned. This call must be made before the first call 
    to #'update-action-state or #'poll-next-event."
-  (with-input-error (%set-action-manifest-path (table input) action-manifest-path)))
+  (with-input-error (%set-action-manifest-path (table input) action-manifest-path))) ; think it works
 ;; (set-action-manifest-path "/home/selwyn/openvr/samples/bin/hellovr_actions.json")
 
 
@@ -83,7 +83,7 @@
   (cffi:with-foreign-object (handle-pointer 'vr-action-handle-t)
     (with-input-error
         (%get-action-handle (table input) action-name handle-pointer))
-    (cffi:mem-ref handle-pointer 'vr-action-handle-t)))
+    (cffi:mem-ref handle-pointer 'vr-action-handle-t))) ; works
 
 (defun input-source (input-source-pathname &key (input *input*))
   "Returns an integer representing an input source for any path in the input system.
@@ -91,7 +91,7 @@
   (cffi:with-foreign-object (handle-pointer 'vr-input-value-handle-t)
     (with-input-error
         (%get-input-source-handle (table input) (namestring input-source-pathname) handle-pointer))
-    (cffi:mem-ref handle-pointer 'vr-input-value-handle-t)))
+    (cffi:mem-ref handle-pointer 'vr-input-value-handle-t))) ; works?
 
 ;; reading action state
 
@@ -157,7 +157,7 @@
          pointer
          (cffi:foreign-type-size '(:struct input-pose-action-data-t))
          restrict-to-device))
-    (cffi:mem-ref pointer '(:struct input-pose-action-data-t))))
+    (cffi:mem-ref pointer '(:struct input-pose-action-data-t)))) ; works
 
 (defun skeletal-action-data (action &key (input *input*))
   "Reads the state of a skeletal action given its handle."
@@ -250,8 +250,9 @@
 (defun trigger-haptic-vibration-action (action from-now duration frequency amplitude
                                         restrict-to-device &key (input *input*))
   "Triggers a haptic event as described by the specified action."
-  (%trigger-haptic-vibration-action (table input) action from-now duration frequency amplitude
-                                    restrict-to-device))
+  (with-input-error
+      (%trigger-haptic-vibration-action (table input) action from-now duration frequency amplitude
+                                        restrict-to-device))) ; works
 
 ;; action origins
 
@@ -311,4 +312,4 @@
 ;; legacy input
 
 (defun using-legacy-input-p (&key (input *input*))
-  (%is-using-legacy-input (table input)))
+  (%is-using-legacy-input (table input))) ; works

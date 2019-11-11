@@ -35,7 +35,7 @@
                eye
                texture-pointer
                (if texture-bounds bounds-pointer (cffi:null-pointer))
-               flags))))
+               flags)))) ; works
 
 (defun wait-get-poses  (pose-array game-pose-array
                         &key (compositor *compositor*))
@@ -56,7 +56,7 @@
                      (cffi:mem-ref p '(:struct tracked-device-pose-t)))))
     (loop for i below (length game-pose-array)
           for p = (cffi:mem-aptr pgpa '(:struct tracked-device-pose-t) i)
-          do (setf (aref game-pose-array i) (cffi:mem-ref p '(:struct tracked-device-pose-t))))))
+          do (setf (aref game-pose-array i) (cffi:mem-ref p '(:struct tracked-device-pose-t)))))) ; works
 
 (defun get-last-pose (tracked-device &key (compositor *compositor*))
   (cffi:with-foreign-objects
@@ -103,13 +103,17 @@
     (cffi:with-foreign-slots ((size) timing-pointer (:struct compositor-frame-timing))
       (setf size (cffi:foreign-type-size '(:struct compositor-frame-timing))))
     (%get-frame-timing (table compositor) timing-pointer frames-ago)
-    (cffi:mem-ref timing-pointer '(:struct compositor-frame-timing))))
+    (cffi:mem-ref timing-pointer '(:struct compositor-frame-timing)))) ; works
 
 (defun frame-timings (number-of-frames &key (compositor *compositor*))
   (cffi:with-foreign-object (timing-pointer '(:struct compositor-frame-timing) number-of-frames)
     (cffi:with-foreign-slots ((size) timing-pointer (:struct compositor-frame-timing))
-      (setf size (cffi:foreign-type-size 'compositor-frame-timing-tclass)))
-    (%get-frame-timings (table compositor) timing-pointer number-of-frames)))
+      (setf size (cffi:foreign-type-size '(:struct compositor-frame-timing))))
+    (%get-frame-timings (table compositor) timing-pointer number-of-frames)
+    (let ((frame-array (make-array (list number-of-frames))))
+      (loop for i below number-of-frames
+            do (setf (aref frame-array i) (cffi:mem-aref timing-pointer '(:struct compositor-frame-timing) i))
+            finally (return frame-array))))) ; works
 
 (define-clos-wrapper (cumulative-statistics compositor-cumulative-stats) ()
                      ((pid pid)
@@ -133,13 +137,11 @@
     (%get-cumulative-stats (table compositor)
                            stats-pointer
                            (cffi:foreign-type-size '(:struct compositor-cumulative-stats)))
-    (cffi:mem-ref stats-pointer '(:struct compositor-cumulative-stats))))
+    (cffi:mem-ref stats-pointer '(:struct compositor-cumulative-stats)))) ; works
 
 
 (defun fade-color (&key (background-p nil) (compositor *compositor*))
-  (let ((pointer (%get-current-fade-color (table compositor) background-p)))
-    (cffi:with-foreign-slots ((r g b a) pointer (:struct hmd-color-t))
-      (values r g b a))))
+  (%get-current-fade-color (table compositor) background-p)) ; doesn't work?
 
 (defun override-skybox (textures &key (color-space :gamma) (texture-type :open-gl) (compositor *compositor*))
   (cffi:with-foreign-object (texture-pointer '(:struct texture-t) (length textures))
@@ -161,65 +163,69 @@
   (%clear-last-submitted-frame (table compositor))) ; works
 
 (defun post-present-handoff (&key (compositor *compositor*))
-  (%post-present-handoff (table compositor)))
+  (%post-present-handoff (table compositor))) ; works?
 
 (defun frame-time-remaining (&key (compositor *compositor*))
-  (%get-frame-time-remaining (table compositor)))
+  (%get-frame-time-remaining (table compositor))) ; works
 
 (defun fade-to-color (time red green blue alpha background-p &key (compositor *compositor*))
-  (%fade-to-color (table compositor) time red green blue alpha background-p))
+  (%fade-to-color (table compositor) time red green blue alpha background-p)) ; works
 
 (defun fade-grid (seconds fade-in-p &key (compositor *compositor*))
-  (%fade-grid (table compositor) seconds fade-in-p))
+  (%fade-grid (table compositor) seconds fade-in-p)) ; works
 
 (defun grid-alpha (&key (compositor *compositor*))
-  (%get-current-grid-alpha (table compositor)))
+  (%get-current-grid-alpha (table compositor))) ; works
 
 (defun clear-skybox-override (&key (compositor *compositor*))
-  (%clear-skybox-override (table compositor)))
+  (%clear-skybox-override (table compositor))) ; works?
 
 (defun bring-to-front (&key (compositor *compositor*))
-  (%compositor-bring-to-front (table compositor)))
+  (%compositor-bring-to-front (table compositor))) ; works
 
 (defun go-to-back (&key (compositor *compositor*))
-  (%compositor-go-to-back (table compositor)))
+  (%compositor-go-to-back (table compositor))) ; works
 
 (defun quit-compositor (&key (compositor *compositor*))
   (%compositor-quit (table compositor)))
 
 (defun fullscreen-p (&key (compositor *compositor*))
-  (%is-fullscreen (table compositor)))
+  (%is-fullscreen (table compositor))) ; doesn't work?
 
 (defun current-scene-focus-process (&key (compositor *compositor*))
-  (%get-current-scene-focus-process (table compositor)))
+  (%get-current-scene-focus-process (table compositor))) ; works
 
 (defun last-frame-renderer (&key (compositor *compositor*))
-  (%get-last-frame-renderer (table compositor)))
+  "Returns the process ID of the process that rendered the last frame (or 0 if the compositor itself 
+   rendered the frame. Returns 0 when fading out from an app and the app's process Id when fading into an app."
+  (%get-last-frame-renderer (table compositor))) ; works
 
 (defun can-render-scene-p (&key (compositor *compositor*))
-  (%can-render-scene (table compositor)))
+  (%can-render-scene (table compositor))) ; works
 
 (defun show-mirror-window (&key (compositor *compositor*))
-  (%show-mirror-window (table compositor)))
+  (%show-mirror-window (table compositor))) ; doesn't work?
+
 (defun hide-mirror-window (&key (compositor *compositor*))
-  (%hide-mirror-window (table compositor)))
+  (%hide-mirror-window (table compositor))) ; doesn't work?
+
 (defun mirror-window-visible-p (&key (compositor *compositor*))
-  (%is-mirror-window-visible (table compositor)))
+  (%is-mirror-window-visible (table compositor))) ; doesn't work?
 
 (defun dump-images (&key (compositor *compositor*))
-  (%compositor-dump-images (table compositor)))
+  (%compositor-dump-images (table compositor))) ; works?
 
 (defun should-app-render-with-low-resources-p (&key (compositor *compositor*))
-  (%should-app-render-with-low-resources (table compositor)))
+  (%should-app-render-with-low-resources (table compositor))) ; works?
 
 (defun force-interleaved-reprojection (override-p &key (compositor *compositor*))
-  (%force-interleaved-reprojection-on (table compositor) override-p))
+  (%force-interleaved-reprojection-on (table compositor) override-p)) ; works?
 
 (defun force-reconnect-process (&key (compositor *compositor*))
-  (%force-reconnect-process (table compositor)))
+  (%force-reconnect-process (table compositor))) ; think it works
 
 (defun suspend-rendering (&key (suspend-p t) (compositor *compositor*))
-  (%suspend-rendering (table compositor) suspend-p))
+  (%suspend-rendering (table compositor) suspend-p)) ; works
 
 (defun mirror-gl-texture (&key (compositor *compositor*))
   (error "implement me"))
@@ -234,16 +240,16 @@
   (error "implement me"))
 
 (defun set-explicit-timing-mode (timing-mode &key (compositor *compositor*))
-  (%set-explicit-timing-mode (table compositor) timing-mode))
+  (%set-explicit-timing-mode (table compositor) timing-mode)) ; not tested, d3d11/vulkan only
 
 (defun submit-explicit-timing-data (&key (compositor *compositor*))
-  (%submit-explicit-timing-data (table compositor)))
+  (%submit-explicit-timing-data (table compositor))) ; think it works
 
 (defun motion-smoothing-enabled-p (&key (compositor *compositor*))
-  (%is-motion-smoothing-enabled (table compositor)))
+  (%is-motion-smoothing-enabled (table compositor))) ; works
 
 (defun motion-smoothing-supported-p (&key (compositor *compositor*))
-  (%is-motion-smoothing-supported (table compositor))) 
+  (%is-motion-smoothing-supported (table compositor))) ; works 
 
 (defun current-scene-focus-app-loading-p (&key (compositor *compositor*))
-  (%is-current-scene-focus-app-loading (table compositor)))
+  (%is-current-scene-focus-app-loading (table compositor))) ; works
