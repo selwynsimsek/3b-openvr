@@ -40,40 +40,35 @@
   (loop while (not (try-to-load-model render-model :render-models render-models))
         do (sleep sleep-time)))
 
-(defun try-to-load-model (render-model &key (render-models *render-models*))
+(defun try-to-load-model (render-model-name &key (render-models *render-models*) (o1 0) (o2 0))
   "Tries to load the model asynchronously. Returns T on success and NIL if still loading."
-  (or (loaded-p render-model)
-      (with-slots (name vertices indices diffuse-texture loaded-p foreign-pointer components)
-          render-model
-        (cffi:with-foreign-object (p1 '(:pointer (:struct render-model-t)))
-          (let ((error-value
-                  (%load-render-model-async (table render-models) name p1)))
-            (format t "~a~%" error-value)
-            (unless (eq error-value :loading)
-              (unless (eq error-value :none)
-                (error "Render models error: ~a" error-value))
-                                        ; continue loading
-
-              (format t "~a~%"
-                      (cffi:mem-ref
-                       (cffi:mem-ref p1 '(:pointer (:struct render-model-t)))
-                       '(:struct render-model-t)))
-              (cffi:with-foreign-slots ((vertex-data vertex-count index-data triangle-count
-                                                     diffuse-texture-id)
-                                         (cffi:mem-ref p1 '(:pointer (:struct render-model-t))) 
-                                        (:struct render-model-t))
-                (format t "v-c: ~a, t-c: ~a, d-t-i: ~a~%" vertex-count triangle-count diffuse-texture-id)
-                (setf vertices (make-array (list vertex-count)))
-                (setf indices (make-array (list (* 3 triangle-count))))
-                (setf diffuse-texture (make-instance 'texture-map :handle diffuse-texture-id))
-                (loop for i from 0 below (length indices)
-                      do (setf (aref indices i) (cffi:mem-ref index-data :uint16 i)))
-                (loop for i from 0 below (length vertices)
-                      do (setf (aref vertices i) (cffi:mem-ref vertex-data '(:struct render-model-vertex-t)
-                                                               i)))
-                (%free-render-model (table render-models) foreign-pointer)
-                (cffi:foreign-free foreign-pointer)
-                (setf loaded-p t))))))))
+  
+  (cffi:with-foreign-object (p1 '(:pointer (:struct render-model-t)))
+    (let ((error-value
+            (%load-render-model-async (table render-models) render-model-name p1)))
+      (format t "~a~%" error-value)
+      (unless (eq error-value :loading)
+        (unless (eq error-value :none)
+          (error "Render models error: ~a" error-value))
+        (let ((pointer (cffi:mem-ref p1 '(:pointer (:struct render-model-t)) o1)))
+          (let* ((vertex-count (cffi:mem-aref pointer :uint32 2))
+                 (triangle-count (cffi:mem-aref pointer :uint32 5))
+                 (index-data-pointer (cffi:mem-aref (cffi:inc-pointer pointer 12) '(:pointer :uint16)))
+                 (diffuse-texture-id (cffi:mem-aref pointer :int32 7))
+                 (vertex-data-pointer (cffi:mem-aref pointer '(:pointer (:struct render-model-vertex-t))))
+                 (vertex-data (make-array (list vertex-count)))
+                 (index-data (make-array (list (* 3 triangle-count)))))
+            (loop for i below (* 3 triangle-count)
+                  do (setf (aref index-data i) (cffi:mem-ref index-data-pointer :uint16 i)))
+            (loop for i below vertex-count
+                  do (setf (aref vertex-data i) (cffi:mem-ref vertex-data-pointer '(:struct render-model-vertex-t) i)))
+            (make-instance 'render-model
+                           :foreign-pointer pointer
+                           :loaded-p nil
+                           :diffuse-texture diffuse-texture-id
+                           :indices index-data
+                           :vertices vertex-data
+                           ))))))) ; give up
 
 (defun try-to-load-texture-map (texture-map &key (render-models *render-models*))
   "Loads the texture map asynchronously. Returns T on success and NIL if still loading."
@@ -105,7 +100,7 @@
           do (cffi:with-foreign-string (foreign-string (make-string 512))
                (%get-render-model-name (table render-models) i foreign-string 512)
                (setf (aref names i) (cffi:foreign-string-to-lisp foreign-string)))
-          finally (return names))))
+          finally (return names)))) ; works
 
 (defun update-component-states-for-device (render-model
                                            input-device

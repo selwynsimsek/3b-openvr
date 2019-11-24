@@ -1866,7 +1866,7 @@
 (defcstruct render-model-t
   (vertex-data (:pointer (:struct render-model-vertex-t))) ;; const struct vr::RenderModel_Vertex_t *
   (vertex-count :uint32) ;; uint32_t
-  (index-data (:pointer :uint16)) ;; const uint16_t *
+  (index-data (:pointer)) ;; const uint16_t *
   (triangle-count :uint32) ;; uint32_t
   (diffuse-texture-id texture-id-t)) ;; TextureID_t
 
