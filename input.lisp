@@ -315,3 +315,87 @@
 
 (defun using-legacy-input-p (&key (input *input*))
   (%is-using-legacy-input (table input))) ; works
+
+(defclass action ()
+  ((name :accessor name :initform (error "Need a name") :initarg :name)
+   (handle :accessor handle :initform (error "Need a handle") :initarg :handle)
+   (action-set-handle :accessor action-set-name :initarg :action-set-handle)
+   (action-type :accessor action-type :initarg :action-type)))
+
+(defmethod print-object ((object action) stream)
+  (print-unreadable-object
+      (object stream)
+    (format stream "3B-OPENVR::ACTION ~a ~a" (name object) (handle object))))
+
+(defclass digital-action (action)
+  ((action-data :accessor action-data :initform (make-instance 'input-digital-action-data))))
+
+(defclass analog-action (action)
+  ((action-data :accessor action-data :initform (make-instance 'input-analog-action-data))))
+
+(defclass haptic-action (action)
+  ())
+
+(defclass pose-action (action)
+  ((action-data :accessor action-data :initform (make-instance 'input-pose-action-data))))
+
+(defclass skeletal-action (action)
+  ())
+
+(defun load-manifest (manifest-name)
+  "Decodes a OpenVR action manifest file at the given pathname specifier."
+  (cl-json:decode-json-from-source (pathname manifest-name)))
+
+(defun manifest-actions (manifest-name)
+  "Returns a vector of actions that are contained in the manifest file."
+  (map 'vector (lambda (entry)
+                 (let* ((name (cdr (find :name entry :test #'eq :key #'car)))
+                        (type (cdr (find :type entry :test #'eq :key #'car)))
+                        (action
+                          (make-instance 'action
+                                         :name name
+                                         :handle (action name)
+                                         :action-type (intern (string-upcase type) (find-package "KEYWORD"))
+                                         :action-set-handle
+                                         (action-set (format nil "/actions/~a" (third (str:split "/" name)))))))
+                   (case (intern (string-upcase type) (find-package "KEYWORD"))
+                     (:boolean (change-class action 'digital-action))
+                     ((:vector1 :vector2 :vector3) (change-class action 'analog-action))
+                     (:vibration (change-class action 'haptic-action))
+                     (:pose (change-class action 'pose-action))
+                     (:skeleton (change-class action 'skeletal-action))
+                     (otherwise action))))
+       (cdr (find :actions (load-manifest manifest-name) :test #'eq :key #'car))))
+
+(defun update-action-set (action-set-name)
+  (update-action-state (vector (make-instance 'active-action-set
+                                              :action-set-handle (action-set action-set-name)
+                                              :restricted-to-device
+                                              +invalid-input-value-handle+
+                                              :secondary-action-set
+                                              +invalid-action-set-handle+
+                                              :priority 1
+                                              :padding 0))))
+
+(defgeneric update-data (action))
+
+(defmethod update-data ((action digital-action))
+  (setf (action-data action) (digital-action-data (handle action))))
+
+(defmethod update-data ((action analog-action))
+  (setf (action-data action) (analog-action-data (handle action))))
+
+(defmethod update-data ((action haptic-action))
+  (values)) ;do nothing
+
+(defmethod update-data ((action pose-action))
+  (handler-case 
+      (setf (action-data action)
+            (pose-action-data-relative-to-now (handle action) :standing 0.0))
+    (t () (progn )))) ;do nothing
+
+(defmethod update-data ((action skeletal-action))
+  (values)) ;do nothing
+
+(defmethod trigger-action ((action haptic-action) from-now duration frequency amplitude)
+  (trigger-haptic-vibration-action (handle action) from-now duration frequency amplitude +invalid-input-value-handle+))
