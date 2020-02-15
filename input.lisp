@@ -174,23 +174,32 @@
   "Reads the number of bones in skeleton associated with the given action."
   (cffi:with-foreign-object (pointer :uint32)
     (with-input-error (%get-bone-count (table input) action pointer))
-    (cffi:mem-ref pointer :uint32)))
+    (cffi:mem-ref pointer :uint32))) ; works
 
 (defun bone-hierarchy (action &key (input *input*))
   "Returns an array of each bone's parent in the skeleton associated with the given action."
+  #-sbcl (do-bone-hierarchy action input)
+  #+sbcl (sb-int:with-float-traps-masked (:invalid)
+           (do-bone-hierarchy action input))) ;works
+
+(defun do-bone-hierarchy (action input)
   (let ((count (bone-count action)))
     (cffi:with-foreign-object (pointer 'bone-index-t count)
       (with-input-error (%get-bone-hierarchy (table input) action pointer count))
       (let ((result (make-array (list count))))
         (loop for i from 0 below count
-              do (setf (aref result i) (cffi:mem-ref pointer 'bone-index-t i))
-              finally (return result))))))
+              do (setf (aref result i) (cffi:mem-aref pointer 'bone-index-t i))
+              finally (return result)))))) ; works
 
 (defun bone-name (action bone &key (input *input*))
   "Returns the name of the bone in the skeleton associated with the given action."
-  (cffi:with-foreign-string (foreign-string (make-string 512))
-    (%get-bone-name (table input) action bone foreign-string 512)
-    (cffi:foreign-string-to-lisp foreign-string)))
+  (cffi:with-foreign-string (foreign-string (make-string (1- +max-bone-name-length+)))
+    #-sbcl
+    (with-input-error (%get-bone-name (table input) action bone foreign-string (1- +max-bone-name-length+)))
+    #+sbcl
+    (sb-int:with-float-traps-masked (:invalid)
+      (with-input-error (%get-bone-name (table input) action bone foreign-string (1- +max-bone-name-length+))))
+    (cffi:foreign-string-to-lisp foreign-string))) ; works
 
 (defun skeletal-reference-transforms (action skeletal-transform-space skeletal-reference-pose
                                       &key (input *input*))
@@ -205,11 +214,11 @@
               do (setf (aref result i) (cffi:mem-ref pointer '(:struct vr-bone-transform-t) i))
               finally (return result))))))
 
-(defun skeletal-tracking-level (action &key (input *input*))
+(defun skeletal-tracking-level-for-handle (handle &key (input *input*))
   "Reads the level of accuracy to which the controller is able to track the user to recreate a 
    skeletal pose."
   (cffi:with-foreign-object (pointer '(:pointer vr-skeletal-tracking-level))
-    (with-input-error (%get-skeletal-tracking-level (table input) action pointer))
+    (with-input-error (%get-skeletal-tracking-level (table input) handle pointer))
     (cffi:mem-ref pointer 'vr-skeletal-tracking-level)))
 
 ;; dynamic skeletal data
@@ -399,3 +408,6 @@
 
 (defmethod trigger-action ((action haptic-action) from-now duration frequency amplitude)
   (trigger-haptic-vibration-action (handle action) from-now duration frequency amplitude +invalid-input-value-handle+))
+
+(defmethod skeletal-tracking-level ((action skeletal-action))
+  (skeletal-tracking-level-for-handle (handle action)))
