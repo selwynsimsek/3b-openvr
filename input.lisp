@@ -349,7 +349,19 @@
   ((action-data :accessor action-data :initform (make-instance 'input-pose-action-data))))
 
 (defclass skeletal-action (action)
-  ())
+  ((action-data :accessor action-data :initform (make-instance 'input-skeletal-action-data))
+   (bones :accessor bones :initarg :bones)))
+
+(defclass bone ()
+  ((name :accessor name :initarg :name)
+   (index :accessor index :initarg :index)
+   (parent :accessor parent :initarg :parent)))
+
+(defmethod print-object ((object bone) stream)
+  (print-unreadable-object
+      (object stream)
+    (format stream "3B-OPENVR::BONE ~a ~a" (name object) (index object))))
+
 
 (defun load-manifest (manifest-name)
   "Decodes a OpenVR action manifest file at the given pathname specifier."
@@ -372,9 +384,26 @@
                      ((:vector1 :vector2 :vector3) (change-class action 'analog-action))
                      (:vibration (change-class action 'haptic-action))
                      (:pose (change-class action 'pose-action))
-                     (:skeleton (change-class action 'skeletal-action))
+                     (:skeleton
+                      (change-class action 'skeletal-action))
                      (otherwise action))))
        (cdr (find :actions (load-manifest manifest-name) :test #'eq :key #'car))))
+
+(defun make-skeletal-action (action)
+  (let ((bones (make-array (list (bone-count (handle action)))))
+        (hierarchy (bone-hierarchy (handle action))))
+    (loop for index from 0 below (length bones) do
+          (setf (aref bones index)
+                (make-instance 'bone :name (bone-name (handle action) index)
+                                     :index index
+                                     :parent (aref hierarchy index))))
+    (loop for index from 0 below (length bones) do
+          (setf (parent (aref bones index))
+                (if (>= (aref hierarchy index) 0)
+                    (aref bones (aref hierarchy index))
+                    nil)))
+    (setf (bones action) bones))
+  action)
 
 (defun update-action-set (action-set-name)
   (update-action-state (vector (make-instance 'active-action-set
