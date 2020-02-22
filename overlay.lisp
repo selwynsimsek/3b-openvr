@@ -135,7 +135,11 @@
                                              &key (overlay *overlay*)))
 (defun set-overlay-cursor (overlay-handle cursor-handle &key (overlay *overlay*)))
 (defun set-overlay-cursor-position-override (overlay-handle cursor &key (overlay *overlay*)))
-(defun clear-overlay-cursor-position-override (&key (overlay *overlay*)))
+
+(defun clear-overlay-cursor-position-override (overlay-handle &key (overlay *overlay*))
+  "Clears the override cursor position for this overlay."
+  (with-overlay-error
+      (%clear-overlay-cursor-position-override (table overlay) overlay-handle)))
 
 ;; overlay texture methods
 
