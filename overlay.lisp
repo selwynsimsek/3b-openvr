@@ -12,13 +12,63 @@
 
 ;; overlay management methods
 
-(defun find-overlay (overlay-key &key (overlay *overlay*)))
-(defun create-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*)))
-(defun destroy-overlay (overlay-handle &key (overlay *overlay*)))
-(defun overlay-key (overlay-handle &key (overlay *overlay*)))
-(defun overlay-name (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-name (overlay-handle name &key (overlay *overlay*)))
-(defun overlay-image-data (overlay-handle &key (overlay *overlay*)))
+(defun find-overlay (overlay-key &key (overlay *overlay*))
+  "Finds an existing overlay with the specified key."
+  (cffi:with-foreign-object (handle 'vr-overlay-handle-t)
+    (with-overlay-error
+        (%find-overlay (table overlay) overlay-key handle)
+      (cffi:mem-ref handle 'vr-overlay-handle-t))))
+
+(defun create-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*))
+  "Creates a new named overlay. All overlays start hidden and with default settings."
+  (cffi:with-foreign-object (handle 'vr-overlay-handle-t)
+    (with-overlay-error
+        (%create-overlay (table overlay) overlay-key overlay-friendly-name handle)
+      (cffi:mem-ref handle 'vr-overlay-handle-t))))
+
+(defun destroy-overlay (overlay-handle &key (overlay *overlay*))
+  "Destroys the specified overlay. When an application calls VR_Shutdown all overlays created by that app
+   are automatically destroyed."
+  (with-overlay-error (%destroy-overlay (table overlay) overlay-handle)))
+
+(defun overlay-key (overlay-handle &key (overlay *overlay*))
+  "Returns the string key of the overlay."
+  (cffi:with-foreign-string (pointer (make-string +vr-overlay-max-key-length+))
+    (cffi:with-foreign-object (error-pointer 'vr-overlay-error)
+      (%get-overlay-key (table overlay) overlay-handle pointer +vr-overlay-max-key-length+ error-pointer)
+      (unless (eq :none (cffi:mem-ref error-pointer 'vr-overlay-error))
+        (error "VR overlay error: ~a" (cffi:mem-ref error-pointer 'vr-overlay-error)))
+      (cffi:foreign-string-to-lisp pointer))))
+
+(defun overlay-name (overlay-handle &key (overlay *overlay*))
+  "Returns the friendly name of the overlay."
+  (cffi:with-foreign-string (pointer (make-string +vr-overlay-max-name-length+))
+    (cffi:with-foreign-object (error-pointer 'vr-overlay-error)
+      (%get-overlay-name (table overlay) overlay-handle pointer +vr-overlay-max-name-length+ error-pointer)
+      (unless (eq :none (cffi:mem-ref error-pointer 'vr-overlay-error))
+        (error "VR overlay error: ~a" (cffi:mem-ref error-pointer 'vr-overlay-error)))
+      (cffi:foreign-string-to-lisp pointer))))
+
+(defun set-overlay-name (overlay-handle name &key (overlay *overlay*))
+  "Set the name to use for this overlay."
+  (with-overlay-error (%set-overlay-name (table overlay) overlay-handle name)))
+
+(defun overlay-image-data (overlay-handle &key (overlay *overlay*))
+  "Gets the raw image data from an overlay. Overlay image data is always returned as RGBA data, 4 bytes per pixel."
+  (cffi:with-foreign-objects ((width-pointer :uint32)
+                              (height-pointer :uint32))
+    (setf (cffi:mem-ref width-pointer :uint32) 0
+          (cffi:mem-ref height-pointer :uint32) 0)
+    (%get-overlay-image-data
+     (table overlay) overlay-handle (cffi:null-pointer) 0 width-pointer height-pointer)
+    (let* ((width (cffi:mem-ref width-pointer :uint32))
+           (height (cffi:mem-ref height-pointer :uint32))
+           (buffer (cffi:make-shareable-byte-vector (* 4 width height))))
+      (cffi:with-pointer-to-vector-data (buffer-pointer buffer)
+        (with-overlay-error
+            (%get-overlay-image-data (table overlay) overlay-handle buffer-pointer
+                                     (* 4 width height) width-pointer height-pointer))
+        (values buffer width height)))))
 
 ;; overlay rendering methods
 
