@@ -116,24 +116,45 @@
 ;; keyboard methods
 
 (defun show-keyboard (input-mode line-input-mode description max-char existing-text
-                      use-minimal-mode-p user-value &key (overlay *overlay*)))
+                      use-minimal-mode-p user-value &key (overlay *overlay*))
+  "Show the virtual keyboard to accept input."
+  (with-overlay-error
+      (%show-keyboard (table origin) input-mode line-input-mode description max-char existing-text
+                      use-minimal-mode-p user-value)))
+
 (defun show-keyboard-for-overlay (overlay-handle input-mode line-input-mode description max-char
                                   existing-text use-minimal-mode-p user-value
-                                  &key (overlay *overlay*)))
-(defun keyboard-text (&key (overlay *overlay*)))
+                                  &key (overlay *overlay*))
+  (with-overlay-error
+      (%show-keyboard-for-overlay (table origin) overlay-handle input-mode line-input-mode description
+                                  max-char existing-text use-minimal-mode-p user-value)))
+
+(defun keyboard-text (&key (overlay *overlay*) (buffer-size 512))
+  "Get the text that was entered into the text input."
+  (cffi:with-foreign-string (string-pointer (make-string buffer-size))
+    (%get-keyboard-text (table overlay) string-pointer buffer-size)
+    (cffi:foreign-string-to-lisp string-pointer)))
 
 (defun hide-keyboard (&key (overlay *overlay*))
   "Hide the virtual keyboard."
   (%hide-keyboard (table overlay)))
 
 (defun set-keyboard-transform-absolute (origin tracking-origin-to-keyboard-transform
-                                        &key (overlay *overlay*)))
-(defun set-keyboard-position-for-overlay (overlay-handle avoid-rect &key (overlay *overlay*)))
+                                        &key (overlay *overlay*))
+  "Set the position of the keyboard in world space."
+  (%set-keyboard-transform-absolute (table overlay) origin tracking-origin-to-keyboard-transform))  ; need a type translator?
+
+(defun set-keyboard-position-for-overlay (overlay-handle avoid-rect &key (overlay *overlay*))
+  "Set the position of the keyboard in overlay space by telling it to avoid a rectangle in the overlay.
+ Rectangle coords have (0,0) in the bottom left."
+  (%set-keyboard-position-for-overlay (table overlay) overlay-handle avoid-rect)) ; need a type translator?
 
 ;; message box methods
 
 (defun show-message-overlay (text caption button-0-text button-1-text button-2-text button-3-text
-                             &key (overlay *overlay*)))
+                             &key (overlay *overlay*))
+  "Show the message overlay. This will block and return you a result."
+  (%show-message-overlay (table overlay) text caption button-0-text button-1-text button-2-text button-3-text))
 
 (defun close-message-overlay (&key (overlay *overlay*))
   "If the calling process owns the overlay and it's open, this will close it."
