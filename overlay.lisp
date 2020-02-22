@@ -49,14 +49,17 @@
 (defun set-overlay-transform-absolute (overlay-handle origin tracking-origin-to-overlay-transform
                                        &key (overlay *overlay*)))
 (defun overlay-transform-absolute (overlay-handle origin &key (overlay *overlay*)))
-(defun set-overlay-transform-tracked-device-relative (overlay-handle tracked-device tracked-device-to-overlay-transform
+(defun set-overlay-transform-tracked-device-relative (overlay-handle tracked-device
+                                                      tracked-device-to-overlay-transform
                                                       &key (overlay *overlay*)))
-(defun overlay-transform-tracked-device-relative (overlay-handle tracked-device &key (overlay *overlay*)))
+(defun overlay-transform-tracked-device-relative (overlay-handle tracked-device
+                                                  &key (overlay *overlay*)))
 (defun set-overlay-transform-tracked-device-component (overlay-handle device-index component-name
                                                        &key (overlay *overlay*)))
 (defun overlay-transform-tracked-device-component (overlay-handle &key (overlay *overlay*)))
 (defun overlay-transform-overlay-relative (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-transform-overlay-relative (overlay-handle parent-overlay-handle parent-overlay-to-overlay-transform
+(defun set-overlay-transform-overlay-relative (overlay-handle parent-overlay-handle
+                                               parent-overlay-to-overlay-transform
                                                &key (overlay *overlay*)))
 (defun set-overlay-transform-cursor (cursor-overlay-handle hotspot &key (overlay *overlay*)))
 (defun overlay-transform-cursor (overlay-handle &key (overlay *overlay*)))
@@ -74,7 +77,8 @@
 (defun set-overlay-mouse-scale (overlay-handle mouse-scale &key (overlay *overlay*)))
 (defun compute-overlay-intersection (overlay-handle parameters &key (overlay *overlay*)))
 (defun hover-target-overlay-p (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-dual-analog-transform (overlay-handle which center radius &key (overlay *overlay*)))
+(defun set-overlay-dual-analog-transform (overlay-handle which center radius
+                                          &key (overlay *overlay*)))
 (defun overlay-dual-analog-transform (overlay-handle which &key (overlay *overlay*)))
 (defun set-overlay-intersection-mask (overlay-handle mask-primitives &key (overlay *overlay*)))
 (defun trigger-laser-mouse-haptic-vibration (overlay-handle duration-in-seconds frequency amplitude
@@ -87,7 +91,8 @@
 
 (defun set-overlay-texture (overlay-handle texture &key (overlay *overlay*)))
 (defun clear-overlay-texture (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-raw (overlay-handle buffer width height bytes-per-pixel &key (overlay *overlay*)))
+(defun set-overlay-raw (overlay-handle buffer width height bytes-per-pixel
+                        &key (overlay *overlay*)))
 (defun set-overlay-from-file (overlay-handle file-path &key (overlay *overlay*)))
 ;;(defun overlay-texture (overlay-handle)) ;??
 ;;(defun release-native-overlay-handle) ;??
@@ -96,22 +101,33 @@
 ;; dashboard overlay methods
 
 (defun create-dashboard-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*)))
-(defun dashboard-visible-p (&key (overlay *overlay*)))
+(defun dashboard-visible-p (&key (overlay *overlay*))
+  "Returns true if the dashboard is visible."
+  (%is-dashboard-visible (table overlay)))
+
 (defun dashboard-overlay-active-p (overlay-handle &key (overlay *overlay*)))
 (defun set-dashboard-overlay-scene-process (overlay-handle process-id &key (overlay *overlay*)))
 (defun dashboard-overlay-scene-process (overlay-handle &key (overlay *overlay*)))
 (defun show-dashboard (overlay-to-show &key (overlay *overlay*)))
-(defun primary-dashboard-device (&key (overlay *overlay*)))
+(defun primary-dashboard-device (&key (overlay *overlay*))
+  "Returns the tracked device that has the laser pointer in the dashboard."
+  (%get-primary-dashboard-device (table overlay)))
 
 ;; keyboard methods
 
-(defun show-keyboard (input-mode line-input-mode description max-char existing-text use-minimal-mode-p user-value
-                      &key (overlay *overlay*)))
-(defun show-keyboard-for-overlay (overlay-handle input-mode line-input-mode description max-char existing-text
-                                  use-minimal-mode-p user-value &key (overlay *overlay*)))
+(defun show-keyboard (input-mode line-input-mode description max-char existing-text
+                      use-minimal-mode-p user-value &key (overlay *overlay*)))
+(defun show-keyboard-for-overlay (overlay-handle input-mode line-input-mode description max-char
+                                  existing-text use-minimal-mode-p user-value
+                                  &key (overlay *overlay*)))
 (defun keyboard-text (&key (overlay *overlay*)))
-(defun hide-keyboard (&key (overlay *overlay*)))
-(defun set-keyboard-transform-absolute (origin tracking-origin-to-keyboard-transform &key (overlay *overlay*)))
+
+(defun hide-keyboard (&key (overlay *overlay*))
+  "Hide the virtual keyboard."
+  (%hide-keyboard (table overlay)))
+
+(defun set-keyboard-transform-absolute (origin tracking-origin-to-keyboard-transform
+                                        &key (overlay *overlay*)))
 (defun set-keyboard-position-for-overlay (overlay-handle avoid-rect &key (overlay *overlay*)))
 
 ;; message box methods
@@ -120,4 +136,5 @@
                              &key (overlay *overlay*)))
 
 (defun close-message-overlay (&key (overlay *overlay*))
+  "If the calling process owns the overlay and it's open, this will close it."
   (%close-message-overlay (table overlay)))
