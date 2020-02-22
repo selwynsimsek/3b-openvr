@@ -100,15 +100,36 @@
 
 ;; dashboard overlay methods
 
-(defun create-dashboard-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*)))
+(defun create-dashboard-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*))
+  (cffi:with-foreign-objects ((main-pointer '(:struct vr-overlay-handle-t))
+                              (thumbnail-pointer '(:struct vr-overlay-handle-t)))
+    (with-overlay-error
+        (%create-dashboard-overlay (table overlay) overlay-key overlay-friendly-name
+                                   main-pointer thumbnail-pointer))
+    (values (cffi:mem-ref main-pointer '(:struct vr-overlay-handle-t))
+            (cffi:mem-ref thumbnail-pointer '(:struct vr-overlay-handle-t)))))
+
 (defun dashboard-visible-p (&key (overlay *overlay*))
   "Returns true if the dashboard is visible."
   (%is-dashboard-visible (table overlay)))
 
-(defun dashboard-overlay-active-p (overlay-handle &key (overlay *overlay*)))
-(defun set-dashboard-overlay-scene-process (overlay-handle process-id &key (overlay *overlay*)))
-(defun dashboard-overlay-scene-process (overlay-handle &key (overlay *overlay*)))
-(defun show-dashboard (overlay-to-show &key (overlay *overlay*)))
+(defun dashboard-overlay-active-p (overlay-handle &key (overlay *overlay*))
+  (%is-active-dashboard-overlay (table overlay) overlay-handle))
+
+(defun set-dashboard-overlay-scene-process (overlay-handle process-id &key (overlay *overlay*))
+  "Sets the dashboard overlay to only appear when the specified process ID has scene focus."
+  (with-overlay-error
+      (%set-dashboard-overlay-scene-process (table overlay) overlay-handle process-id)))
+
+(defun dashboard-overlay-scene-process (overlay-handle &key (overlay *overlay*))
+  (cffi:with-foreign-object (pointer :uint32)
+    (with-overlay-error
+        (%get-dashboard-overlay-scene-process (table overlay) overlay-handle pointer))
+    (cffi:mem-ref pointer :uint32)))
+
+(defun show-dashboard (overlay-to-show &key (overlay *overlay*))
+  (%show-dashboard (table overlay) overlay-to-show))
+
 (defun primary-dashboard-device (&key (overlay *overlay*))
   "Returns the tracked device that has the laser pointer in the dashboard."
   (%get-primary-dashboard-device (table overlay)))
