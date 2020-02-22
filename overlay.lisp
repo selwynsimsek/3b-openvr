@@ -89,25 +89,59 @@
 
 ;; overlay texture methods
 
-(defun set-overlay-texture (overlay-handle texture &key (overlay *overlay*)))
-(defun clear-overlay-texture (overlay-handle &key (overlay *overlay*)))
+(defun set-overlay-texture (overlay-handle texture &key (overlay *overlay*)
+                                                        (texture-type :open-gl)
+                                                        (color-space :gamma))
+  "Texture to draw for the overlay. This function can only be called by the overlay's creator or renderer process
+   (see #'set-overlay-rendering-pid)"
+  (cffi:with-foreign-objects ((texture-pointer '(:struct texture-t)))
+    (let ((space color-space))
+      (cffi:with-foreign-slots ((handle type color-space) texture-pointer '(:struct texture-t))
+        (setf type texture-type
+              handle (cffi:make-pointer texture)
+              color-space space)
+        (with-overlay-error
+            (%set-overlay-texture (table overlay) overlay-handle texture-pointer))))))
+
+(defun clear-overlay-texture (overlay-handle &key (overlay *overlay*))
+  "Use this to tell the overlay system to release the texture set for this overlay."
+  (with-overlay-error
+      (%clear-overlay-texture (table overlay) overlay-handle)))
+
 (defun set-overlay-raw (overlay-handle buffer width height bytes-per-pixel
-                        &key (overlay *overlay*)))
-(defun set-overlay-from-file (overlay-handle file-path &key (overlay *overlay*)))
+                        &key (overlay *overlay*))
+  "Separate interface for providing the data as a stream of bytes, but there is an upper bound on data 
+  that can be sent. This function can only be called by the overlay's renderer process. buffer must be a shareable
+  byte vector."
+  (cffi:with-pointer-to-vector-data (pointer buffer)
+    (with-overlay-error
+      (%set-overlay-raw (table overlay) overlay-handle pointer width height bytes-per-pixel))))
+
+(defun set-overlay-from-file (overlay-handle file-path &key (overlay *overlay*))
+  "Separate interface for providing the image through a filename: can be png or jpg,
+   and should not be bigger than 1920x1080.This function can only be called by the overlay's renderer process."
+  (with-overlay-error
+      (%set-overlay-from-file (table overlay) overlay-handle file-path)))
+
 ;;(defun overlay-texture (overlay-handle)) ;??
 ;;(defun release-native-overlay-handle) ;??
-(defun overlay-texture-size (overlay-handle &key (overlay *overlay*)))
+(defun overlay-texture-size (overlay-handle &key (overlay *overlay*))
+  (cffi:with-foreign-objects ((width :uint32)
+                              (height :uint32))
+    (with-overlay-error
+        (%get-overlay-texture-size (table overlay) overlay-handle width height))
+    (values (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32))))
 
 ;; dashboard overlay methods
 
 (defun create-dashboard-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*))
-  (cffi:with-foreign-objects ((main-pointer '(:struct vr-overlay-handle-t))
-                              (thumbnail-pointer '(:struct vr-overlay-handle-t)))
+  (cffi:with-foreign-objects ((main-pointer 'vr-overlay-handle-t)
+                              (thumbnail-pointer 'vr-overlay-handle-t))
     (with-overlay-error
         (%create-dashboard-overlay (table overlay) overlay-key overlay-friendly-name
                                    main-pointer thumbnail-pointer))
-    (values (cffi:mem-ref main-pointer '(:struct vr-overlay-handle-t))
-            (cffi:mem-ref thumbnail-pointer '(:struct vr-overlay-handle-t)))))
+    (values (cffi:mem-ref main-pointer 'vr-overlay-handle-t)
+            (cffi:mem-ref thumbnail-pointer 'vr-overlay-handle-t))))
 
 (defun dashboard-visible-p (&key (overlay *overlay*))
   "Returns true if the dashboard is visible."
