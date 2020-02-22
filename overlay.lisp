@@ -126,14 +126,29 @@
 (defun overlay-mouse-scale (overlay-handle &key (overlay *overlay*)))
 (defun set-overlay-mouse-scale (overlay-handle mouse-scale &key (overlay *overlay*)))
 (defun compute-overlay-intersection (overlay-handle parameters &key (overlay *overlay*)))
-(defun hover-target-overlay-p (overlay-handle &key (overlay *overlay*)))
+
+(defun hover-target-overlay-p (overlay-handle &key (overlay *overlay*))
+  "Returns true if the specified overlay is the hover target. An overlay is the hover target when it is
+   the last overlay 'moused over' by the virtual mouse pointer."
+  (%is-hover-target-overlay (table overlay) overlay-handle))
+
 (defun set-overlay-dual-analog-transform (overlay-handle which center radius
                                           &key (overlay *overlay*)))
 (defun overlay-dual-analog-transform (overlay-handle which &key (overlay *overlay*)))
 (defun set-overlay-intersection-mask (overlay-handle mask-primitives &key (overlay *overlay*)))
+
 (defun trigger-laser-mouse-haptic-vibration (overlay-handle duration-in-seconds frequency amplitude
-                                             &key (overlay *overlay*)))
-(defun set-overlay-cursor (overlay-handle cursor-handle &key (overlay *overlay*)))
+                                             &key (overlay *overlay*))
+  "Triggers a haptic event on the laser mouse controller for the specified overlay."
+  (with-overlay-error
+      (%trigger-laser-mouse-haptic-vibration (table overlay) overlay-handle
+                                             duration-in-seconds frequency amplitude)))
+
+(defun set-overlay-cursor (overlay-handle cursor-handle &key (overlay *overlay*))
+  "Sets the cursor to use for the specified overlay. This will be drawn instead of the generic blob when 
+   the laser mouse is pointed at the specified overlay."
+  (with-overlay-error (%set-overlay-cursor (table overlay) overlay-handle cursor-handle)))
+
 (defun set-overlay-cursor-position-override (overlay-handle cursor &key (overlay *overlay*)))
 
 (defun clear-overlay-cursor-position-override (overlay-handle &key (overlay *overlay*))
