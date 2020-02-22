@@ -5,11 +5,17 @@
 
 (in-package :3b-openvr)
 
+(defmacro with-tracked-camera-error (&rest body)
+  (let ((error-name (gensym "error-value")))
+    `(let ((,error-name (progn ,@body)))
+       (if (eq ,error-name :none) t (error "VR tracked-camera error: ~a" ,error-name)))))
+
 (defun has-camera-p (tracked-device &key (tracked-camera *tracked-camera*))
   "For convenience, same as tracked property request Prop_HasCamera_Bool."
   (cffi:with-foreign-object (pointer :bool)
-    (%has-camera (table tracked-camera) tracked-device pointer)
-    (cffi:mem-ref pointer :bool)))
+    (with-tracked-camera-error
+        (%has-camera (table tracked-camera) tracked-device pointer))
+    (cffi:mem-ref pointer :bool))) ; works
 
 (defun camera-frame-size (tracked-device frame-type &key (tracked-camera *tracked-camera*))
   "Gets size of the image frame."
@@ -24,12 +30,12 @@
 
 (defun camera-intrinsics
     (tracked-device camera-index frame-type &key (tracked-camera *tracked-camera*))
-  (cffi:with-foreign-objects ((focal-length (:struct hmd-vector-2-t))
-                              (center (:struct hmd-vector-2-t)))
+  (cffi:with-foreign-objects ((focal-length '(:struct hmd-vector-2-t))
+                              (center '(:struct hmd-vector-2-t)))
     (%get-camera-intrinsics
      (table tracked-camera) tracked-device camera-index frame-type focal-length center)
     (values (cffi:mem-ref focal-length '(:struct hmd-vector-2-t))
-            (cffi:mem-ref center '(:struct hmd-vector-2-t)))))
+            (cffi:mem-ref center '(:struct hmd-vector-2-t))))) ; doesn't work
 
 (defun camera-projection
     (tracked-device camera-index frame-type near far &key (tracked-camera *tracked-camera*))
@@ -103,10 +109,10 @@
   (%release-video-stream-texture-gl (table tracked-camera) camera texture-id))
 
 (defun set-camera-tracking-space (tracking-universe-origin &key (tracked-camera *tracked-camera*))
-  (%set-camera-tracking-space (table tracked-camera) tracking-universe-origin))
+  (%set-camera-tracking-space (table tracked-camera) tracking-universe-origin)) ; works
 
 (defun camera-tracking-space (&key (tracked-camera *tracked-camera*))
-  (%get-camera-tracking-space (table tracked-camera)))
+  (%get-camera-tracking-space (table tracked-camera))) ; works
 
 (define-clos-wrapper (video-stream-frame-header camera-video-stream-frame-header-t) ()
                      ((frame-type frame-type)
