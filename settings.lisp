@@ -1,18 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; High-level bindings for the Settings API.
 
-;;; IVRSettings_002
+;;; IVRSettings_003
 
 (in-package :3b-openvr)
-
-(defun sync (&key (force-p nil) (settings *settings*))
-  "Returns T if file sync occurred (force or settings dirty)."
-  (cffi:with-foreign-object (error-pointer 'vr-settings-error)
-    (prog1
-        (%sync (table settings) force-p error-pointer)
-      (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
-        (unless (eq error-code :none)
-          (error "Settings error: ~a" error-code))))))
 
 (defun remove-section (section &key (settings *settings*))
   (cffi:with-foreign-object (error-pointer 'vr-settings-error)
@@ -61,4 +52,4 @@
         (unless (eq error-code :none)
           (error "Settings error: ~a" error-code))))))
 
-(export '(settings-set settings-get sync remove-section remove-key-in-section))
+(export '(settings-set settings-get remove-section remove-key-in-section))

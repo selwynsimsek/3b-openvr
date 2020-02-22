@@ -12,7 +12,7 @@ Overlay | 40% | N | IVROverlay_022
 Resources | 90% | N | IVRResources_001
 RenderModels | -  | - | IVRRenderModels_006
 ExtendedDisplay | 100% | Y | IVRExtendedDisplay_001
-Settings | 95% | N | IVRSettings_002
+Settings | 100% | N | IVRSettings_002
 Applications | 80% | N | IVRApplications_006
 TrackedCamera | 100% | N | IVRTrackedCamera_006
 Screenshots | 100% | N | IVRScreenshots_001
