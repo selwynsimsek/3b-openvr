@@ -18,7 +18,7 @@ TrackedCamera | 100% | N | IVRTrackedCamera_006
 Screenshots | 100% | N | IVRScreenshots_001
 DriverManager | 90% | N | IVRDriverManager_001
 Input | 90% | Some | IVRInput_007
-IOBuffer | 60% | N | IVRIOBuffer_002
+IOBuffer | 100% | N | IVRIOBuffer_002
 SpatialAnchors | 75% | N | IVRSpatialAnchors_001
 Debug | 100% | Y | IVRDebug_001
 Notifications | 100% | N | IVRNotifications_002

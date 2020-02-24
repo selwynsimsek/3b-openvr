@@ -13,12 +13,13 @@
 
 (in-package 3b-openvr)
 
-(defclass io-buffer () ; gray streams for this one?
+(defclass io-buffer () ; gray streams for this one? no, too slow
   ((handle :initarg :handle :accessor handle)
    (path :initarg :path :accessor path)
    (mode :initarg :mode :accessor mode)
    (element-size :initarg :element-size :accessor element-size)
-   (number-of-elements :initarg :number-of-elements :accessor number-of-elements)))
+   (number-of-elements :initarg :number-of-elements :accessor number-of-elements)
+   (closed-p :initarg :closed-p :accessor closed-p)))
 
 (defun open-io-buffer (path mode element-size number-of-elements &key (io-buffer *io-buffer*))
   (cffi:with-foreign-object (pointer 'obuffer-handle-t)
@@ -31,18 +32,34 @@
                      :path path
                      :mode mode
                      :element-size element-size
+                     :closed-p nil
                      :number-of-elements number-of-elements))))
 
 (defun close-io-buffer (buffer &key (io-buffer *io-buffer*))
   (let ((error-code (%close (table io-buffer) (handle buffer))))
-    (unless (eq error-code :none)
-      (error "IO Buffer error: ~a" error-code))))
+    (if (eq error-code :none)
+        (setf (closed-p buffer) t)
+        (error "IO Buffer error: ~a" error-code))))
 
-(defun read-from-buffer (buffer destination &key (io-buffer *io-buffer*))
-  (error "implement me"))
+(defun read-from-buffer (buffer destination number-of-bytes &key (io-buffer *io-buffer*))
+  "reads up to number-of-bytes from buffer into destination, returning the number of bytes read.
+   destination must be a shareable byte vector."
+  (unless (closed-p buffer)
+    (cffi:with-foreign-object (unread :uint32)
+      (cffi:with-pointer-to-vector-data (pointer destination)
+        (let ((error-code (%read (table io-buffer) (handle buffer) pointer number-of-bytes unread)))
+          (if (eq error-code :none)
+              (cffi:mem-ref unread :uint32)
+              (error "IO Buffer error: ~a" error-code)))))))
 
-(defun write-to-buffer (buffer source &key (io-buffer *io-buffer*))
-  (error "implement me"))
+(defun write-to-buffer (buffer source number-of-bytes &key (io-buffer *io-buffer*))
+  "Writes number-of-bytes of data from source into a buffer. source must be a shareable byte vector."
+  (unless (closed-p buffer)
+    (cffi:with-pointer-to-vector-data (pointer source)
+      (let ((error-code (%write (table io-buffer) (handle buffer) pointer number-of-bytes)))
+        (if (eq error-code :none)
+            t
+            (error "IO Buffer error: ~a" error-code))))))
 
 
 (defun property-container (buffer &key (io-buffer *io-buffer*))
@@ -50,8 +67,8 @@
   (%property-container (table io-buffer) (handle buffer)))
 
 (defun has-readers-p (buffer &key (io-buffer *io-buffer*))
-  "Inexpensively checks for readers to allow writers to fast-fail potentially expensive copies and
-   writes."
+  "Inexpensively checks for readers to allow writers to fast-fail potentially expensive copies and writes."
   (%has-readers (table io-buffer) (handle buffer)))
 
-(export '(has-readers-p property-container io-buffer open-io-buffer close-io-buffer))
+(export '(has-readers-p property-container io-buffer open-io-buffer close-io-buffer handle path
+          mode element-size number-of-elements closed-p))
