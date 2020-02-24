@@ -9,7 +9,7 @@ Chaperone | 75% | Y | IVRChaperone_003
 ChaperoneSetup | 90% | Partly | IVRChaperoneSetup_006
 Compositor | 90% | Mostly | IVRCompositor_022
 Overlay | 70% | N | IVROverlay_022
-Resources | 90% | N | IVRResources_001
+Resources | 100% | N | IVRResources_001
 RenderModels | -  | - | IVRRenderModels_006
 ExtendedDisplay | 100% | Y | IVRExtendedDisplay_001
 Settings | 100% | N | IVRSettings_002
