@@ -93,10 +93,18 @@
     (cffi:foreign-string-to-lisp foreign-string)))
 
 (defun applications-that-support-mime-type (mime-type &key (applications *applications*))
-  (error "implement me"))
+  (let ((length (%get-applications-that-support-mime-type (table applications)
+                                                          mime-type (cffi:null-pointer) 0)))
+    (cffi:with-foreign-string (foreign-string (make-string length))
+      (%get-applications-that-support-mime-type (table applications) mime-type foreign-string length)
+      (cffi:foreign-string-to-lisp foreign-string))))
 
-(defun application-launch-arguments (handle &key (applications *applications*))
-  (error "implement me"))
+(defun application-launch-arguments (handle &key (applications *applications*)
+                                                 (buffer-size 2048))
+  "Get the args list from an app launch that had the process already running, you call this when you get a
+   VREvent_ApplicationMimeTypeLoad"
+  (cffi:with-foreign-string (pointer (make-string buffer-size))
+    (%get-application-launch-arguments (table applications) handle pointer buffer-size)))
 
 
 ;; transition methods
