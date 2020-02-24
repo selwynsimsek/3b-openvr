@@ -5,6 +5,11 @@
 
 (in-package 3b-openvr)
 
+(defmacro with-spatial-anchor-error (&rest body)
+  (let ((error-name (gensym "error-value")))
+    `(let ((,error-name (progn ,@body)))
+       (if (eq ,error-name :success) t (error "VR overlay error: ~a" ,error-name)))))
+
 (defclass spatial-anchor ()
   ((handle :initarg :handle :accessor handle)))
 
@@ -13,7 +18,8 @@
    Caller can wait for an event or occasionally poll spatial-anchor-pose to find the virtual 
    coordinate associated with this anchor."
   (cffi:with-foreign-object (pointer 'spatial-anchor-handle-t)
-    (%create-spatial-anchor-from-descriptor (table spatial-anchors) descriptor pointer)
+    (with-spatial-anchor-error
+        (%create-spatial-anchor-from-descriptor (table spatial-anchors) descriptor pointer))
     (make-instance 'spatial-anchor :handle (cffi:mem-ref pointer 'spatial-anchor-handle-t))))
 
 (defun spatial-anchor-from-pose (device-index tracking-universe-origin pose
@@ -30,7 +36,11 @@
   (when the descriptor is re-used) will be highest. The caller may decide to apply offsets from this
   initial pose, but is advised to stay relatively close to the original pose location for highest 
   fidelity."
-  (error "implement me"))
+  (cffi:with-foreign-object (pointer 'spatial-anchor-handle-t)
+    (with-spatial-anchor-error
+        (%create-spatial-anchor-from-pose (table spatial-anchors) device-index tracking-universe-origin
+                                          pose pointer)) ; need a type translator here? check this
+    (make-instance 'spatial-anchor :handle (cffi:mem-ref pointer 'spatial-anchor-handle-t))))
 
 (defun spatial-anchor-pose (spatial-anchor tracking-universe-origin
                             &key (spatial-anchors *spatial-anchors*))
@@ -38,8 +48,9 @@
   (or fairly often) so that the driver can refine this position when it has more information 
   available."
   (cffi:with-foreign-object (pointer '(:struct spatial-anchor-pose-t))
-    (%get-spatial-anchor-pose (table spatial-anchors) (handle spatial-anchor)
-                              tracking-universe-origin pointer)
+    (with-spatial-anchor-error
+        (%get-spatial-anchor-pose (table spatial-anchors) (handle spatial-anchor)
+                                  tracking-universe-origin pointer))
     (cffi:mem-ref pointer '(:struct spatial-anchor-pose-t))))
 
 (defun spatial-anchor-descriptor (spatial-anchor &key (spatial-anchors *spatial-anchors*))
@@ -49,9 +60,10 @@
   UpdateSpatialAnchorDescriptor() already in this session, it will be the descriptor provided by 
   the driver."
   (cffi:with-foreign-string (pointer (make-string 512))
-    (%get-spatial-anchor-descriptor (table spatial-anchors)
-                                    (handle spatial-anchor)
-                                    pointer 512)
+    (with-spatial-anchor-error
+        (%get-spatial-anchor-descriptor (table spatial-anchors)
+                                        (handle spatial-anchor)
+                                        pointer 512))
     (cffi:foreign-string-to-lisp pointer)))
 
 (export '(spatial-anchor spatial-anchor-pose spatial-anchor-descriptor
