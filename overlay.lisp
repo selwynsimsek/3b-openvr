@@ -162,14 +162,61 @@
         (%get-overlay-width-in-meters (table overlay) overlay-handle width))
     (cffi:mem-ref width :float)))
 
-(defun set-overlay-curvature (overlay-handle curvature &key (overlay *overlay*)))
-(defun overlay-curvature (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-texture-color-space (overlay-handle color-space &key (overlay *overlay*)))
-(defun overlay-texture-color-space (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-texture-bounds (overlay-handle texture-bounds &key (overlay *overlay*)))
-(defun overlay-texture-bounds (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-render-model (overlay-handle render-model-name color &key (overlay *overlay*)))
-(defun overlay-render-model (overlay-handle &key (overlay *overlay*)))
+(defun set-overlay-curvature (overlay-handle curvature &key (overlay *overlay*))
+  "Use to draw overlay as a curved surface. Curvature is a percentage from (0..1] where 1 is a fully closed cylinder.
+   For a specific radius, curvature can be computed as: overlay.width / (2 PI r)."
+  (with-overlay-error
+    (%set-overlay-curvature (table overlay) overlay-handle curvature)))
+
+(defun overlay-curvature (overlay-handle &key (overlay *overlay*))
+  "Returns the curvature of the overlay as a percentage from (0..1] where 1 is a fully closed cylinder."
+  (cffi:with-foreign-object (curvature :float)
+    (with-overlay-error
+        (%get-overlay-curvature (table overlay) overlay-handle curvature))
+    (cffi:mem-ref curvature :float)))
+
+(defun set-overlay-texture-color-space (overlay-handle color-space &key (overlay *overlay*))
+  "Sets the colorspace the overlay texture's data is in.  Defaults to 'auto'.
+   If the texture needs to be resolved, you should call #'set-overlay-texture with the appropriate colorspace instead."
+  (with-overlay-error (%set-overlay-texture-color-space (table overlay) overlay-handle color-space)))
+
+(defun overlay-texture-color-space (overlay-handle &key (overlay *overlay*))
+  "Gets the overlay's current colorspace setting."
+  (cffi:with-foreign-object (color-space 'color-space)
+    (with-overlay-error
+        (%get-overlay-texture-color-space (table overlay) overlay-handle color-space))
+    (cffi:mem-ref color-space 'color-space)))
+
+(defun set-overlay-texture-bounds (overlay-handle u-min v-min u-max v-max &key (overlay *overlay*))
+  "Sets the part of the texture to use for the overlay. UV Min is the upper left corner and UV Max is the lower
+   right corner."
+  (cffi:with-foreign-object (texture-bounds '(:struct vr-texture-bounds-t))
+    (setf (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-min) u-min
+          (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-min) v-min
+          (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-max) u-max
+          (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max) v-max)
+    (with-overlay-error
+      (%set-overlay-texture-bounds (table overlay) overlay-handle texture-bounds))))
+
+(defun overlay-texture-bounds (overlay-handle &key (overlay *overlay*))
+  "Gets the part of the texture to use for the overlay. UV Min is the upper left corner and UV Max is the lower
+   right corner."
+  (cffi:with-foreign-object (texture-bounds '(:struct vr-texture-bounds-t))
+    (with-overlay-error
+        (%get-overlay-texture-bounds (table overlay) overlay-handle texture-bounds))
+    (values (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-min)
+            (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-min)
+            (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-max)
+            (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max))))
+
+(defun set-overlay-render-model (overlay-handle render-model-name color &key (overlay *overlay*))
+  "Sets render model to draw behind this overlay and the vertex color to use, pass null for pColor to match the
+   overlays vertex color. 
+   The model is scaled by the same amount as the overlay, with a default of 1m.")
+
+(defun overlay-render-model (overlay-handle &key (overlay *overlay*))
+  "Gets render model to draw behind this overlay"
+  )
 (defun overlay-transform-type (overlay-handle &key (overlay *overlay*)))
 (defun set-overlay-transform-absolute (overlay-handle origin tracking-origin-to-overlay-transform
                                        &key (overlay *overlay*)))
@@ -188,11 +235,23 @@
                                                &key (overlay *overlay*)))
 (defun set-overlay-transform-cursor (cursor-overlay-handle hotspot &key (overlay *overlay*)))
 (defun overlay-transform-cursor (overlay-handle &key (overlay *overlay*)))
-(defun show-overlay (overlay-handle &key (overlay *overlay*)))
-(defun hide-overlay (overlay-handle &key (overlay *overlay*)))
-(defun overlay-visible-p (overlay-handle &key (overlay *overlay*)))
-(defun transfrom-for-overlay-coordinates (overlay-handle tracking-origin coordinates-in-overlay
-                                          &key (overlay *overlay*)))
+
+(defun show-overlay (overlay-handle &key (overlay *overlay*))
+  "Shows the VR overlay.  For dashboard overlays, only the Dashboard Manager is allowed to call this."
+  (with-overlay-error (%show-overlay (table overlay) overlay-handle)))
+
+(defun hide-overlay (overlay-handle &key (overlay *overlay*))
+  
+  "Hides the VR overlay.  For dashboard overlays, only the Dashboard Manager is allowed to call this."
+  (with-overlay-error (%hide-overlay (table overlay) overlay-handle)))
+
+(defun overlay-visible-p (overlay-handle &key (overlay *overlay*))
+  "Returns true if the overlay is visible."
+  (%is-overlay-visible (table overlay) overlay-handle))
+
+(defun transform-for-overlay-coordinates (overlay-handle tracking-origin coordinates-in-overlay
+                                          &key (overlay *overlay*))
+  )
 
 ;; overlay input methods
 (defun poll-next-overlay-event (overlay-handle &key (overlay *overlay*)))
