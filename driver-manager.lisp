@@ -6,9 +6,9 @@
 (defun driver-count (&key (driver-manager *driver-manager*))
   (%get-driver-count (table driver-manager)))
 
-(defun driver-name (driver-id &key (driver-manager *driver-manager*))
-  (cffi:with-foreign-string (buffer (make-string 512 :initial-element #\space))
-    (%get-driver-name (table driver-manager) driver-id buffer 512)
+(defun driver-name (driver-id &key (driver-manager *driver-manager*) (buffer-size 512))
+  (cffi:with-foreign-string (buffer (make-string buffer-size :initial-element #\space))
+    (%get-driver-name (table driver-manager) driver-id buffer buffer-size)
     (cffi:foreign-string-to-lisp buffer)))
 
 (defun driver-handle (name &key (driver-manager *driver-manager*))

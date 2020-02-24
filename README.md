@@ -16,7 +16,7 @@ Settings | 100% | N | IVRSettings_002
 Applications | 80% | N | IVRApplications_006
 TrackedCamera | 100% | N | IVRTrackedCamera_006
 Screenshots | 100% | N | IVRScreenshots_001
-DriverManager | 90% | N | IVRDriverManager_001
+DriverManager | 100% | N | IVRDriverManager_001
 Input | 90% | Some | IVRInput_007
 IOBuffer | 100% | N | IVRIOBuffer_002
 SpatialAnchors | 100% | N | IVRSpatialAnchors_001
