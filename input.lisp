@@ -235,11 +235,11 @@
               do (setf (aref result i) (cffi:mem-ref pointer '(:struct vr-bone-transform-t) i))
               finally (return result))))))
 
-(defun skeletal-summary-data (action &key (input *input*))
+(defun skeletal-summary-data (action &key (input *input*) (summary-type :animation))
   "Reads summary information about the current pose of the skeleton associated with the given
    action."
   (cffi:with-foreign-object (pointer '(:pointer (:struct vr-skeletal-summary-data-t)))
-    (%get-skeletal-summary-data (table action) action pointer)
+    (%get-skeletal-summary-data (table input) action summary-type pointer)
     (cffi:mem-ref pointer '(:struct vr-skeletal-summary-data-t))))
  
 (defun compressed-skeletal-bone-data (action motion-range &key (input *input*))
@@ -385,24 +385,25 @@
                      (:vibration (change-class action 'haptic-action))
                      (:pose (change-class action 'pose-action))
                      (:skeleton
-                      (change-class action 'skeletal-action))
+                      (make-skeletal-action (change-class action 'skeletal-action)))
                      (otherwise action))))
        (cdr (find :actions (load-manifest manifest-name) :test #'eq :key #'car))))
 
 (defun make-skeletal-action (action)
-  (let ((bones (make-array (list (bone-count (handle action)))))
-        (hierarchy (bone-hierarchy (handle action))))
-    (loop for index from 0 below (length bones) do
-          (setf (aref bones index)
-                (make-instance 'bone :name (bone-name (handle action) index)
-                                     :index index
-                                     :parent (aref hierarchy index))))
-    (loop for index from 0 below (length bones) do
-          (setf (parent (aref bones index))
-                (if (>= (aref hierarchy index) 0)
-                    (aref bones (aref hierarchy index))
-                    nil)))
-    (setf (bones action) bones))
+  ;; (let ((bones (make-array (list (bone-count (handle action)))))
+  ;;       (hierarchy (bone-hierarchy (handle action))))
+  ;;   (loop for index from 0 below (length bones) do
+  ;;         (setf (aref bones index)
+  ;;               (make-instance 'bone :name (bone-name (handle action) index)
+  ;;                                    :index index
+  ;;                                    :parent (aref hierarchy index))))
+  ;;   (loop for index from 0 below (length bones) do
+  ;;         (setf (parent (aref bones index))
+  ;;               (if (>= (aref hierarchy index) 0)
+  ;;                   (aref bones (aref hierarchy index))
+  ;;                   nil)))
+  ;;   (setf (bones action) bones))
+  (format t "a")
   action)
 
 (defun update-action-set (action-set-name)
@@ -433,10 +434,23 @@
     (t () (progn )))) ;do nothing
 
 (defmethod update-data ((action skeletal-action))
-  (values)) ;do nothing
+  ;(setf (action-data action) (skeletal-bone-data (handle action) :parent :out-controller))
+  ) ;do nothing
 
 (defmethod trigger-action ((action haptic-action) from-now duration frequency amplitude)
   (trigger-haptic-vibration-action (handle action) from-now duration frequency amplitude +invalid-input-value-handle+))
 
 (defmethod skeletal-tracking-level ((action skeletal-action))
   (skeletal-tracking-level-for-handle (handle action)))
+
+(defmethod cffi:translate-from-foreign :around (value (type vr-skeletal-summary-data-t-tclass))
+  (let ((ret-val (call-next-method)))
+    (setf (finger-curl ret-val)
+          (map 'vector
+               (lambda (index) (cffi:mem-aref (finger-curl ret-val) :float index))
+               #(0 1 2 3 4))) ; 5 fingers
+    (setf (finger-splay ret-val)
+          (map 'vector
+               (lambda (index) (cffi:mem-aref (finger-splay ret-val) :float index))
+               #(0 1 2 3)))
+    ret-val))

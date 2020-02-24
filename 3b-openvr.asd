@@ -7,6 +7,7 @@
   :components (;(:file "package")
                (:file "low-level")
                (:file "wrappers")
+               (:file "pragma")
                (:file "library")
                (:file "clos")
                (:file "system")

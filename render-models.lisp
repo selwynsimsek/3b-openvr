@@ -54,21 +54,20 @@
           (let* ((vertex-count (cffi:mem-aref pointer :uint32 2))
                  (triangle-count (cffi:mem-aref pointer :uint32 5))
                  (index-data-pointer (cffi:mem-aref (cffi:inc-pointer pointer 12) '(:pointer :uint16)))
-                 (diffuse-texture-id (cffi:mem-aref pointer :int32 7))
+                 (diffuse-texture-id (cffi:mem-aref pointer :int32 7)) ; these all match the pragmas...
                  (vertex-data-pointer (cffi:mem-aref pointer '(:pointer (:struct render-model-vertex-t))))
                  (vertex-data (make-array (list vertex-count)))
                  (index-data (make-array (list (* 3 triangle-count)))))
             (loop for i below (* 3 triangle-count)
-                  do (setf (aref index-data i) (cffi:mem-ref index-data-pointer :uint16 i)))
+                  do (setf (aref index-data i) (cffi:mem-aref index-data-pointer :uint16 i)))
             (loop for i below vertex-count
-                  do (setf (aref vertex-data i) (cffi:mem-ref vertex-data-pointer '(:struct render-model-vertex-t) i)))
+                  do (setf (aref vertex-data i) (cffi:mem-aref vertex-data-pointer '(:struct render-model-vertex-t) i)))
             (make-instance 'render-model
                            :foreign-pointer pointer
                            :loaded-p nil
                            :diffuse-texture diffuse-texture-id
                            :indices index-data
-                           :vertices vertex-data
-                           ))))))) ; give up
+                           :vertices vertex-data))))))) ; appears to work? check more.
 
 (defun try-to-load-texture-map (texture-map &key (render-models *render-models*))
   "Loads the texture map asynchronously. Returns T on success and NIL if still loading."
@@ -143,4 +142,27 @@
                      ((location position)
                       (normal normal)
                       (texture-coordinate texture-coord)))
+
+(defmethod print-object ((object render-model-vertex) stream)
+  (print-unreadable-object (object stream)
+    (format stream "VR::RENDER-MODEL-VERTEX l:~a n:~a t:~a" (location object) (normal object) (texture-coordinate object))))
+
+(defmethod print-object ((object render-model) stream)
+  (print-unreadable-object (object stream)
+    (format stream "VR::RENDER-MODEL ~a ~a ~a ~a"
+            (foreign-pointer object) (loaded-p object) (length (indices object))
+            (length (vertices object)))))
+
+:foreign-pointer pointer
+:loaded-p nil
+:diffuse-texture diffuse-texture-id
+:indices index-data
+:vertices vertex-data
+
+(defmethod cffi:translate-from-foreign :around (value (type render-model-vertex-t-tclass))
+  (let ((vertex (call-next-method)))
+    (setf (texture-coordinate vertex)
+          (vector (cffi:mem-ref (texture-coordinate vertex) :float)
+                  (cffi:mem-aref (texture-coordinate vertex) :float 1)))
+    vertex))
 
