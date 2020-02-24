@@ -21,4 +21,4 @@ Input | 90% | Some | IVRInput_007
 IOBuffer | 60% | N | IVRIOBuffer_002
 SpatialAnchors | 75% | N | IVRSpatialAnchors_001
 Debug | 100% | Y | IVRDebug_001
-Notifications | 40% | N | IVRNotifications_002
+Notifications | 100% | N | IVRNotifications_002
