@@ -153,12 +153,6 @@
             (foreign-pointer object) (loaded-p object) (length (indices object))
             (length (vertices object)))))
 
-:foreign-pointer pointer
-:loaded-p nil
-:diffuse-texture diffuse-texture-id
-:indices index-data
-:vertices vertex-data
-
 (defmethod cffi:translate-from-foreign :around (value (type render-model-vertex-t-tclass))
   (let ((vertex (call-next-method)))
     (setf (texture-coordinate vertex)

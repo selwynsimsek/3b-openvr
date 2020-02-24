@@ -72,21 +72,96 @@
 
 ;; overlay rendering methods
 
-(defun set-overlay-rendering-pid (overlay-handle pid &key (overlay *overlay*)))
-(defun overlay-rendering-pid (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-flag (overlay-handle flag enabled-p &key (overlay *overlay*)))
-(defun overlay-flag (overlay-handle flag &key (overlay *overlay*)))
-(defun overlay-flags (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-color (overlay-handle red green blue &key (overlay *overlay*)))
-(defun overlay-color (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-alpha (overlay-handle alpha &key (overlay *overlay*)))
-(defun overlay-alpha (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-texel-aspect (overlay-handle texel-aspect &key (overlay *overlay*)))
-(defun overlay-texel-aspect (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-sort-order (overlay-handle sort-order &key (overlay *overlay*)))
-(defun overlay-sort-order (overlay-handle &key (overlay *overlay*)))
-(defun set-overlay-width-in-meters (overlay-handle width-in-meters &key (overlay *overlay*)))
-(defun overlay-width-in-meters (overlay-handle &key (overlay *overlay*)))
+(defun set-overlay-rendering-pid (overlay-handle pid &key (overlay *overlay*))
+  "Sets the pid that is allowed to render to this overlay (the creator pid is always allow to render),
+   by default this is the pid of the process that made the overlay."
+  (with-overlay-error
+      (%set-overlay-rendering-pid (table overlay) overlay-handle pid)))
+
+(defun overlay-rendering-pid (overlay-handle &key (overlay *overlay*))
+  "Gets the pid that is allowed to render to this overlay."
+  (%get-overlay-rendering-pid (table overlay) overlay-handle))
+
+(defun set-overlay-flag (overlay-handle flag enabled-p &key (overlay *overlay*))
+  "Specify flag setting for a given overlay."
+  (with-overlay-error
+      (%set-overlay-flag (table overlay) overlay-handle flag enabled-p)))
+
+(defun overlay-flag (overlay-handle flag &key (overlay *overlay*))
+  "Gets flag setting for a given overlay."
+  (cffi:with-foreign-object (pointer :bool)
+    (with-overlay-error
+        (%get-overlay-flag (table overlay) overlay-handle flag pointer))
+    (cffi:mem-ref pointer :bool)))
+
+(defun overlay-flags (overlay-handle &key (overlay *overlay*))
+  "Gets all the flags for a given overlay."
+  (cffi:with-foreign-object (pointer :uint32)
+    (with-overlay-error
+        (%get-overlay-flags (table overlay) overlay-handle pointer))
+    (cffi:mem-ref pointer :uint32)))
+
+(defun set-overlay-color (overlay-handle red green blue &key (overlay *overlay*))
+  "Sets the color tint of the overlay quad. Use 0.0 to 1.0 per channel."
+  (with-overlay-error (%set-overlay-color (table overlay) overlay-handle red green blue)))
+
+(defun overlay-color (overlay-handle &key (overlay *overlay*))
+  "Gets the color tint of the overlay quad."
+  (cffi:with-foreign-objects ((red :float)
+                              (green :float)
+                              (blue :float))
+    (with-overlay-error (%get-overlay-color (table overlay) overlay-handle red green blue))
+    (values (cffi:mem-ref red :float) (cffi:mem-ref green :float) (cffi:mem-ref blue :float))))
+
+(defun set-overlay-alpha (overlay-handle alpha &key (overlay *overlay*))
+  "Sets the alpha of the overlay quad. Use 1.0 for 100 percent opacity to 0.0 for 0 percent opacity."
+  (with-overlay-error (%set-overlay-alpha (table overlay) overlay-handle alpha)))
+
+(defun overlay-alpha (overlay-handle &key (overlay *overlay*))
+  "Gets the alpha of the overlay quad. By default overlays are rendering at 100 percent alpha (1.0)."
+  (cffi:with-foreign-object (alpha :float)
+    (with-overlay-error (%get-overlay-alpha (table overlay) overlay-handle alpha))
+    (cffi:mem-ref alpha :float)))
+
+(defun set-overlay-texel-aspect (overlay-handle texel-aspect &key (overlay *overlay*))
+  "Sets the aspect ratio of the texels in the overlay. 1.0 means the texels are square. 2.0 means the texels
+   are twice as wide as they are tall. Defaults to 1.0."
+  (with-overlay-error (%set-overlay-texel-aspect (table overlay) overlay-handle texel-aspect)))
+
+(defun overlay-texel-aspect (overlay-handle &key (overlay *overlay*))
+  "Gets the aspect ratio of the texels in the overlay. Defaults to 1.0."
+  (cffi:with-foreign-object (texel-aspect :float)
+    (with-overlay-error (%get-overlay-texel-aspect (table overlay) overlay-handle texel-aspect))
+    (cffi:mem-ref texel-aspect :float)))
+
+
+(defun set-overlay-sort-order (overlay-handle sort-order &key (overlay *overlay*))
+  "Sets the rendering sort order for the overlay. Overlays are rendered this order:
+   Overlays owned by the scene application
+   Overlays owned by some other application
+   Within a category overlays are rendered lowest sort order to highest sort order. Overlays with the same 
+   sort order are rendered back to front base on distance from the HMD.
+   Sort order defaults to 0."
+  (with-overlay-error (%set-overlay-sort-order (table overlay) overlay-handle sort-order)))
+
+(defun overlay-sort-order (overlay-handle &key (overlay *overlay*))
+  "Gets the sort order of the overlay. See #'set-overlay-sort-order for how this works."
+  (cffi:with-foreign-object (sort-order :uint32)
+    (with-overlay-error
+        (%get-overlay-sort-order (table overlay) overlay-handle sort-order))
+    (cffi:mem-ref sort-order :uint32)))
+
+(defun set-overlay-width-in-meters (overlay-handle width-in-meters &key (overlay *overlay*))
+  "Sets the width of the overlay quad in meters. By default overlays are rendered on a quad that is 1 meter across."
+  (with-overlay-error (%set-overlay-width-in-meters (table overlay) overlay-handle width-in-meters)))
+
+(defun overlay-width-in-meters (overlay-handle &key (overlay *overlay*))
+  "Returns the width of the overlay quad in meters. By default overlays are rendered on a quad that is 1 meter across."
+  (cffi:with-foreign-object (width :float)
+    (with-overlay-error
+        (%get-overlay-width-in-meters (table overlay) overlay-handle width))
+    (cffi:mem-ref width :float)))
+
 (defun set-overlay-curvature (overlay-handle curvature &key (overlay *overlay*)))
 (defun overlay-curvature (overlay-handle &key (overlay *overlay*)))
 (defun set-overlay-texture-color-space (overlay-handle color-space &key (overlay *overlay*)))
