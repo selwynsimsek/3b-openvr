@@ -5,11 +5,14 @@
 
 (in-package :3b-openvr)
 
+(annot:enable-annot-syntax)
+
 (defmacro with-tracked-camera-error (&rest body)
   (let ((error-name (gensym "error-value")))
     `(let ((,error-name (progn ,@body)))
        (if (eq ,error-name :none) t (error "VR tracked-camera error: ~a" ,error-name)))))
 
+@export
 (defun has-camera-p (tracked-device &key (tracked-camera *tracked-camera*))
   "For convenience, same as tracked property request Prop_HasCamera_Bool."
   (cffi:with-foreign-object (pointer :bool)
@@ -17,6 +20,7 @@
         (%has-camera (table tracked-camera) tracked-device pointer))
     (cffi:mem-ref pointer :bool))) ; works
 
+@export
 (defun camera-frame-size (tracked-device frame-type &key (tracked-camera *tracked-camera*))
   "Gets size of the image frame."
   (cffi:with-foreign-objects ((width :uint32)
@@ -28,6 +32,7 @@
             (cffi:mem-ref height :uint32)
             (cffi:mem-ref framebuffer-size :uint32))))
 
+@export
 (defun camera-intrinsics
     (tracked-device camera-index frame-type &key (tracked-camera *tracked-camera*))
   (cffi:with-foreign-objects ((focal-length '(:struct hmd-vector-2-t))
@@ -37,6 +42,7 @@
     (values (cffi:mem-ref focal-length '(:struct hmd-vector-2-t))
             (cffi:mem-ref center '(:struct hmd-vector-2-t))))) ; doesn't work
 
+@export
 (defun camera-projection
     (tracked-device camera-index frame-type near far &key (tracked-camera *tracked-camera*))
   (cffi:with-foreign-object (pointer '(:struct hmd-matrix-44-t))
@@ -44,9 +50,11 @@
      (table tracked-camera) tracked-device camera-index frame-type near far pointer)
     (cffi:mem-ref pointer '(:struct hmd-matrix-44-t))))
 
+@export
 (defclass tracked-camera ()
   ((handle :initarg :handle :accessor handle)))
 
+@export
 (defun acquire-video-streaming-service (tracked-device &key (tracked-camera *tracked-camera*))
   "Acquiring streaming service permits video streaming for the caller. Releasing hints the system 
    that video services do not need to be maintained for this client.
@@ -59,9 +67,11 @@
     (%acquire-video-streaming-service (table tracked-camera) tracked-device pointer)
     (make-instance 'tracked-camera :handle (cffi:mem-ref pointer 'tracked-camera-handle-t))))
 
+@export
 (defun release-video-streaming-service (camera &key (tracked-camera *tracked-camera*))
   (%release-video-streaming-service (table tracked-camera) camera))
 
+@export
 (defun video-stream-frame-buffer-header (camera frame-type &key (tracked-camera *tracked-camera*))
   (cffi:with-foreign-object (pointer '(:struct camera-video-stream-frame-header-t))
     (%get-video-stream-frame-buffer
@@ -69,6 +79,7 @@
      (cffi:foreign-type-size '(:struct camera-video-stream-frame-header-t)))
     (cffi:mem-ref pointer '(:struct camera-video-stream-frame-header-t))))
 
+@export
 (defun video-stream-frame-buffer (camera frame-type &key (tracked-camera *tracked-camera*))
   "The image data is currently provided as RGBA data, 4 bytes per pixel.
    If there is no frame available yet, due to initial camera spinup or re-activation, the error 
@@ -82,6 +93,7 @@
     (%get-video-stream-frame-buffer
      (table tracked-camera) camera frame-type pointer (length pointer) (cffi:null-pointer) 0)))
 
+@export
 (defun video-stream-texture-size (tracked-device frame-type &key (tracked-camera *tracked-camera*))
   "Gets size of the image frame."
   (cffi:with-foreign-objects ((texture '(:struct vr-texture-bounds-t))
@@ -93,6 +105,7 @@
             (cffi:mem-ref width :uint32)
             (cffi:mem-ref height :uint32))))
 
+@export
 (defun video-stream-texture-gl
     (camera frame-type &key (tracked-camera *tracked-camera*))
   "Access a shared GL texture for the specified tracked camera stream."
@@ -104,13 +117,16 @@
     (values (cffi:mem-ref gl-pointer 'gl-uint-t)
             (cffi:mem-ref frame-pointer '(:struct camera-video-stream-frame-header-t)))))
 
+@export
 (defun release-video-stream-texture-gl (camera texture-id &key (tracked-camera *tracked-camera*))
   "Release a shared GL texture for the specified tracked camera stream."
   (%release-video-stream-texture-gl (table tracked-camera) camera texture-id))
 
+@export
 (defun set-camera-tracking-space (tracking-universe-origin &key (tracked-camera *tracked-camera*))
   (%set-camera-tracking-space (table tracked-camera) tracking-universe-origin)) ; works
 
+@export
 (defun camera-tracking-space (&key (tracked-camera *tracked-camera*))
   (%get-camera-tracking-space (table tracked-camera))) ; works
 

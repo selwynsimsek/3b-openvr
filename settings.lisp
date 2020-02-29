@@ -5,6 +5,9 @@
 
 (in-package :3b-openvr)
 
+(annot:enable-annot-syntax)
+
+@export
 (defun remove-section (section &key (settings *settings*))
   (cffi:with-foreign-object (error-pointer 'vr-settings-error)
     (%remove-section (table settings) section error-pointer)
@@ -12,6 +15,7 @@
       (unless (eq error-code :none)
         (error "Settings error: ~a" error-code)))))
 
+@export
 (defun remove-key-in-section (section settings-key &key (settings *settings*))
   (cffi:with-foreign-object (error-pointer 'vr-settings-error)
     (%remove-key-in-section (table settings) section settings-key error-pointer)
@@ -19,6 +23,7 @@
       (unless (eq error-code :none)
         (error "Settings error: ~a" error-code)))))
 
+@export
 (defun settings-set (section settings-key value type &key (settings *settings*))
   (cffi:with-foreign-object (error-pointer 'vr-settings-error)
     (cond
@@ -34,6 +39,7 @@
       (unless (eq error-code :none)
         (error "Settings error: ~a" error-code)))))
 
+@export
 (defun settings-get (section settings-key type &key (settings *settings*))
   (cffi:with-foreign-object (error-pointer 'vr-settings-error)
     (prog1
@@ -51,5 +57,3 @@
       (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
         (unless (eq error-code :none)
           (error "Settings error: ~a" error-code))))))
-
-(export '(settings-set settings-get remove-section remove-key-in-section))

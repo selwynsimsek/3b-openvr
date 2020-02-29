@@ -1,7 +1,9 @@
 (defsystem :3b-openvr
   :description "Common Lisp bindings for the OpenVR API"
-  :depends-on (cffi-libffi alexandria trivial-features cl-json str)
+  :depends-on (cffi-libffi alexandria trivial-features cl-json str cl-annot)
   :serial t
+  :bug-tracker "https://github.com/selwynsimsek/3b-openvr/issues"
+  :source-control (:git "https://github.com/selwynsimsek/3b-openvr.git")
   :license "MIT"
   :author "Bart Botta <00003b at gmail.com>"
   :components (;(:file "package")

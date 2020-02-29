@@ -5,14 +5,18 @@
 
 (in-package 3b-openvr)
 
+(annot:enable-annot-syntax)
+
 (defmacro with-spatial-anchor-error (&rest body)
   (let ((error-name (gensym "error-value")))
     `(let ((,error-name (progn ,@body)))
        (if (eq ,error-name :success) t (error "VR overlay error: ~a" ,error-name)))))
 
+@export
 (defclass spatial-anchor ()
   ((handle :initarg :handle :accessor handle)))
 
+@export
 (defun spatial-anchor-from-descriptor (descriptor &key (spatial-anchors *spatial-anchors*))
   "Returns a handle for an spatial anchor described by descriptor.
    Caller can wait for an event or occasionally poll spatial-anchor-pose to find the virtual 
@@ -22,6 +26,7 @@
         (%create-spatial-anchor-from-descriptor (table spatial-anchors) descriptor pointer))
     (make-instance 'spatial-anchor :handle (cffi:mem-ref pointer 'spatial-anchor-handle-t))))
 
+@export
 (defun spatial-anchor-from-pose (device-index tracking-universe-origin pose
                                         &key (spatial-anchors *spatial-anchors*))
   "Returns a handle for an new spatial anchor at pPose. Caller can wait for an event or occasionally
@@ -42,6 +47,7 @@
                                           pose pointer)) ; need a type translator here? check this
     (make-instance 'spatial-anchor :handle (cffi:mem-ref pointer 'spatial-anchor-handle-t))))
 
+@export
 (defun spatial-anchor-pose (spatial-anchor tracking-universe-origin
                             &key (spatial-anchors *spatial-anchors*))
   "Get the pose for a given handle.  This is intended to be cheap enough to call every frame 
@@ -53,6 +59,7 @@
                                   tracking-universe-origin pointer))
     (cffi:mem-ref pointer '(:struct spatial-anchor-pose-t))))
 
+@export
 (defun spatial-anchor-descriptor (spatial-anchor &key (spatial-anchors *spatial-anchors*))
   "Get the descriptor for a given handle.  This will be empty for handles where the driver has not
   yet built a descriptor.  It will be the application-supplied descriptor for previously saved 
@@ -65,6 +72,3 @@
                                         (handle spatial-anchor)
                                         pointer 512))
     (cffi:foreign-string-to-lisp pointer)))
-
-(export '(spatial-anchor spatial-anchor-pose spatial-anchor-descriptor
-          spatial-anchor-from-descriptor))

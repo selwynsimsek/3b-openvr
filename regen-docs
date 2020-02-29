@@ -1,0 +1,2 @@
+rm -rf docs
+sbcl --eval '(ql:quickload :staple)' --eval '(staple:generate :3b-openvr)' --eval '(quit)'

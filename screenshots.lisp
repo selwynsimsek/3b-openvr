@@ -6,12 +6,16 @@
 
 (in-package 3b-openvr)
 
+(annot:enable-annot-syntax)
+
+@export
 (defclass screenshot ()
   ((handle :initarg :handle :accessor handle)
    (screenshot-type :initarg :screenshot-type :accessor screenshot-type)
    (preview-pathname :initarg :preview-pathname :accessor preview-pathname)
    (vr-pathname :initarg :vr-pathname :accessor vr-pathname)))
 
+@export
 (defun screenshot-from-handle (handle &key (screenshots *screenshots*))
   (make-instance 'screenshot
                  :handle (cffi:mem-ref handle 'screenshot-handle-t)
@@ -25,6 +29,7 @@
                                (cffi:mem-ref handle 'screenshot-handle-t)
                                :vr :screenshots screenshots)))
 
+@export
 (defun request-screenshot (&key (preview-pathname #p"preview.png")
                                 (vr-pathname #p"screenshot.png")
                                 (type :stereo) (screenshots *screenshots*))
@@ -34,6 +39,7 @@
                          (namestring preview-pathname) (namestring vr-pathname))
     (screenshot-from-handle handle)))
 
+@export
 (defun hook-screenshot (screenshot-type-list &key (screenshots *screenshots*))
   "Called by the running VR application to indicate which screenshots it wishes to support."
   (let ((number-of-types (length screenshot-type-list)))
@@ -43,6 +49,7 @@
                      (nth i screenshot-type-list)))
       (%hook-screenshot (table screenshots) supported-types number-of-types))))
 
+@export
 (defun screenshot-property-type (handle &key (screenshots *screenshots*))
   "Returns the type of the screenshot specified by handle."
   (cffi:with-foreign-object (screenshot-error 'vr-screenshot-error)
@@ -50,6 +57,7 @@
       (unless (eq :none (cffi:mem-ref screenshot-error 'vr-screenshot-error))
         (error "VR screenshot error ~a" (cffi:mem-ref screenshot-error 'vr-screenshot-error))))))
 
+@export
 (defun screenshot-property-filename (handle filename-type &key (screenshots *screenshots*))
   "Get the filename associated with a screenshot handle. filename-type must be :PREVIEW or :VR"
   (cffi:with-foreign-string (buffer (make-string 512 :initial-element #\space))
@@ -58,12 +66,14 @@
                                          error-pointer)
       (cffi:foreign-string-to-lisp buffer))))
 
+@export
 (defun update-screenshot-progress (screenshot progress &key (screenshots *screenshots*))
   "Present the user with a progress display during screenshot generation."
   (let ((error-value (%update-screenshot-progress (table screenshots) (handle screenshot) progress)))
     (unless (eq error-value :none)
       (error "VR screenshot error ~a" error-value))))
 
+@export
 (defun take-stereo-screenshot (preview-pathname vr-pathname &key (screenshots *screenshots*))
   "Request a stereoscopic screenshot."
   (cffi:with-foreign-object (handle '(:pointer screenshot-handle-t))
@@ -74,6 +84,7 @@
       (unless (eq error-value :none) (error "VR screenshot error ~a" error-value))
       (screenshot-from-handle handle))))
 
+@export
 (defun submit-screenshot (screenshot &key (screenshots *screenshots*))
   "Submit a new screenshot to the Steam API."
   (let ((error-value
@@ -81,7 +92,3 @@
                               (namestring (preview-pathname screenshot))
                               (namestring (vr-pathname screenshot)))))
     (unless (eq error-value :none) (error "VR screenshot error ~a" error-value))))
-
-(export '(request-screenshot hook-screenshot screenshot-property-type screenshot-property-filename
-          update-screenshot-progress take-stereo-screenshot submit-screenshot screenshot handle
-          screenshot-type preview-pathname vr-pathname))

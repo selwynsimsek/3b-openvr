@@ -10,6 +10,9 @@
 
 (in-package 3b-openvr)
 
+(annot:enable-annot-syntax)
+
+@export
 (defun window-bounds (&key (extended-display *extended-display*))
   "Size and position that the window needs to be on the VR display."
   (cffi:with-foreign-objects
@@ -21,6 +24,7 @@
     (values (cffi:mem-ref x :int32) (cffi:mem-ref y :int32)
             (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32))))
 
+@export
 (defun eye-output-viewport (eye &key (extended-display *extended-display*))
   "Gets the viewport in the frame buffer to draw the output of the distortion into."
   (cffi:with-foreign-objects
