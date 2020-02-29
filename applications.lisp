@@ -20,7 +20,7 @@
 
 @export
 (defun application-installed-p (application-key &key (applications *applications*))
-  (%is-application-installed (table applications) application-key))
+  (%is-application-installed (table applications) application-key)) ; works
 
 @export
 (defun application-keys (&key (applications *applications*))
@@ -28,13 +28,13 @@
          (result-array (make-array (list count))))
     (loop for i from 0 below count
           do (setf (aref result-array i)
-                   (cffi:with-foreign-string (foreign-pointer +max-application-key-length+)
+                   (cffi:with-foreign-string (foreign-pointer (make-string +max-application-key-length+))
                      (%get-application-key-by-index (table applications)
                                                     i
                                                     foreign-pointer
                                                     +max-application-key-length+)
                      (cffi:foreign-string-to-lisp foreign-pointer)))
-          finally (return result-array))))
+          finally (return result-array)))) ; works
 
 @export
 (defun application-key-by-process-id (process-id &key (applications *applications*))
@@ -84,17 +84,64 @@
 
 @export
 (defun application-process-id (application-key &key (applications *applications*))
-  (%get-application-process-id (table applications) application-key))
+  (%get-application-process-id (table applications) application-key)) ; works
 
+(defun application-property-with-type (application-key application-property type
+                                       &key (applications *applications*))
+  (cffi:with-foreign-object (error-pointer 'vr-application-error)
+    (cond
+      ((eq type :uint64)
+       (let ((result
+               (%get-application-property-uint64 (table applications)
+                                                 application-key application-property error-pointer
+                                                 )))
+         (if (eq :none (cffi:mem-ref error-pointer 'vr-application-error))
+                 result
+                 (error "VR application error: ~a" (cffi:mem-ref error-pointer 'vr-application-error)))))
+      ((eq type :bool)
+       (let ((result
+               (%get-application-property-bool (table applications)
+                                               application-key application-property error-pointer)))
+         (if (eq :none (cffi:mem-ref error-pointer 'vr-application-error))
+             result
+             (error "VR application error: ~a" (cffi:mem-ref error-pointer 'vr-application-error)))))
+      ((eq type :string)
+       (let ((string-length (%get-application-property-string
+                             (table applications) application-key application-property
+                             (cffi:null-pointer) 0 error-pointer)))
+         (cffi:with-foreign-string (foreign-string-pointer (make-string string-length))
+           (%get-application-property-string (table applications)
+                                             application-key application-property
+                                             foreign-string-pointer string-length error-pointer)
+           (if (eq :none (cffi:mem-ref error-pointer 'vr-application-error))
+               (cffi:foreign-string-to-lisp foreign-string-pointer)
+               (error "VR application error: ~a" (cffi:mem-ref error-pointer 'vr-application-error)))))))))
 
-
+@export
 (defun application-property (application-key application-property ;incomplete
                              &key (applications *applications*))
-  (cond ((eq application-property :last-launch-time)
-         (%get-application-property-uint64 (table applications)
-                                           application-key
-                                           :last-launch-time-uint64))
-        ))
+  (ecase application-property
+    (:name (application-property-with-type application-key :name-string :string))
+    (:launch-type (application-property-with-type application-key :launch-type-string :string))
+    (:working-directory (application-property-with-type application-key :working-directory-string :string))
+    (:binary-path (application-property-with-type application-key :binary-path-string :string))
+    (:arguments (application-property-with-type application-key :arguments-string :string))
+    (:url (application-property-with-type application-key :url-string :string))
+    (:description (application-property-with-type application-key :description-string :string))
+    (:news-url (application-property-with-type application-key :news-url-string :string))
+    (:image-path (application-property-with-type application-key :image-path-string :string))
+    (:source (application-property-with-type application-key :source-string :string))
+    (:action-manifest-url (application-property-with-type application-key :action-manifest-url-string :string))
+    (:is-dashboard-overlay (application-property-with-type application-key :is-dashboard-overlay-bool :bool))
+    (:is-template (application-property-with-type application-key :is-template-bool :bool))
+    (:is-instanced (application-property-with-type application-key :is-instanced-bool :bool))
+    (:is-internal (application-property-with-type application-key :is-internal-bool :bool))
+    (:wants-compositor-pause-in-standby (application-property-with-type
+                                         application-key :wants-compositor-pause-in-standby-bool :bool))
+    (:is-hidden (application-property-with-type
+                 application-key :is-hidden-bool :bool))
+    (:last-launch-time (application-property-with-type
+                        application-key :last-launch-time-uint64 :uint64)))) ; works
 
 @export
 (defun set-application-auto-launch (application-key auto-launch-p
@@ -123,6 +170,7 @@
 (defun application-supported-mime-types (application-key &key (applications *applications*))
   (cffi:with-foreign-string (foreign-string (make-string 512))
     (%get-application-supported-mime-types (table applications)
+                                           application-key
                                            foreign-string
                                            512)
     (cffi:foreign-string-to-lisp foreign-string)))
@@ -133,7 +181,7 @@
                                                           mime-type (cffi:null-pointer) 0)))
     (cffi:with-foreign-string (foreign-string (make-string length))
       (%get-applications-that-support-mime-type (table applications) mime-type foreign-string length)
-      (cffi:foreign-string-to-lisp foreign-string))))
+      (cffi:foreign-string-to-lisp foreign-string)))) ; doesn't work
 
 @export
 (defun application-launch-arguments (handle &key (applications *applications*)
@@ -153,16 +201,12 @@
     (cffi:foreign-string-to-lisp pointer)))
 
 @export
-(defun transition-state (&key (applications *applications*))
-  (%get-transition-state (table applications)))
+(defun scene-application-state (&key (applications *applications*))
+  (%get-scene-application-state (table applications))) ; works
 
 @export
 (defun perform-application-prelaunch-check (application-key &key (applications *applications*))
   (%perform-application-prelaunch-check (table applications) application-key))
-
-@export
-(defun quit-user-prompt-requested-p (&key (applications *applications*))
-  (%is-quit-user-prompt-requested (table applications)))
 
 @export
 (defun launch-internal-process (binary-path arguments working-directory
@@ -171,4 +215,4 @@
 
 @export
 (defun current-scene-process-id (&key (applications *applications*))
-  (%get-current-scene-process-id (table applications)))
+  (%get-current-scene-process-id (table applications))) ; works
