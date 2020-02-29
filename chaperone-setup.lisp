@@ -125,11 +125,27 @@
     (%get-live-seated-zero-pose-to-raw-tracking-pose (table chaperone-setup) pointer)
     (cffi:mem-ref pointer '(:struct hmd-matrix-34-t))))
 
-(defun export-live-to-buffer (&key (chaperone-setup *chaperone-setup*))
-  (error "implement me")) ; what is this?
+@export
+(defun export-live (&key (chaperone-setup *chaperone-setup*))
+  "Returns a sexp that contains the current chaperone setup."
+  (let ((length
+          (cffi:with-foreign-object (pointer :uint32)
+            (setf (cffi:mem-ref pointer :uint32) 0)
+            (%export-live-to-buffer (table chaperone-setup) (cffi:null-pointer) pointer)
+            (cffi:mem-ref pointer :uint32))))
+    (cffi:with-foreign-string (foreign-string (make-string length))
+      (cffi:with-foreign-object (pointer :uint32)
+        (setf (cffi:mem-ref pointer :uint32) length)
+        (if (%export-live-to-buffer (table chaperone-setup)
+                                    foreign-string pointer)
+            (cl-json:decode-json-from-source (cffi:foreign-string-to-lisp foreign-string))
+            (error "%export-live-to-buffer returned NIL")))))) ; works
 
-(defun import-from-buffer-to-working (&key (chaperone-setup *chaperone-setup*))
-  (error "implement me")) ; what is this?
+@export
+(defun import-to-working (chaperone-configuration &key (chaperone-setup *chaperone-setup*))
+  (cffi:with-foreign-string (pointer (cl-json:encode-json-to-string chaperone-configuration))
+    (unless (%import-from-buffer-to-working (table chaperone-setup) pointer 1)
+      (error "%import-from-buffer-to-working returned NIL")))) ; appears to work
 
 @export
 (defun show-working-set-preview (&key (chaperone-setup *chaperone-setup*))

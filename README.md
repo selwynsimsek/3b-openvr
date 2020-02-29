@@ -6,7 +6,7 @@ Interface | Percentage of interface exposed | Tested? | Version
 --- | --- | --- | ---
 System | 85% | N | IVRSystem_020
 Chaperone | 75% | Y | IVRChaperone_003
-ChaperoneSetup | 90% | Partly | IVRChaperoneSetup_006
+ChaperoneSetup | 100% | Partly | IVRChaperoneSetup_006
 Compositor | 90% | Mostly | IVRCompositor_022
 Overlay | 70% | N | IVROverlay_022
 Resources | 100% | N | IVRResources_001
