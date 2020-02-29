@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; High-level bindings for the Applications API.
 
-;;; IVR_Applications_006
+;;; IVR_Applications_007
 
 (in-package :3b-openvr)
 
@@ -49,8 +49,22 @@
 (defun launch-application (application-key &key (applications *applications*))
   (%launch-application (table applications) application-key))
 
-(defun launch-template-application ()
-  (error "implement me"))
+@export
+(defclass application-override-key ()
+  ((key :accessor key :initarg :key)
+   (value :accessor value :initarg :value)))
+
+@export
+(defun launch-template-application (template-application-key new-application-key
+                                    app-override-keys &key (applications *applications*))
+  (cffi:with-foreign-object (foreign-keys '(:struct app-override-keys-t) (length app-override-keys))
+    (loop for i from 0 below (length app-override-keys) do
+          (let ((key (cffi:mem-aref foreign-keys '(:struct app-override-keys-t) i)))
+            (cffi:with-foreign-slots ((key value) key '(:struct app-override-keys-t))
+              (setf key (key (aref app-override-keys i))
+                    value (value (aref app-override-keys i))))))
+    (%launch-template-application (table applications) template-application-key new-application-key
+                                  foreign-keys (length app-override-keys))))
 
 @export
 (defun launch-application-from-mime-type (mime-type args &key (applications *applications*))
@@ -73,11 +87,14 @@
   (%get-application-process-id (table applications) application-key))
 
 
-;; application properties
 
-(defun application-property (application-key application-property
+(defun application-property (application-key application-property ;incomplete
                              &key (applications *applications*))
-  (error "implement me"))
+  (cond ((eq application-property :last-launch-time)
+         (%get-application-property-uint64 (table applications)
+                                           application-key
+                                           :last-launch-time-uint64))
+        ))
 
 @export
 (defun set-application-auto-launch (application-key auto-launch-p
