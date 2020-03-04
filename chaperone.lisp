@@ -32,7 +32,11 @@
 (defun reload-chaperone-info (&key (chaperone *chaperone*))
   "Reload Chaperone data from the .vrchap file on disk."
   (%reload-info (table chaperone))) ; apparently works
-
+(define-clos-wrapper (color hmd-color-t) ()
+                     ((r r)
+                      (g g)
+                      (b b)
+                      (a a)))
 @export
 (defun set-scene-color (color &key (chaperone *chaperone*))
   "Optionally give the chaperone system a hint about the color and brightness in the scene."
@@ -42,7 +46,18 @@
 
 (defun bounds-color (collision-bounds-fade-distance &key (chaperone *chaperone*))
   "Get the current chaperone bounds draw color and brightness."
-  (error "implement me")) ; not sure what to do here?
+  (cffi:with-foreign-objects ((color-array '(:struct hmd-color-t) 10)
+                              (camera-color '(:struct hmd-color-t)))
+    (%get-bounds-color (table chaperone) color-array 10 collision-bounds-fade-distance
+                       camera-color)
+    (let ((return-vector (make-array (list 10))))
+      (loop for i from 0 below (length return-vector) do
+            (setf (aref return-vector i) (cffi:mem-aref color-array '(:struct hmd-color-t) i)))
+      (values (cffi:mem-aref camera-color '(:struct hmd-color-t)) return-vector)))) ; not sure what to do here?
+
+(defmethod print-object ((object color) stream)
+  (print-unreadable-object (object stream)
+    (format stream "r ~a g ~a b ~a a ~a" (r object) (g object) (b object) (a object))))
 
 @export
 (defun bounds-visible-p (&key (chaperone *chaperone*))
@@ -53,11 +68,5 @@
 (defun force-bounds-visible (bounds-visible-p &key (chaperone *chaperone*))
   "Force the bounds to show, mostly for utilities."
   (%force-bounds-visible (table chaperone) bounds-visible-p)) ; works
-
-(define-clos-wrapper (color hmd-color-t) ()
-  ((r r)
-   (g g)
-   (b b)
-   (a a)))
 
 (export '(r g a color))

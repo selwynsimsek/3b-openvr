@@ -261,8 +261,12 @@
 (defun suspend-rendering (&key (suspend-p t) (compositor *compositor*))
   (%suspend-rendering (table compositor) suspend-p)) ; works
 
-(defun mirror-gl-texture (&key (compositor *compositor*))
-  (error "implement me"))
+(defun mirror-gl-texture (eye &key (compositor *compositor*))
+  (cffi:with-foreign-objects ((texture-id 'gl-uint-t)
+                              (shared-texture-id 'gl-shared-texture-handle-t))
+    (%get-mirror-texture-gl (table compositor) eye texture-id shared-texture-id)
+    (values (cffi:mem-ref texture-id 'gl-uint-t)
+            (cffi:mem-ref shared-texture-id 'shared-texture-handle-t)))) ; doesn't work
 
 (defun release-shared-gl-texture (&key (compositor *compositor*))
   (error "implement me"))

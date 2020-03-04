@@ -14,7 +14,7 @@
          (buffer-array (cffi:make-shareable-byte-vector (list buffer-size))))
     (cffi:with-pointer-to-vector-data (pointer buffer-array)
       (%load-shared-resource (table resources) name pointer buffer-size))
-     buffer-array))
+     buffer-array)) ; works
 
 @export
 (defun resource-pathname (resource-name resource-type-directory &key (resources *resources*)
@@ -24,4 +24,4 @@
   resource-type-directory is the subdirectory of resources to look in."
   (cffi:with-foreign-string (foreign-string (make-string buffer-size))
     (%get-resource-full-path (table resources) resource-name resource-type-directory foreign-string buffer-size)
-    (cffi:foreign-string-to-lisp foreign-string)))
+    (cffi:foreign-string-to-lisp foreign-string))) ; works
