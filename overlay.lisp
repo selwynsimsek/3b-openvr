@@ -239,6 +239,7 @@
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-max)
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max))))
 
+@export
 (defun set-overlay-render-model (overlay-handle render-model-name color &key (overlay *overlay*))
   "Sets render model to draw behind this overlay and the vertex color to use, pass NIL for color to match the
    overlays vertex color. 
@@ -248,7 +249,7 @@
     (with-overlay-error
         (%set-overlay-render-model (table overlay) overlay-handle render-model-name (if color foreign-color
                                                                                         (cffi:null-pointer))))))
-
+@export
 (defun overlay-render-model (overlay-handle &key (overlay *overlay*))
   "Gets render model to draw behind this overlay"
   (cffi:with-foreign-objects ((error-pointer 'vr-overlay-error)
@@ -266,6 +267,7 @@
         (values (cffi:foreign-string-to-lisp string-pointer)
                 (cffi:mem-ref color-pointer '(:struct hmd-color-t)))))))
 
+@export
 (defun overlay-transform-type (overlay-handle &key (overlay *overlay*))
   "Returns the transform type of this overlay."
   (cffi:with-foreign-object (transform-type 'vr-overlay-transform-type)
@@ -273,12 +275,14 @@
         (%get-overlay-transform-type (table overlay) overlay-handle transform-type))
     (cffi:mem-ref transform-type 'vr-overlay-transform-type)))
 
+@export
 (defun set-overlay-transform-absolute (overlay-handle origin tracking-origin-to-overlay-transform
                                        &key (overlay *overlay*))
   "Sets the transform to absolute tracking origin."
   (with-overlay-error
       (%set-overlay-transform-absolute (table overlay) overlay-handle origin tracking-origin-to-overlay-transform)))
 
+@export
 (defun overlay-transform-absolute (overlay-handle origin &key (overlay *overlay*))
   "Gets the transform if it is absolute. Returns an error if the transform is some other type."
   (cffi:with-foreign-objects ((tracking-origin 'tracking-universe-origin)
@@ -288,6 +292,7 @@
     (values (cffi:mem-ref tracking-origin 'tracking-universe-origin)
             (cffi:mem-ref transform '(:struct hmd-matrix-34-t)))))
 
+@export
 (defun set-overlay-transform-tracked-device-relative (overlay-handle tracked-device
                                                       tracked-device-to-overlay-transform
                                                       &key (overlay *overlay*))
@@ -296,6 +301,7 @@
       (%set-overlay-transform-tracked-device-relative
        (table overlay) overlay-handle tracked-device tracked-device-to-overlay-transform)))
 
+@export
 (defun overlay-transform-tracked-device-relative (overlay-handle
                                                   &key (overlay *overlay*))
 
@@ -308,6 +314,7 @@
     (values (cffi:mem-ref handle 'tracked-device-index-t)
             (cffi:mem-ref transform '(:struct hmd-matrix-34-t)))))
 
+@export
 (defun set-overlay-transform-tracked-device-component (overlay-handle device-index component-name
                                                        &key (overlay *overlay*))
   "Sets the transform to draw the overlay on a rendermodel component mesh instead of a quad. This will only draw when
@@ -315,6 +322,7 @@
   (with-overlay-error
     (%set-overlay-transform-tracked-device-component (table overlay) overlay-handle device-index component-name)))
 
+@export
 (defun overlay-transform-tracked-device-component (overlay-handle &key (overlay *overlay*) (buffer-size 512))
   "Gets the transform information when the overlay is rendering on a component."
   (cffi:with-foreign-object (device 'tracked-device-index-t)
@@ -324,6 +332,7 @@
       (values (cffi:mem-ref device 'tracked-device-index-t)
               (cffi:foreign-string-to-lisp foreign-string)))))
 
+@export
 (defun overlay-transform-overlay-relative (overlay-handle &key (overlay *overlay*))
   "Gets the transform if it is relative to another overlay. Returns an error if the transform is some other type."
   (cffi:with-foreign-objects ((foreign-matrix '(:struct hmd-matrix-34-t))
@@ -333,6 +342,7 @@
     (values (cffi:mem-ref foreign-handle 'vr-overlay-handle-t)
             (cffi:mem-ref foreign-matrix '(:struct hmd-matrix-34-t)))))
 
+@export
 (defun set-overlay-transform-overlay-relative (overlay-handle parent-overlay-handle
                                                parent-overlay-to-overlay-transform
                                                &key (overlay *overlay*))
@@ -343,6 +353,7 @@
     (with-overlay-error
       (%set-overlay-transform-overlay-relative (table overlay) overlay-handle parent-overlay-handle foreign-matrix))))
 
+@export
 (defun set-overlay-transform-cursor (cursor-overlay-handle hotspot &key (overlay *overlay*))
   "Sets the hotspot for the specified overlay when that overlay is used as a cursor. These are in texture space
    with 0,0 in the upper left corner of the texture and 1,1 in the lower right corner of the texture."
@@ -351,6 +362,7 @@
     (with-overlay-error
       (%set-overlay-transform-cursor (table overlay) cursor-overlay-handle foreign-hotspot))))
 
+@export
 (defun overlay-transform-cursor (overlay-handle &key (overlay *overlay*))
   "Gets cursor hotspot/transform for the specified overlay."
   (cffi:with-foreign-object (hotspot '(:struct hmd-vector-2-t))
@@ -374,6 +386,7 @@
   "Returns true if the overlay is visible."
   (%is-overlay-visible (table overlay) overlay-handle))
 
+@export
 (defun transform-for-overlay-coordinates (overlay-handle tracking-origin coordinates-in-overlay
                                           &key (overlay *overlay*))
   "Get the transform in 3d space associated with a specific 2d point in the overlay's coordinate space
@@ -387,6 +400,8 @@
     (cffi:mem-ref matrix '(:struct hmd-matrix-34-t))))
 
 ;; overlay input methods
+
+@export
 (defun poll-next-overlay-event (overlay-handle &key (overlay *overlay*))
   (cffi:with-foreign-object (ev '(:struct vr-event-t))
     (when (%poll-next-overlay-event (table system) overlay-handle ev (cffi:foreign-type-size
@@ -402,6 +417,7 @@
                 do (format t "~%")))
         (first r)))))
 
+@export
 (defun overlay-input-method (overlay-handle &key (overlay *overlay*))
   "Returns the current input settings for the specified overlay."
   (cffi:with-foreign-object (input-method 'vr-overlay-input-method)
@@ -409,11 +425,13 @@
         (%get-overlay-input-method (table overlay) overlay-handle input-method))
     (cffi:mem-ref input-method 'vr-overlay-input-method)))
 
+@export
 (defun set-overlay-input-method (overlay-handle input-method &key (overlay *overlay*))
   "Sets the input settings for the specified overlay."
   (with-overlay-error
       (%set-overlay-input-method (table overlay) overlay-handle input-method)))
 
+@export
 (defun overlay-mouse-scale (overlay-handle &key (overlay *overlay*))
   "Gets the mouse scaling factor that is used for mouse events. The actual texture may be a different size,
    but this is typically the size of the underlying UI in pixels."
@@ -421,6 +439,7 @@
     (with-overlay-error (%get-overlay-mouse-scale (table overlay) overlay-handle foreign-mouse-scale))
     (cffi:mem-ref foreign-mouse-scale '(:struct hmd-vector-2-t))))
 
+@export
 (defun set-overlay-mouse-scale (overlay-handle mouse-scale &key (overlay *overlay*))
   "Sets the mouse scaling factor that is used for mouse events. The actual texture may be a different size,
    but this is typically the size of the underlying UI in pixels (not in world space)."
@@ -428,7 +447,17 @@
     (setf (cffi:mem-ref pointer '(:struct hmd-vector-2-t)) mouse-scale)
     (with-overlay-error (%set-overlay-mouse-scale (table overlay) overlay-handle pointer))))
 
-(defun compute-overlay-intersection (overlay-handle parameters &key (overlay *overlay*)))
+@export
+(defun compute-overlay-intersection (overlay-handle intersection-source intersection-direction
+                                     intersection-origin &key (overlay *overlay*))
+  (cffi:with-foreign-objects ((foreign-params '(:struct vr-overlay-intersection-params-t))
+                              (foreign-results '(:struct vr-overlay-intersection-results-t)))
+    (cffi:with-foreign-slots ((source direction origin) foreign-params '(:struct vr-overlay-intersection-params-t))
+      (setf source intersection-source direction intersection-direction origin intersection-origin)
+      (when (%compute-overlay-intersection (table overlay) overlay-handle foreign-params foreign-results)
+        (cffi:with-foreign-slots ((point normal uvs distance) foreign-results
+                                  '(:struct vr-overlay-intersection-results-t))
+          (values point normal uvs distance))))))
 
 @export
 (defun hover-target-overlay-p (overlay-handle &key (overlay *overlay*))
@@ -455,6 +484,7 @@
     (values (cffi:mem-ref foreign-center '(:struct hmd-vector-2-t))
             (cffi:mem-ref foreign-radius :float))))
 
+@export
 (defun set-overlay-intersection-mask (overlay-handle mask-primitives &key (overlay *overlay*))
   "Sets a list of primitives to be used for controller ray intersection
    typically the size of the underlying UI in pixels (not in world space)."
@@ -483,6 +513,7 @@
    the laser mouse is pointed at the specified overlay."
   (with-overlay-error (%set-overlay-cursor (table overlay) overlay-handle cursor-handle)))
 
+@export
 (defun set-overlay-cursor-position-override (overlay-handle cursor &key (overlay *overlay*))
   "Sets the override cursor position to use for this overlay in overlay mouse coordinates. This position will
    be used to draw the cursor instead of whatever the laser mouse cursor position is."

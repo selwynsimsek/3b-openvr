@@ -8,7 +8,7 @@ System | 85% | N | IVRSystem_020
 Chaperone | 75% | Y | IVRChaperone_003
 ChaperoneSetup | 100% | Partly | IVRChaperoneSetup_006
 Compositor | 90% | Mostly | IVRCompositor_022
-Overlay | 70% | N | IVROverlay_022
+Overlay | 100% | N | IVROverlay_022
 Resources | 100% | Y | IVRResources_001
 RenderModels | -  | - | IVRRenderModels_006
 ExtendedDisplay | 100% | Y | IVRExtendedDisplay_001
