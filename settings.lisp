@@ -13,7 +13,7 @@
     (%remove-section (table settings) section error-pointer)
     (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
       (unless (eq error-code :none)
-        (error "Settings error: ~a" error-code)))))
+        (error "Settings error: ~a" error-code))))) ; doesn't work?
 
 @export
 (defun remove-key-in-section (section settings-key &key (settings *settings*))
@@ -21,11 +21,12 @@
     (%remove-key-in-section (table settings) section settings-key error-pointer)
     (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
       (unless (eq error-code :none)
-        (error "Settings error: ~a" error-code)))))
+        (error "Settings error: ~a" error-code))))) ; doesn't work?
 
 @export
 (defun settings-set (section settings-key value type &key (settings *settings*))
   (cffi:with-foreign-object (error-pointer 'vr-settings-error)
+    (setf (cffi:mem-ref error-pointer 'vr-settings-error) :none)
     (cond
       ((or (eq type :int) (eq type :int32))
        (%set-int32 (table settings) section settings-key value error-pointer))
@@ -36,8 +37,9 @@
       ((eq type :string)
        (%set-string (table settings) section settings-key value error-pointer)))
     (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
+      (print error-code)
       (unless (eq error-code :none)
-        (error "Settings error: ~a" error-code)))))
+        (error "Settings error: ~a" error-code))))) ; doesn't work?
 
 @export
 (defun settings-get (section settings-key type &key (settings *settings*))
@@ -56,4 +58,4 @@
              (cffi:foreign-string-to-lisp string-pointer))))
       (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
         (unless (eq error-code :none)
-          (error "Settings error: ~a" error-code))))))
+          (error "Settings error: ~a" error-code)))))) ; works

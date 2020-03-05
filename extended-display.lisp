@@ -22,7 +22,7 @@
        (height '(:pointer :uint32)))
     (%get-window-bounds (table extended-display) x y width height)
     (values (cffi:mem-ref x :int32) (cffi:mem-ref y :int32)
-            (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32))))
+            (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32)))) ; works
 
 @export
 (defun eye-output-viewport (eye &key (extended-display *extended-display*))
@@ -34,4 +34,4 @@
        (height '(:pointer :uint32)))
     (%get-eye-output-viewport (table extended-display) eye x y width height)
     (values (cffi:mem-ref x :int32) (cffi:mem-ref y :int32)
-            (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32))))
+            (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32)))) ; works
