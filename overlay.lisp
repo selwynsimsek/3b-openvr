@@ -387,7 +387,20 @@
     (cffi:mem-ref matrix '(:struct hmd-matrix-34-t))))
 
 ;; overlay input methods
-(defun poll-next-overlay-event (overlay-handle &key (overlay *overlay*)))
+(defun poll-next-overlay-event (overlay-handle &key (overlay *overlay*))
+  (cffi:with-foreign-object (ev '(:struct vr-event-t))
+    (when (%poll-next-overlay-event (table system) overlay-handle ev (cffi:foreign-type-size
+                                                                      '(:struct vr-event-t)))
+      (let ((R (multiple-value-list
+                (ignore-errors
+                 (cffi:mem-ref ev '(:struct vr-event-t))))))
+        (when (second r)
+          (format t "~&~a?~%" (second r))
+          (loop for i below 40
+                do (format t " #~2,'0x" (cffi:mem-aref ev :uint8 i))
+                when (zerop (mod (1+ i) 8))
+                do (format t "~%")))
+        (first r)))))
 
 (defun overlay-input-method (overlay-handle &key (overlay *overlay*))
   "Returns the current input settings for the specified overlay."
@@ -442,7 +455,19 @@
     (values (cffi:mem-ref foreign-center '(:struct hmd-vector-2-t))
             (cffi:mem-ref foreign-radius :float))))
 
-(defun set-overlay-intersection-mask (overlay-handle mask-primitives &key (overlay *overlay*)))
+(defun set-overlay-intersection-mask (overlay-handle mask-primitives &key (overlay *overlay*))
+  "Sets a list of primitives to be used for controller ray intersection
+   typically the size of the underlying UI in pixels (not in world space)."
+  (cffi:with-foreign-object (foreign-mask-primitives '(:struct vr-overlay-intersection-mask-primitive-t)
+                             (length mask-primitives))
+    (loop for i from 0 below (length mask-primitives) do
+          (setf (cffi:mem-aref foreign-mask-primitives '(:struct vr-overlay-intersection-mask-primitive-t) i)
+                (aref mask-primitives i))) ; probably use a type translator here?
+    (with-overlay-error
+        (%set-overlay-intersection-mask (table overlay) overlay-handle foreign-mask-primitives
+                                        (length mask-primitives)
+                                        (cffi:foreign-type-size
+                                         '(:struct vr-overlay-intersection-mask-primitive-t))))))
 
 @export
 (defun trigger-laser-mouse-haptic-vibration (overlay-handle duration-in-seconds frequency amplitude
@@ -458,7 +483,13 @@
    the laser mouse is pointed at the specified overlay."
   (with-overlay-error (%set-overlay-cursor (table overlay) overlay-handle cursor-handle)))
 
-(defun set-overlay-cursor-position-override (overlay-handle cursor &key (overlay *overlay*)))
+(defun set-overlay-cursor-position-override (overlay-handle cursor &key (overlay *overlay*))
+  "Sets the override cursor position to use for this overlay in overlay mouse coordinates. This position will
+   be used to draw the cursor instead of whatever the laser mouse cursor position is."
+  (cffi:with-foreign-object (foreign-cursor '(:struct hmd-vector-2-t))
+    (setf (cffi:mem-ref foreign-cursor '(:struct hmd-vector-2-t)) cursor)
+    (with-overlay-error
+        (%set-overlay-cursor-position-override (table overlay) overlay-handle foreign-cursor))))
 
 @export
 (defun clear-overlay-cursor-position-override (overlay-handle &key (overlay *overlay*))
