@@ -2,7 +2,7 @@
 
 It is intended that at least most of the OpenVR API will be exposed to a fairly high level, still a work in progress.
 
-So far, nearly everything is exposed, with the notable exceptions of the [Skeletal Input API])(https://github.com/ValveSoftware/openvr/wiki/SteamVR-Skeletal-Input), mirror textures in the Compositor API, and some parts of the System API. Large parts of the API are not yet tested, but it has been used to run VR experiences through [trial-vr](https://github.com/selwynsimsek/trial-vr).
+So far, nearly everything is exposed, with the notable exceptions of the [Skeletal Input API](https://github.com/ValveSoftware/openvr/wiki/SteamVR-Skeletal-Input), mirror textures in the Compositor API, and some parts of the System API. Large parts of the API are not yet tested, but it has been used to run VR experiences through [trial-vr](https://github.com/selwynsimsek/trial-vr).
 
 Interface | Percentage of interface exposed | Tested? | Version
 --- | --- | --- | ---
