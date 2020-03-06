@@ -10,7 +10,7 @@ System | 85% | 0% | 0% | IVRSystem_020
 Chaperone | 100% | 100% | 75% | IVRChaperone_003
 ChaperoneSetup | 100% | 100% | 100% | IVRChaperoneSetup_006
 Compositor | 90% | 70% | 57% | IVRCompositor_022
-Overlay | 100% | 0% | 0% | IVROverlay_022
+Overlay | 100% | 64% | 64% | IVROverlay_022
 Resources | 100% | 100% | 100% | IVRResources_001
 RenderModels | -  | 0% | 0% | IVRRenderModels_006
 ExtendedDisplay | 100% | 100% | 100% | IVRExtendedDisplay_001
