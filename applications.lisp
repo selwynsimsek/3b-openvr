@@ -38,7 +38,7 @@
 
 @export
 (defun application-key-by-process-id (process-id &key (applications *applications*))
-  (cffi:with-foreign-string (foreign-pointer +max-application-key-length+)
+  (cffi:with-foreign-string (foreign-pointer (make-string +max-application-key-length+))
     (%get-application-key-by-process-id (table applications)
                                         process-id
                                         foreign-pointer
@@ -86,6 +86,7 @@
 (defun application-process-id (application-key &key (applications *applications*))
   (%get-application-process-id (table applications) application-key)) ; works
 
+@export
 (defun application-property-with-type (application-key application-property type
                                        &key (applications *applications*))
   (cffi:with-foreign-object (error-pointer 'vr-application-error)
