@@ -19,22 +19,22 @@
   "Finds an existing overlay with the specified key."
   (cffi:with-foreign-object (handle 'vr-overlay-handle-t)
     (with-overlay-error
-        (%find-overlay (table overlay) overlay-key handle)
-      (cffi:mem-ref handle 'vr-overlay-handle-t))))
+        (%find-overlay (table overlay) overlay-key handle))
+    (cffi:mem-ref handle 'vr-overlay-handle-t))) ; works
 
 @export
 (defun create-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*))
   "Creates a new named overlay. All overlays start hidden and with default settings."
   (cffi:with-foreign-object (handle 'vr-overlay-handle-t)
     (with-overlay-error
-        (%create-overlay (table overlay) overlay-key overlay-friendly-name handle)
-      (cffi:mem-ref handle 'vr-overlay-handle-t))))
+        (%create-overlay (table overlay) overlay-key overlay-friendly-name handle))
+    (cffi:mem-ref handle 'vr-overlay-handle-t))) ; works
 
 @export
 (defun destroy-overlay (overlay-handle &key (overlay *overlay*))
   "Destroys the specified overlay. When an application calls VR_Shutdown all overlays created by that app
    are automatically destroyed."
-  (with-overlay-error (%destroy-overlay (table overlay) overlay-handle)))
+  (with-overlay-error (%destroy-overlay (table overlay) overlay-handle))) ; works
 
 @export
 (defun overlay-key (overlay-handle &key (overlay *overlay*))
@@ -44,7 +44,7 @@
       (%get-overlay-key (table overlay) overlay-handle pointer +vr-overlay-max-key-length+ error-pointer)
       (unless (eq :none (cffi:mem-ref error-pointer 'vr-overlay-error))
         (error "VR overlay error: ~a" (cffi:mem-ref error-pointer 'vr-overlay-error)))
-      (cffi:foreign-string-to-lisp pointer))))
+      (cffi:foreign-string-to-lisp pointer)))) ; works
 
 @export
 (defun overlay-name (overlay-handle &key (overlay *overlay*))
@@ -54,12 +54,12 @@
       (%get-overlay-name (table overlay) overlay-handle pointer +vr-overlay-max-name-length+ error-pointer)
       (unless (eq :none (cffi:mem-ref error-pointer 'vr-overlay-error))
         (error "VR overlay error: ~a" (cffi:mem-ref error-pointer 'vr-overlay-error)))
-      (cffi:foreign-string-to-lisp pointer))))
+      (cffi:foreign-string-to-lisp pointer)))) ; works
 
 @export
 (defun set-overlay-name (overlay-handle name &key (overlay *overlay*))
   "Set the name to use for this overlay."
-  (with-overlay-error (%set-overlay-name (table overlay) overlay-handle name)))
+  (with-overlay-error (%set-overlay-name (table overlay) overlay-handle name))) ; works
 
 @export
 (defun overlay-image-data (overlay-handle &key (overlay *overlay*))
@@ -86,18 +86,18 @@
   "Sets the pid that is allowed to render to this overlay (the creator pid is always allow to render),
    by default this is the pid of the process that made the overlay."
   (with-overlay-error
-      (%set-overlay-rendering-pid (table overlay) overlay-handle pid)))
+      (%set-overlay-rendering-pid (table overlay) overlay-handle pid))) ; works
 
 @export
 (defun overlay-rendering-pid (overlay-handle &key (overlay *overlay*))
   "Gets the pid that is allowed to render to this overlay."
-  (%get-overlay-rendering-pid (table overlay) overlay-handle))
+  (%get-overlay-rendering-pid (table overlay) overlay-handle)) ; works
 
 @export
 (defun set-overlay-flag (overlay-handle flag enabled-p &key (overlay *overlay*))
   "Specify flag setting for a given overlay."
   (with-overlay-error
-      (%set-overlay-flag (table overlay) overlay-handle flag enabled-p)))
+      (%set-overlay-flag (table overlay) overlay-handle flag enabled-p))) ; works
 
 @export
 (defun overlay-flag (overlay-handle flag &key (overlay *overlay*))
@@ -105,7 +105,7 @@
   (cffi:with-foreign-object (pointer :bool)
     (with-overlay-error
         (%get-overlay-flag (table overlay) overlay-handle flag pointer))
-    (cffi:mem-ref pointer :bool)))
+    (cffi:mem-ref pointer :bool))) ; works
 
 @export
 (defun overlay-flags (overlay-handle &key (overlay *overlay*))
@@ -113,12 +113,12 @@
   (cffi:with-foreign-object (pointer :uint32)
     (with-overlay-error
         (%get-overlay-flags (table overlay) overlay-handle pointer))
-    (cffi:mem-ref pointer :uint32)))
+    (cffi:mem-ref pointer :uint32))) ; works - replace with list?
 
 @export
 (defun set-overlay-color (overlay-handle red green blue &key (overlay *overlay*))
   "Sets the color tint of the overlay quad. Use 0.0 to 1.0 per channel."
-  (with-overlay-error (%set-overlay-color (table overlay) overlay-handle red green blue)))
+  (with-overlay-error (%set-overlay-color (table overlay) overlay-handle red green blue))) ; works
 
 @export
 (defun overlay-color (overlay-handle &key (overlay *overlay*))
@@ -127,33 +127,32 @@
                               (green :float)
                               (blue :float))
     (with-overlay-error (%get-overlay-color (table overlay) overlay-handle red green blue))
-    (values (cffi:mem-ref red :float) (cffi:mem-ref green :float) (cffi:mem-ref blue :float))))
+    (values (cffi:mem-ref red :float) (cffi:mem-ref green :float) (cffi:mem-ref blue :float)))) ; works
 
 @export
 (defun set-overlay-alpha (overlay-handle alpha &key (overlay *overlay*))
   "Sets the alpha of the overlay quad. Use 1.0 for 100 percent opacity to 0.0 for 0 percent opacity."
-  (with-overlay-error (%set-overlay-alpha (table overlay) overlay-handle alpha)))
+  (with-overlay-error (%set-overlay-alpha (table overlay) overlay-handle alpha))) ; works
 
 @export
 (defun overlay-alpha (overlay-handle &key (overlay *overlay*))
   "Gets the alpha of the overlay quad. By default overlays are rendering at 100 percent alpha (1.0)."
   (cffi:with-foreign-object (alpha :float)
     (with-overlay-error (%get-overlay-alpha (table overlay) overlay-handle alpha))
-    (cffi:mem-ref alpha :float)))
+    (cffi:mem-ref alpha :float))) ; works
 
 @export
 (defun set-overlay-texel-aspect (overlay-handle texel-aspect &key (overlay *overlay*))
   "Sets the aspect ratio of the texels in the overlay. 1.0 means the texels are square. 2.0 means the texels
    are twice as wide as they are tall. Defaults to 1.0."
-  (with-overlay-error (%set-overlay-texel-aspect (table overlay) overlay-handle texel-aspect)))
+  (with-overlay-error (%set-overlay-texel-aspect (table overlay) overlay-handle texel-aspect))) ; works
 
 @export
 (defun overlay-texel-aspect (overlay-handle &key (overlay *overlay*))
   "Gets the aspect ratio of the texels in the overlay. Defaults to 1.0."
   (cffi:with-foreign-object (texel-aspect :float)
     (with-overlay-error (%get-overlay-texel-aspect (table overlay) overlay-handle texel-aspect))
-    (cffi:mem-ref texel-aspect :float)))
-
+    (cffi:mem-ref texel-aspect :float))) ; works
 
 @export
 (defun set-overlay-sort-order (overlay-handle sort-order &key (overlay *overlay*))
@@ -163,7 +162,7 @@
    Within a category overlays are rendered lowest sort order to highest sort order. Overlays with the same 
    sort order are rendered back to front base on distance from the HMD.
    Sort order defaults to 0."
-  (with-overlay-error (%set-overlay-sort-order (table overlay) overlay-handle sort-order)))
+  (with-overlay-error (%set-overlay-sort-order (table overlay) overlay-handle sort-order))) ; works
 
 @export
 (defun overlay-sort-order (overlay-handle &key (overlay *overlay*))
@@ -171,12 +170,12 @@
   (cffi:with-foreign-object (sort-order :uint32)
     (with-overlay-error
         (%get-overlay-sort-order (table overlay) overlay-handle sort-order))
-    (cffi:mem-ref sort-order :uint32)))
+    (cffi:mem-ref sort-order :uint32))) ; works
 
 @export
 (defun set-overlay-width-in-meters (overlay-handle width-in-meters &key (overlay *overlay*))
   "Sets the width of the overlay quad in meters. By default overlays are rendered on a quad that is 1 meter across."
-  (with-overlay-error (%set-overlay-width-in-meters (table overlay) overlay-handle width-in-meters)))
+  (with-overlay-error (%set-overlay-width-in-meters (table overlay) overlay-handle width-in-meters))) ; works
 
 @export
 (defun overlay-width-in-meters (overlay-handle &key (overlay *overlay*))
@@ -184,14 +183,14 @@
   (cffi:with-foreign-object (width :float)
     (with-overlay-error
         (%get-overlay-width-in-meters (table overlay) overlay-handle width))
-    (cffi:mem-ref width :float)))
+    (cffi:mem-ref width :float))) ; works
 
 @export
 (defun set-overlay-curvature (overlay-handle curvature &key (overlay *overlay*))
   "Use to draw overlay as a curved surface. Curvature is a percentage from (0..1] where 1 is a fully closed cylinder.
    For a specific radius, curvature can be computed as: overlay.width / (2 PI r)."
   (with-overlay-error
-    (%set-overlay-curvature (table overlay) overlay-handle curvature)))
+    (%set-overlay-curvature (table overlay) overlay-handle curvature))) ; works
 
 @export
 (defun overlay-curvature (overlay-handle &key (overlay *overlay*))
@@ -199,13 +198,13 @@
   (cffi:with-foreign-object (curvature :float)
     (with-overlay-error
         (%get-overlay-curvature (table overlay) overlay-handle curvature))
-    (cffi:mem-ref curvature :float)))
+    (cffi:mem-ref curvature :float))) ; works
 
 @export
 (defun set-overlay-texture-color-space (overlay-handle color-space &key (overlay *overlay*))
   "Sets the colorspace the overlay texture's data is in.  Defaults to 'auto'.
    If the texture needs to be resolved, you should call #'set-overlay-texture with the appropriate colorspace instead."
-  (with-overlay-error (%set-overlay-texture-color-space (table overlay) overlay-handle color-space)))
+  (with-overlay-error (%set-overlay-texture-color-space (table overlay) overlay-handle color-space))) ; works
 
 @export
 (defun overlay-texture-color-space (overlay-handle &key (overlay *overlay*))
@@ -213,7 +212,7 @@
   (cffi:with-foreign-object (color-space 'color-space)
     (with-overlay-error
         (%get-overlay-texture-color-space (table overlay) overlay-handle color-space))
-    (cffi:mem-ref color-space 'color-space)))
+    (cffi:mem-ref color-space 'color-space))) ; works
 
 @export
 (defun set-overlay-texture-bounds (overlay-handle u-min v-min u-max v-max &key (overlay *overlay*))
@@ -225,7 +224,7 @@
           (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-max) u-max
           (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max) v-max)
     (with-overlay-error
-      (%set-overlay-texture-bounds (table overlay) overlay-handle texture-bounds))))
+      (%set-overlay-texture-bounds (table overlay) overlay-handle texture-bounds)))) ; works
 
 @export
 (defun overlay-texture-bounds (overlay-handle &key (overlay *overlay*))
@@ -237,7 +236,7 @@
     (values (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-min)
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-min)
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-max)
-            (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max))))
+            (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max)))) ; works
 
 @export
 (defun set-overlay-render-model (overlay-handle render-model-name color &key (overlay *overlay*))
@@ -247,8 +246,8 @@
   (cffi:with-foreign-object (foreign-color '(:struct hmd-color-t))
     (when color (setf (cffi:mem-ref foreign-color '(:struct hmd-color-t)) color))
     (with-overlay-error
-        (%set-overlay-render-model (table overlay) overlay-handle render-model-name (if color foreign-color
-                                                                                        (cffi:null-pointer))))))
+        (%set-overlay-render-model (table overlay) overlay-handle render-model-name
+                                   (if color foreign-color (cffi:null-pointer)))))) ; works?
 @export
 (defun overlay-render-model (overlay-handle &key (overlay *overlay*))
   "Gets render model to draw behind this overlay"
@@ -265,7 +264,7 @@
         (unless (eq (cffi:mem-ref error-pointer 'vr-overlay-error) :none)
           (error "Overlay error: ~a" (cffi:mem-ref error-pointer 'vr-overlay-error)))
         (values (cffi:foreign-string-to-lisp string-pointer)
-                (cffi:mem-ref color-pointer '(:struct hmd-color-t)))))))
+                (cffi:mem-ref color-pointer '(:struct hmd-color-t))))))) ; works?
 
 @export
 (defun overlay-transform-type (overlay-handle &key (overlay *overlay*))
@@ -273,14 +272,16 @@
   (cffi:with-foreign-object (transform-type 'vr-overlay-transform-type)
     (with-overlay-error
         (%get-overlay-transform-type (table overlay) overlay-handle transform-type))
-    (cffi:mem-ref transform-type 'vr-overlay-transform-type)))
+    (cffi:mem-ref transform-type 'vr-overlay-transform-type))) ; works
 
 @export
 (defun set-overlay-transform-absolute (overlay-handle origin tracking-origin-to-overlay-transform
                                        &key (overlay *overlay*))
   "Sets the transform to absolute tracking origin."
-  (with-overlay-error
-      (%set-overlay-transform-absolute (table overlay) overlay-handle origin tracking-origin-to-overlay-transform)))
+  (cffi:with-foreign-object (transform '(:struct hmd-matrix-34-t))
+    (setf (cffi:mem-ref transform '(:struct hmd-matrix-34-t)) tracking-origin-to-overlay-transform)
+    (with-overlay-error
+        (%set-overlay-transform-absolute (table overlay) overlay-handle origin transform))))
 
 @export
 (defun overlay-transform-absolute (overlay-handle origin &key (overlay *overlay*))
@@ -290,7 +291,7 @@
     (with-overlay-error
         (%get-overlay-transform-absolute (table overlay) overlay-handle tracking-origin transform))
     (values (cffi:mem-ref tracking-origin 'tracking-universe-origin)
-            (cffi:mem-ref transform '(:struct hmd-matrix-34-t)))))
+            (cffi:mem-ref transform '(:struct hmd-matrix-34-t))))) ; works
 
 @export
 (defun set-overlay-transform-tracked-device-relative (overlay-handle tracked-device
@@ -373,18 +374,18 @@
 @export
 (defun show-overlay (overlay-handle &key (overlay *overlay*))
   "Shows the VR overlay.  For dashboard overlays, only the Dashboard Manager is allowed to call this."
-  (with-overlay-error (%show-overlay (table overlay) overlay-handle)))
+  (with-overlay-error (%show-overlay (table overlay) overlay-handle))) ; works?
 
 @export
 (defun hide-overlay (overlay-handle &key (overlay *overlay*))
   
   "Hides the VR overlay.  For dashboard overlays, only the Dashboard Manager is allowed to call this."
-  (with-overlay-error (%hide-overlay (table overlay) overlay-handle)))
+  (with-overlay-error (%hide-overlay (table overlay) overlay-handle))) ; works?
 
 @export
 (defun overlay-visible-p (overlay-handle &key (overlay *overlay*))
   "Returns true if the overlay is visible."
-  (%is-overlay-visible (table overlay) overlay-handle))
+  (%is-overlay-visible (table overlay) overlay-handle)) ; works
 
 @export
 (defun transform-for-overlay-coordinates (overlay-handle tracking-origin coordinates-in-overlay
@@ -404,7 +405,7 @@
 @export
 (defun poll-next-overlay-event (overlay-handle &key (overlay *overlay*))
   (cffi:with-foreign-object (ev '(:struct vr-event-t))
-    (when (%poll-next-overlay-event (table system) overlay-handle ev (cffi:foreign-type-size
+    (when (%poll-next-overlay-event (table overlay) overlay-handle ev (cffi:foreign-type-size
                                                                       '(:struct vr-event-t)))
       (let ((R (multiple-value-list
                 (ignore-errors
@@ -415,7 +416,7 @@
                 do (format t " #~2,'0x" (cffi:mem-aref ev :uint8 i))
                 when (zerop (mod (1+ i) 8))
                 do (format t "~%")))
-        (first r)))))
+        (first r))))) ; works
 
 @export
 (defun overlay-input-method (overlay-handle &key (overlay *overlay*))
@@ -423,13 +424,13 @@
   (cffi:with-foreign-object (input-method 'vr-overlay-input-method)
     (with-overlay-error
         (%get-overlay-input-method (table overlay) overlay-handle input-method))
-    (cffi:mem-ref input-method 'vr-overlay-input-method)))
+    (cffi:mem-ref input-method 'vr-overlay-input-method))) ; works
 
 @export
 (defun set-overlay-input-method (overlay-handle input-method &key (overlay *overlay*))
   "Sets the input settings for the specified overlay."
   (with-overlay-error
-      (%set-overlay-input-method (table overlay) overlay-handle input-method)))
+      (%set-overlay-input-method (table overlay) overlay-handle input-method))) ; works
 
 @export
 (defun overlay-mouse-scale (overlay-handle &key (overlay *overlay*))
@@ -437,7 +438,7 @@
    but this is typically the size of the underlying UI in pixels."
   (cffi:with-foreign-object (foreign-mouse-scale '(:struct hmd-vector-2-t))
     (with-overlay-error (%get-overlay-mouse-scale (table overlay) overlay-handle foreign-mouse-scale))
-    (cffi:mem-ref foreign-mouse-scale '(:struct hmd-vector-2-t))))
+    (cffi:mem-ref foreign-mouse-scale '(:struct hmd-vector-2-t)))) ; works
 
 @export
 (defun set-overlay-mouse-scale (overlay-handle mouse-scale &key (overlay *overlay*))
@@ -445,7 +446,7 @@
    but this is typically the size of the underlying UI in pixels (not in world space)."
   (cffi:with-foreign-object (pointer '(:struct hmd-vector-2-t))
     (setf (cffi:mem-ref pointer '(:struct hmd-vector-2-t)) mouse-scale)
-    (with-overlay-error (%set-overlay-mouse-scale (table overlay) overlay-handle pointer))))
+    (with-overlay-error (%set-overlay-mouse-scale (table overlay) overlay-handle pointer)))) ; works
 
 @export
 (defun compute-overlay-intersection (overlay-handle intersection-source intersection-direction
@@ -463,7 +464,7 @@
 (defun hover-target-overlay-p (overlay-handle &key (overlay *overlay*))
   "Returns true if the specified overlay is the hover target. An overlay is the hover target when it is
    the last overlay 'moused over' by the virtual mouse pointer."
-  (%is-hover-target-overlay (table overlay) overlay-handle))
+  (%is-hover-target-overlay (table overlay) overlay-handle)) ; works?
 
 @export
 (defun set-overlay-dual-analog-transform (overlay-handle which center radius
@@ -538,7 +539,7 @@
    (see #'set-overlay-rendering-pid)"
   (cffi:with-foreign-objects ((texture-pointer '(:struct texture-t)))
     (let ((space color-space))
-      (cffi:with-foreign-slots ((handle type color-space) texture-pointer '(:struct texture-t))
+      (cffi:with-foreign-slots ((handle type color-space) texture-pointer (:struct texture-t))
         (setf type texture-type
               handle (cffi:make-pointer texture)
               color-space space)
@@ -594,7 +595,7 @@
 @export
 (defun dashboard-visible-p (&key (overlay *overlay*))
   "Returns true if the dashboard is visible."
-  (%is-dashboard-visible (table overlay)))
+  (%is-dashboard-visible (table overlay))) ; works
 
 @export
 (defun dashboard-overlay-active-p (overlay-handle &key (overlay *overlay*))
@@ -604,14 +605,14 @@
 (defun set-dashboard-overlay-scene-process (overlay-handle process-id &key (overlay *overlay*))
   "Sets the dashboard overlay to only appear when the specified process ID has scene focus."
   (with-overlay-error
-      (%set-dashboard-overlay-scene-process (table overlay) overlay-handle process-id)))
+      (%set-dashboard-overlay-scene-process (table overlay) overlay-handle process-id))) ; works
 
 @export
 (defun dashboard-overlay-scene-process (overlay-handle &key (overlay *overlay*))
   (cffi:with-foreign-object (pointer :uint32)
     (with-overlay-error
         (%get-dashboard-overlay-scene-process (table overlay) overlay-handle pointer))
-    (cffi:mem-ref pointer :uint32)))
+    (cffi:mem-ref pointer :uint32))) ; works
 
 @export
 (defun show-dashboard (overlay-to-show &key (overlay *overlay*))
@@ -620,7 +621,7 @@
 @export
 (defun primary-dashboard-device (&key (overlay *overlay*))
   "Returns the tracked device that has the laser pointer in the dashboard."
-  (%get-primary-dashboard-device (table overlay)))
+  (%get-primary-dashboard-device (table overlay))) ; works?
 
 ;; keyboard methods
 
@@ -629,28 +630,28 @@
                       use-minimal-mode-p user-value &key (overlay *overlay*))
   "Show the virtual keyboard to accept input."
   (with-overlay-error
-      (%show-keyboard (table origin) input-mode line-input-mode description max-char existing-text
-                      use-minimal-mode-p user-value)))
+      (%show-keyboard (table overlay) input-mode line-input-mode description max-char existing-text
+                      use-minimal-mode-p user-value))) ; works
 
 @export
 (defun show-keyboard-for-overlay (overlay-handle input-mode line-input-mode description max-char
                                   existing-text use-minimal-mode-p user-value
                                   &key (overlay *overlay*))
   (with-overlay-error
-      (%show-keyboard-for-overlay (table origin) overlay-handle input-mode line-input-mode description
-                                  max-char existing-text use-minimal-mode-p user-value)))
+      (%show-keyboard-for-overlay (table overlay) overlay-handle input-mode line-input-mode description
+                                  max-char existing-text use-minimal-mode-p user-value))) ; works
 
 @export
 (defun keyboard-text (&key (overlay *overlay*) (buffer-size 512))
   "Get the text that was entered into the text input."
   (cffi:with-foreign-string (string-pointer (make-string buffer-size))
     (%get-keyboard-text (table overlay) string-pointer buffer-size)
-    (cffi:foreign-string-to-lisp string-pointer)))
+    (cffi:foreign-string-to-lisp string-pointer))) ; works
 
 @export
 (defun hide-keyboard (&key (overlay *overlay*))
   "Hide the virtual keyboard."
-  (%hide-keyboard (table overlay)))
+  (%hide-keyboard (table overlay))) ; works
 
 @export
 (defun set-keyboard-transform-absolute (origin tracking-origin-to-keyboard-transform
@@ -670,9 +671,9 @@
 (defun show-message-overlay (text caption button-0-text button-1-text button-2-text button-3-text
                              &key (overlay *overlay*))
   "Show the message overlay. This will block and return you a result."
-  (%show-message-overlay (table overlay) text caption button-0-text button-1-text button-2-text button-3-text))
+  (%show-message-overlay (table overlay) text caption button-0-text button-1-text button-2-text button-3-text)) ; works
 
 @export
 (defun close-message-overlay (&key (overlay *overlay*))
   "If the calling process owns the overlay and it's open, this will close it."
-  (%close-message-overlay (table overlay)))
+  (%close-message-overlay (table overlay))) ; works
