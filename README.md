@@ -17,7 +17,7 @@ ExtendedDisplay | 100% | 100% | 100% | IVRExtendedDisplay_001
 Settings | 100% | 100% | 25% | IVRSettings_002
 Applications | 100% | 27% |  23% | IVRApplications_006
 TrackedCamera | 100% | 31% | 23% | IVRTrackedCamera_006
-Screenshots | 100% | - | - | IVRScreenshots_001
+Screenshots | 100% | 100% | 100% | IVRScreenshots_001
 DriverManager | 100% | 100% | 100% | IVRDriverManager_001
 Input | 90% | - | - | IVRInput_007
 IOBuffer | 100% | 0% | 0% | IVRIOBuffer_002

@@ -8,6 +8,11 @@
 
 (annot:enable-annot-syntax)
 
+(defmacro with-screenshot-error (&rest body)
+  (let ((error-name (gensym "error-value")))
+    `(let ((,error-name (progn ,@body)))
+       (if (eq ,error-name :none) t (error "VR overlay error: ~a" ,error-name)))))
+
 @export
 (defclass screenshot ()
   ((handle :initarg :handle :accessor handle)
@@ -27,7 +32,7 @@
                                     :preview :screenshots screenshots)
                  :vr-pathname (screenshot-property-filename
                                (cffi:mem-ref handle 'screenshot-handle-t)
-                               :vr :screenshots screenshots)))
+                               :vr :screenshots screenshots))) ; works
 
 @export
 (defun request-screenshot (&key (preview-pathname #p"preview.png")
@@ -35,9 +40,10 @@
                                 (type :stereo) (screenshots *screenshots*))
   "Requests a screenshot. Returns a handle to the screenshot."
   (cffi:with-foreign-object (handle 'screenshot-handle-t)
-    (%request-screenshot (table screenshots) handle type
-                         (namestring preview-pathname) (namestring vr-pathname))
-    (screenshot-from-handle handle)))
+    (with-screenshot-error 
+        (%request-screenshot (table screenshots) handle type
+                             (namestring preview-pathname) (namestring vr-pathname)))
+    (screenshot-from-handle handle))) ; works
 
 @export
 (defun hook-screenshot (screenshot-type-list &key (screenshots *screenshots*))
@@ -47,7 +53,8 @@
       (loop for i below number-of-types
             do (setf (cffi:mem-aref supported-types 'vr-screenshot-type i)
                      (nth i screenshot-type-list)))
-      (%hook-screenshot (table screenshots) supported-types number-of-types))))
+      (with-screenshot-error
+          (%hook-screenshot (table screenshots) supported-types number-of-types))))) ; works
 
 @export
 (defun screenshot-property-type (handle &key (screenshots *screenshots*))
@@ -55,7 +62,7 @@
   (cffi:with-foreign-object (screenshot-error 'vr-screenshot-error)
     (prog1 (%get-screenshot-property-type (table screenshots) handle screenshot-error)
       (unless (eq :none (cffi:mem-ref screenshot-error 'vr-screenshot-error))
-        (error "VR screenshot error ~a" (cffi:mem-ref screenshot-error 'vr-screenshot-error))))))
+        (error "VR screenshot error ~a" (cffi:mem-ref screenshot-error 'vr-screenshot-error)))))) ; works
 
 @export
 (defun screenshot-property-filename (handle filename-type &key (screenshots *screenshots*))
@@ -64,14 +71,16 @@
     (cffi:with-foreign-object (error-pointer 'vr-screenshot-error) 
       (%get-screenshot-property-filename (table screenshots) handle filename-type buffer 512
                                          error-pointer)
-      (cffi:foreign-string-to-lisp buffer))))
+      (unless (eq :none (cffi:mem-ref error-pointer 'vr-screenshot-error))
+        (error "VR screenshot error ~a" (cffi:mem-ref error-pointer 'vr-screenshot-error)))
+      (cffi:foreign-string-to-lisp buffer)))) ; works
 
 @export
 (defun update-screenshot-progress (screenshot progress &key (screenshots *screenshots*))
   "Present the user with a progress display during screenshot generation."
   (let ((error-value (%update-screenshot-progress (table screenshots) (handle screenshot) progress)))
     (unless (eq error-value :none)
-      (error "VR screenshot error ~a" error-value))))
+      (error "VR screenshot error ~a" error-value)))) ; works?
 
 @export
 (defun take-stereo-screenshot (preview-pathname vr-pathname &key (screenshots *screenshots*))
@@ -82,7 +91,7 @@
                                      handle (namestring preview-pathname)
                                      (namestring vr-pathname))))
       (unless (eq error-value :none) (error "VR screenshot error ~a" error-value))
-      (screenshot-from-handle handle))))
+      (screenshot-from-handle handle)))) ; works?
 
 @export
 (defun submit-screenshot (screenshot &key (screenshots *screenshots*))
@@ -91,4 +100,4 @@
           (%submit-screenshot (table screenshots) (handle screenshot) (screenshot-type screenshot)
                               (namestring (preview-pathname screenshot))
                               (namestring (vr-pathname screenshot)))))
-    (unless (eq error-value :none) (error "VR screenshot error ~a" error-value))))
+    (unless (eq error-value :none) (error "VR screenshot error ~a" error-value)))) ; works?
