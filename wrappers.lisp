@@ -31,12 +31,45 @@
     (setf (aref a 15) 1.0)
     a))
 
+(defmethod cffi:translate-into-foreign-memory (value (type hmd-matrix-34-t-tclass) pointer)
+  (loop for j below 4
+        do (loop for i below 3
+                 do (setf (cffi:mem-ref pointer :float (+ (* i 4) j))
+                          (aref value (+ (* j 4) i))))))
+
+(defmethod cffi:translate-into-foreign-memory (value (type hmd-vector-2-t-tclass) pointer)
+  (setf (cffi:mem-aref pointer :float) (aref value 0)
+        (cffi:mem-aref pointer :float 1) (aref value 1)))
+
+(defmethod cffi:translate-into-foreign-memory (value (type hmd-vector-3-t-tclass) pointer)
+  (setf (cffi:mem-aref pointer :float) (aref value 0)
+        (cffi:mem-aref pointer :float 1) (aref value 1)
+        (cffi:mem-aref pointer :float 2) (aref value 2)))
+
+(defmethod cffi:translate-into-foreign-memory (value (type hmd-vector-4-t-tclass) pointer)
+  (setf (cffi:mem-aref pointer :float) (aref value 0)
+        (cffi:mem-aref pointer :float 1) (aref value 1)
+        (cffi:mem-aref pointer :float 2) (aref value 2)
+        (cffi:mem-aref pointer :float 3) (aref value 3)))
+
 (defmethod cffi:translate-from-foreign (value (type hmd-matrix-44-t-tclass))
   (let ((a (make-array 16 :element-type 'single-float :initial-element 0.0)))
     (dotimes (j 4)
       (dotimes (i 4)
         (setf (aref a (+ i (* j 4))) (cffi:mem-aref value :float (+ j (* i 4))))))
     a))
+
+(defmethod cffi:translate-from-foreign (value (type hmd-quad-t-tclass))
+  (let ((a (make-array '(4))))
+    (loop for i from 0 below 4 do
+          (setf (aref a i) (cffi:mem-aref value '(:struct hmd-vector-3-t) i)))
+    a))
+
+(defmethod cffi:translate-into-foreign-memory (value (type hmd-quad-t-tclass) pointer)
+  (loop for i from 0 below 4 do
+        (setf (cffi:mem-aref pointer '(:struct hmd-vector-3-t) i)
+              (aref value i))))
+
 
 (defmethod cffi:translate-from-foreign (value (type hmd-quaternionf-t-tclass))
   (cffi:with-foreign-slots ((w x y z) value (:struct hmd-quaternionf-t))
@@ -54,6 +87,20 @@
     (setf (aref a 0) (cffi:mem-aref value :float 0)
           (aref a 1) (cffi:mem-aref value :float 1)
           (aref a 2) (cffi:mem-aref value :float 2))
+    a))
+
+(defmethod cffi:translate-from-foreign (value (type hmd-vector-2-t-tclass))
+  (let ((a (make-array '(2) :initial-element 0.0)))
+    (setf (aref a 0) (cffi:mem-aref value :float 0)
+          (aref a 1) (cffi:mem-aref value :float 1))
+    a))
+
+(defmethod cffi:translate-from-foreign (value (type hmd-vector-4-t-tclass))
+  (let ((a (make-array '(4) :initial-element 0.0)))
+    (setf (aref a 0) (cffi:mem-aref value :float 0)
+          (aref a 1) (cffi:mem-aref value :float 1)
+          (aref a 2) (cffi:mem-aref value :float 2)
+          (aref a 3) (cffi:mem-aref value :float 3))
     a))
 
 ;;; fixme: replace this with map to functions instead of types, so

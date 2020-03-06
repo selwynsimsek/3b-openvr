@@ -90,14 +90,14 @@
   (cffi:with-foreign-object (pointer '(:struct hmd-quad-t) (length quads))
     (loop for i from 0 below (length quads)
           do (setf (cffi:mem-aref pointer '(:struct hmd-quad-t) i) (aref quads i)))
-    (%set-working-collision-bounds-info (table chaperone-setup) pointer (length quads)))) ; not tested yet
+    (%set-working-collision-bounds-info (table chaperone-setup) pointer (length quads)))) ; works
 
 @export
 (defun set-working-perimeter (points &key (chaperone-setup *chaperone-setup*))
   (cffi:with-foreign-object (pointer '(:struct hmd-vector-2-t) (length points))
     (loop for i from 0 below (length points)
           do (setf (cffi:mem-aref pointer '(:struct hmd-vector-2-t) i) (aref points i)))
-    (%set-working-perimeter (table chaperone-setup) pointer (length points)))) ; not tested yet
+    (%set-working-perimeter (table chaperone-setup) pointer (length points)))) ; works
 
 @export
 (defun set-working-seated-zero-pose-to-raw-tracking-pose
@@ -105,7 +105,7 @@
   (cffi:with-foreign-object (pointer '(:struct hmd-matrix-34-t))
     (setf (cffi:mem-ref pointer '(:struct hmd-matrix-34-t))
           pose)
-    (%set-working-seated-zero-pose-to-raw-tracking-pose (table chaperone-setup) pose)))
+    (%set-working-seated-zero-pose-to-raw-tracking-pose (table chaperone-setup) pointer))) ; works
 
 @export
 (defun set-working-standing-zero-pose-to-raw-tracking-pose
@@ -113,17 +113,17 @@
   (cffi:with-foreign-object (pointer '(:struct hmd-matrix-34-t))
     (setf (cffi:mem-ref pointer '(:struct hmd-matrix-34-t))
           pose)
-    (%set-working-standing-zero-pose-to-raw-tracking-pose (table chaperone-setup) pose)))
+    (%set-working-standing-zero-pose-to-raw-tracking-pose (table chaperone-setup) pointer))) ; works
 
 @export
 (defun reload-from-disk (configuration-file &key (chaperone-setup *chaperone-setup*))
-  (%reload-from-disk (table chaperone-setup) configuration-file))
+  (%reload-from-disk (table chaperone-setup) configuration-file)) ; works
 
 @export
 (defun live-seated-zero-pose-to-raw-tracking-pose (&key (chaperone-setup *chaperone-setup*))
   (cffi:with-foreign-object (pointer '(:struct hmd-matrix-34-t))
     (%get-live-seated-zero-pose-to-raw-tracking-pose (table chaperone-setup) pointer)
-    (cffi:mem-ref pointer '(:struct hmd-matrix-34-t))))
+    (cffi:mem-ref pointer '(:struct hmd-matrix-34-t)))) ; works
 
 @export
 (defun export-live (&key (chaperone-setup *chaperone-setup*))
