@@ -7,7 +7,7 @@ So far, nearly everything is exposed, with the notable exceptions of the [Skelet
 Interface | Exposed? | Tested? | Works? | Version
 --- | --- | --- | --- | ---
 System | 85% | 0% | 0% | IVRSystem_020
-Chaperone | 100% | 88% | 75% | IVRChaperone_003
+Chaperone | 100% | 100% | 75% | IVRChaperone_003
 ChaperoneSetup | 100% | 100% | 100% | IVRChaperoneSetup_006
 Compositor | 90% | 70% | 57% | IVRCompositor_022
 Overlay | 100% | 0% | 0% | IVROverlay_022

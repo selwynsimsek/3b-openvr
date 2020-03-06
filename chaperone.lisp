@@ -41,8 +41,12 @@
 (defun set-scene-color (color &key (chaperone *chaperone*))
   "Optionally give the chaperone system a hint about the color and brightness in the scene."
   (cffi:with-foreign-object (color-pointer '(:struct hmd-color-t))
-    (setf (cffi:mem-ref color-pointer '(:struct hmd-color-t)) color)
-    (%set-scene-color (table chaperone) color-pointer))) ; doesn't work
+    (cffi:with-foreign-slots ((r g b a) color-pointer (:struct hmd-color-t))
+      (setf r (r color)
+            g (g color)
+            b (b color)
+            a (a color))
+      (%set-scene-color (table chaperone) color)))) ; doesn't really work
 
 (defun bounds-color (collision-bounds-fade-distance &key (chaperone *chaperone*))
   "Get the current chaperone bounds draw color and brightness."
@@ -53,7 +57,7 @@
     (let ((return-vector (make-array (list 10))))
       (loop for i from 0 below (length return-vector) do
             (setf (aref return-vector i) (cffi:mem-aref color-array '(:struct hmd-color-t) i)))
-      (values (cffi:mem-aref camera-color '(:struct hmd-color-t)) return-vector)))) ; not sure what to do here?
+      (values (cffi:mem-aref camera-color '(:struct hmd-color-t)) return-vector)))) ; doesn't really work
 
 (defmethod print-object ((object color) stream)
   (print-unreadable-object (object stream)
