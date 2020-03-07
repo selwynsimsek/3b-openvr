@@ -544,7 +544,7 @@
               handle (cffi:make-pointer texture)
               color-space space)
         (with-overlay-error
-            (%set-overlay-texture (table overlay) overlay-handle texture-pointer))))))
+            (%set-overlay-texture (table overlay) overlay-handle texture-pointer)))))) ; works
 
 @export
 (defun clear-overlay-texture (overlay-handle &key (overlay *overlay*))
@@ -567,7 +567,7 @@
   "Separate interface for providing the image through a filename: can be png or jpg,
    and should not be bigger than 1920x1080.This function can only be called by the overlay's renderer process."
   (with-overlay-error
-      (%set-overlay-from-file (table overlay) overlay-handle file-path)))
+      (%set-overlay-from-file (table overlay) overlay-handle file-path))) ; works
 
 ;;(defun overlay-texture (overlay-handle)) ;??
 ;;(defun release-native-overlay-handle) ;??
@@ -578,7 +578,7 @@
                               (height :uint32))
     (with-overlay-error
         (%get-overlay-texture-size (table overlay) overlay-handle width height))
-    (values (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32))))
+    (values (cffi:mem-ref width :uint32) (cffi:mem-ref height :uint32)))) ; works
 
 ;; dashboard overlay methods
 
