@@ -25,3 +25,4 @@ IOBuffer | 100% | 0% | 0% | IVRIOBuffer_002
 SpatialAnchors | 100% | 0% | 0% | IVRSpatialAnchors_001
 Debug | 100% | 100% | 100% | IVRDebug_001
 Notifications | 100% | Not implemented in OpenVR | - | IVRNotifications_002
+HeadsetView | 100% | 0% | 0% | IVRHeadsetView_001

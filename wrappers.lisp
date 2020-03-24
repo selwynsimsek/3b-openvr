@@ -21,6 +21,7 @@
 (defvar *spatial-anchors*)
 (defvar *debug*)
 (defvar *notifications*)
+(defvar *headset-view*)
 
 (defmethod cffi:translate-from-foreign (value (type hmd-matrix-34-t-tclass))
   (let ((a (make-array 16 :element-type 'single-float :initial-element 0.0)))
@@ -478,6 +479,13 @@
   *debug*)
 
 @export
+(defun vr-headset-view ()
+  (check-clear)
+  (unless *headset-view*
+    (setf *headset-view* (make-instance 'vr-headset-view)))
+  *headset-view*)
+
+@export
 (defun vr-notifications ()
   (check-clear)
   (unless *notifications*
@@ -504,7 +512,8 @@
          (*io-buffer* nil)
          (*spatial-anchors* nil)
          (*debug* nil)
-         (*notifications* nil))
+         (*notifications* nil)
+         (*headset-view* nil))
      (unwind-protect
           (progn (vr-system)
                  (vr-chaperone)
@@ -524,6 +533,7 @@
                  (vr-spatial-anchors)
                  (vr-debug)
                  (vr-notifications)
+                 (vr-headset-view)
                  ,@body)
        (vr-shutdown-internal))))
 
