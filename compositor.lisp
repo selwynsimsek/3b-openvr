@@ -231,15 +231,15 @@
 
 @export
 (defun show-mirror-window (&key (compositor *compositor*))
-  (%show-mirror-window (table compositor))) ; doesn't work?
+  (%show-mirror-window (table compositor))) ; removed in 1.7.15
 
 @export
 (defun hide-mirror-window (&key (compositor *compositor*))
-  (%hide-mirror-window (table compositor))) ; doesn't work?
+  (%hide-mirror-window (table compositor))) ; removed in 1.7.15
 
 @export
 (defun mirror-window-visible-p (&key (compositor *compositor*))
-  (%is-mirror-window-visible (table compositor))) ; doesn't work?
+  (%is-mirror-window-visible (table compositor))) ; removed in 1.7.15
 
 @export
 (defun dump-images (&key (compositor *compositor*))
@@ -261,21 +261,26 @@
 (defun suspend-rendering (&key (suspend-p t) (compositor *compositor*))
   (%suspend-rendering (table compositor) suspend-p)) ; works
 
+@export
 (defun mirror-gl-texture (eye &key (compositor *compositor*))
+  "Must be called in the render loop."
   (cffi:with-foreign-objects ((texture-id 'gl-uint-t)
                               (shared-texture-id 'gl-shared-texture-handle-t))
     (%get-mirror-texture-gl (table compositor) eye texture-id shared-texture-id)
     (values (cffi:mem-ref texture-id 'gl-uint-t)
-            (cffi:mem-ref shared-texture-id 'shared-texture-handle-t)))) ; doesn't work
+            (cffi:mem-ref shared-texture-id 'shared-texture-handle-t)))) ; works
 
-(defun release-shared-gl-texture (&key (compositor *compositor*))
-  (error "implement me"))
+@export
+(defun release-shared-gl-texture (texture-id shared-texture-handle &key (compositor *compositor*))
+  (%release-shared-gltexture (table compositor) texture-id shared-texture-handle))
 
-(defun lock-gl-shared-texture (&key (compositor *compositor*))
-  (error "implement me"))
+@export
+(defun lock-gl-shared-texture (shared-texture-handle &key (compositor *compositor*))
+  (%lock-glshared-texture-for-access (table compositor) shared-texture-handle))
 
-(defun unlock-gl-shared-texture (&key (compositor *compositor*))
-  (error "implement me"))
+@export
+(defun unlock-gl-shared-texture (shared-texture-handle &key (compositor *compositor*))
+  (%unlock-glshared-texture-for-access (table compositor) shared-texture-handle))
 
 @export
 (defun set-explicit-timing-mode (timing-mode &key (compositor *compositor*))
