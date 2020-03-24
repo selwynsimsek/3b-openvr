@@ -218,7 +218,7 @@
             (= l 2))
        "vr-overlay-intersection-mask-primitive-data-t")
       ((and (string= f "reserved")
-            (= l 30))
+            (= l 29))
        "vr-event-data-t")
       (t (error (format nil  "??  ~a" (length fields)))))))
 
