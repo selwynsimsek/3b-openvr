@@ -238,35 +238,6 @@
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-max)
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max)))) ; works
 
-
-(defun set-overlay-render-model (overlay-handle render-model-name color &key (overlay *overlay*))
-  "Sets render model to draw behind this overlay and the vertex color to use, pass NIL for color to match the
-   overlays vertex color. 
-   The model is scaled by the same amount as the overlay, with a default of 1m."
-  (cffi:with-foreign-object (foreign-color '(:struct hmd-color-t))
-    (when color (setf (cffi:mem-ref foreign-color '(:struct hmd-color-t)) color))
-    (with-overlay-error
-        (%set-overlay-render-model (table overlay) overlay-handle render-model-name
-                                   (if color foreign-color (cffi:null-pointer)))))) ; works?
-
-(defun overlay-render-model (overlay-handle &key (overlay *overlay*))
-  "Gets render model to draw behind this overlay"
-  (cffi:with-foreign-objects ((error-pointer 'vr-overlay-error)
-                              (color-pointer '(:struct hmd-color-t)))
-    (setf (cffi:mem-ref error-pointer 'vr-overlay-error) :none)
-    (let ((length (%get-overlay-render-model (table overlay) overlay-handle
-                                             (cffi:null-pointer) 0 color-pointer error-pointer)))
-      (unless (eq (cffi:mem-ref error-pointer 'vr-overlay-error) :none)
-        (error "Overlay error: ~a" (cffi:mem-ref error-pointer 'vr-overlay-error)))
-      (cffi:with-foreign-string (string-pointer (make-string length))
-        (%get-overlay-render-model (table overlay) overlay-handle string-pointer
-                                   length color-pointer error-pointer)
-        (unless (eq (cffi:mem-ref error-pointer 'vr-overlay-error) :none)
-          (error "Overlay error: ~a" (cffi:mem-ref error-pointer 'vr-overlay-error)))
-        (values (cffi:foreign-string-to-lisp string-pointer)
-                (cffi:mem-ref color-pointer '(:struct hmd-color-t))))))) ; works?
-
-
 (defun overlay-transform-type (overlay-handle &key (overlay *overlay*))
   "Returns the transform type of this overlay."
   (cffi:with-foreign-object (transform-type 'vr-overlay-transform-type)

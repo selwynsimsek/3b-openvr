@@ -153,7 +153,54 @@
    #:find-overlay
    #:create-overlay
    #:destroy-overlay
-   #:overlay-key)
+   #:overlay-key
+   #:overlay-name
+   #:set-overlay-name
+   #:set-overlay-rendering-pid
+   #:overlay-rendering-pid
+   #:set-overlay-flag
+   #:overlay-flag
+   #:overlay-flags
+   #:set-overlay-color
+   #:overlay-color
+   #:set-overlay-alpha
+   #:overlay-alpha
+   #:set-overlay-texel-aspect
+   #:overlay-texel-aspect
+   #:set-overlay-sort-order
+   #:overlay-sort-order
+   #:set-overlay-width-in-meters
+   #:overlay-width-in-meters
+   #:set-overlay-curvature
+   #:overlay-curvature
+   #:set-overlay-texture-color-space
+   #:overlay-texture-color-space
+   #:set-overlay-texture-bounds
+   #:overlay-texture-bounds
+   #:overlay-transform-type
+   #:overlay-transform-absolute
+   #:show-overlay
+   #:hide-overlay
+   #:overlay-visible-p
+   #:poll-next-overlay-event
+   #:overlay-input-method
+   #:set-overlay-input-method
+   #:overlay-mouse-scale
+   #:set-overlay-mouse-scale
+   #:hover-target-overlay-p
+   #:set-overlay-texture
+   #:set-overlay-from-file
+   #:overlay-texture-size
+   #:dashboard-visible-p
+   #:set-dashboard-overlay-scene-process
+   #:dashboard-overlay-scene-process
+   #:primary-dashboard-device
+   #:show-keyboard
+   #:show-keyboard-for-overlay
+   #:keyboard-text
+   #:hide-keyboard
+   #:show-message-overlay
+   #:close-message-overlay)
   ;;pragma.lisp
   ;;render-models.lisp
   (:export
@@ -186,7 +233,9 @@
    )
   ;;tracked-camera.lisp
   (:export
-   #:has-camera-p)
+   #:has-camera-p
+   #:set-camera-tracking-space
+   #:camera-tracking-space)
   ;;wrappers.lisp
   (:export
    #:vr-event
