@@ -495,3 +495,25 @@
                (lambda (index) (cffi:mem-aref (finger-splay ret-val) :float index))
                #(0 1 2 3)))
     ret-val))
+
+(defun dominant-hand (&key (input *input*))
+  "Returns the current dominant hand for the user for this application. This function will only return success for 
+   applications which include 'supports_dominant_hand_setting': true in their action manifests. The dominant hand will
+   only change after a call to #'update-action-state, and the action data returned after that point will use the new
+   dominant hand."
+  (cffi:with-foreign-object (pointer 'tracked-controller-role)
+    (with-input-error
+        (%get-dominant-hand (table input) pointer)
+      (cffi:mem-ref pointer 'tracked-controller-role))))
+
+(defun set-dominant-hand (dominant-hand &key (input *input*))
+  "Sets the dominant hand for the user for this application."
+  (with-input-error
+    (%set-dominant-hand (table input) dominant-hand)))
+
+(defun binding-variant (device-path &key (input *input*) (buffer-size 512))
+  "Returns the variant set in the current bindings. If the binding doesn't include a variant setting, this function 
+   will return an empty string."
+  (cffi:with-foreign-string (pointer (make-string buffer-size))
+    (with-input-error (%get-binding-variant (table input) device-path pointer buffer-size))
+    (cffi:foreign-string-to-lisp pointer)))
