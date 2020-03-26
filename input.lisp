@@ -5,14 +5,14 @@
 
 (in-package 3b-openvr)
 
-(annot:enable-annot-syntax)
+
 
 (defmacro with-input-error (&rest body)
   (let ((error-name (gensym "error-value")))
     `(let ((,error-name (progn ,@body)))
        (if (eq ,error-name :none) t (error "VR input error: ~a" ,error-name)))))
 
-@export
+
 (defclass input-action-data ()
   (active-origin active-p))
 
@@ -62,7 +62,7 @@
 
 ;; handle management
 
-@export
+
 (defun set-action-manifest-path (action-manifest-path &key (input *input*))
   "Sets the path to the action manifest JSON file that is used by this application. If this
    information was set on the Steam partner site, calls to this function are ignored. If the Steam 
@@ -73,7 +73,7 @@
 ;; (set-action-manifest-path "/home/selwyn/openvr/samples/bin/hellovr_actions.json")
 
 
-@export
+
 (defun action-set (action-set-name &key (input *input*))
   "Returns an integer representing an action set. This object is used for all performance-sensitive
    calls."
@@ -82,7 +82,7 @@
         (%get-action-set-handle (table input) action-set-name handle-pointer))
     (cffi:mem-ref handle-pointer 'vr-action-set-handle-t))) ; works
 
-@export
+
 (defun action (action-name &key (input *input*))
   "Returns an integer representing an action. This handle is used for all performance-sensitive 
    calls."
@@ -91,7 +91,7 @@
         (%get-action-handle (table input) action-name handle-pointer))
     (cffi:mem-ref handle-pointer 'vr-action-handle-t))) ; works
 
-@export
+
 (defun input-source (input-source-pathname &key (input *input*))
   "Returns an integer representing an input source for any path in the input system.
    E.g. /user/hand/right"
@@ -102,7 +102,7 @@
 
 ;; reading action state
 
-@export
+
 (defun update-action-state (active-action-sets &key (input *input*))
   "Reads the current state into all actions. After this call, the results of *action-data calls 
    will be the same until the next call to #'update-action-state."
@@ -117,7 +117,7 @@
                               (cffi:foreign-type-size '(:struct vr-active-action-set-t))
                               (length active-action-sets))))) ; works
 
-@export
+
 (defun digital-action-data (action &key (restrict-to-device +invalid-input-value-handle+)
                                         (input *input*))
   "Reads the state of a digital action."
@@ -128,7 +128,7 @@
                                   restrict-to-device))
     (cffi:mem-ref pointer '(:struct input-digital-action-data-t)))) ; works
 
-@export
+
 (defun analog-action-data (action &key (restrict-to-device +invalid-input-value-handle+)
                                        (input *input*))
   "Reads the state of an analog action given its handle."
@@ -139,7 +139,7 @@
                                  restrict-to-device))
     (cffi:mem-ref pointer '(:struct input-analog-action-data-t))))
 
-@export
+
 (defun pose-action-data-relative-to-now (action tracking-universe-origin predicted-seconds-from-now
                                          &key (restrict-to-device +invalid-input-value-handle+)
                                               (input *input*))
@@ -154,7 +154,7 @@
                                                restrict-to-device))
     (cffi:mem-ref pointer '(:struct input-pose-action-data-t))))
 
-@export
+
 (defun pose-action-data-for-next-frame (action tracking-universe-origin
                                         &key (restrict-to-device +invalid-input-value-handle+)
                                              (input *input*))
@@ -171,7 +171,7 @@
          restrict-to-device))
     (cffi:mem-ref pointer '(:struct input-pose-action-data-t)))) ; works
 
-@export
+
 (defun skeletal-action-data (action &key (input *input*))
   "Reads the state of a skeletal action given its handle."
   (cffi:with-foreign-object (pointer '(:struct input-skeletal-action-data-t))
@@ -183,14 +183,14 @@
 
 ;; static skeletal data
 
-@export
+
 (defun bone-count (action &key (input *input*))
   "Reads the number of bones in skeleton associated with the given action."
   (cffi:with-foreign-object (pointer :uint32)
     (with-input-error (%get-bone-count (table input) action pointer))
     (cffi:mem-ref pointer :uint32))) ; works
 
-@export
+
 (defun bone-hierarchy (action &key (input *input*))
   "Returns an array of each bone's parent in the skeleton associated with the given action."
   #-sbcl (do-bone-hierarchy action input)
@@ -206,7 +206,7 @@
               do (setf (aref result i) (cffi:mem-aref pointer 'bone-index-t i))
               finally (return result)))))) ; works
 
-@export
+
 (defun bone-name (action bone &key (input *input*))
   "Returns the name of the bone in the skeleton associated with the given action."
   (cffi:with-foreign-string (foreign-string (make-string (1- +max-bone-name-length+)))
@@ -217,7 +217,7 @@
       (with-input-error (%get-bone-name (table input) action bone foreign-string (1- +max-bone-name-length+))))
     (cffi:foreign-string-to-lisp foreign-string))) ; works
 
-@export
+
 (defun skeletal-reference-transforms (action skeletal-transform-space skeletal-reference-pose
                                       &key (input *input*))
   "Returns the bone transforms for a specific static skeletal reference pose."
@@ -231,7 +231,7 @@
               do (setf (aref result i) (cffi:mem-ref pointer '(:struct vr-bone-transform-t) i))
               finally (return result))))))
 
-@export
+
 (defun skeletal-tracking-level-for-handle (handle &key (input *input*))
   "Reads the level of accuracy to which the controller is able to track the user to recreate a 
    skeletal pose."
@@ -241,7 +241,7 @@
 
 ;; dynamic skeletal data
 
-@export
+
 (defun skeletal-bone-data (action skeletal-transform-space motion-range &key (input *input*))
   "Returns the state of the skeletal bone data associated with this action."
   (let ((count (bone-count action)))
@@ -254,7 +254,7 @@
               do (setf (aref result i) (cffi:mem-ref pointer '(:struct vr-bone-transform-t) i))
               finally (return result))))))
 
-@export
+
 (defun skeletal-summary-data (action &key (input *input*) (summary-type :animation))
   "Reads summary information about the current pose of the skeleton associated with the given
    action."
@@ -276,7 +276,7 @@
 
 ;; haptics
 
-@export
+
 (defun trigger-haptic-vibration-action (action from-now duration frequency amplitude
                                         restrict-to-device &key (input *input*))
   "Triggers a haptic event as described by the specified action."
@@ -286,7 +286,7 @@
 
 ;; action origins
 
-@export
+
 (defun action-origins (action-set action &key (input *input*))
   "Retrieve origins for an action."
   (cffi:with-foreign-object (pointer '(:pointer vr-input-value-handle-t) 10)
@@ -296,14 +296,14 @@
                                     (cffi:mem-ref pointer 'vr-input-value-handle-t i))
             finally (return result)))))
 
-@export
+
 (defun origin-localized-name (origin &key (input *input*))
   "application to specify which parts of the origin's information it wants a string for."
   (cffi:with-foreign-string (foreign-string (make-string 512 :initial-element #\Space))
     (%get-origin-localized-name (table input) origin foreign-string 512 64)
     (cffi:foreign-string-to-lisp foreign-string)))
 
-@export
+
 (defun origin-tracked-device-information (input-source &key (input *input*))
   "Retrieves useful information for the origin of this action."
   (cffi:with-foreign-object (pointer '(:struct input-binding-info-t))
@@ -313,7 +313,7 @@
                                          (cffi:foreign-type-size '(:struct input-origin-info-t))))
     (cffi:mem-ref pointer '(:struct input-origin-info-t)))) ; works - put in render-model component name
 
-@export
+
 (defun action-binding-information (action &key (input *input*))
   "Retrieves useful information about the bindings for an action."
   (cffi:with-foreign-objects ((integer-pointer :uint32)
@@ -330,12 +330,12 @@
                                                                 i))
             finally (return binding-information))))) ; needs to be improved
 
-@export
+
 (defun show-action-origins (action-set action &key (input *input*))
   "Shows the current binding for the action in the headset."
   (with-input-error (%show-action-origins (table input) action-set action)))
 
-@export
+
 (defun show-bindings-for-action-set (action-sets origin-to-highlight &key (input *input*))
   "Shows the current binding for all the actions in the specified action sets."
   (cffi:with-foreign-object (pointer '(:struct vr-active-action-set-t) (length action-sets))
@@ -349,11 +349,11 @@
 
 ;; legacy input
 
-@export
+
 (defun using-legacy-input-p (&key (input *input*))
   (%is-using-legacy-input (table input))) ; works
 
-@export
+
 (defclass action ()
   ((name :accessor name :initform (error "Need a name") :initarg :name)
    (handle :accessor handle :initform (error "Need a handle") :initarg :handle)
@@ -365,28 +365,28 @@
       (object stream)
     (format stream "3B-OPENVR::ACTION ~a ~a" (name object) (handle object))))
 
-@export
+
 (defclass digital-action (action)
   ((action-data :accessor action-data :initform (make-instance 'input-digital-action-data))))
 
-@export
+
 (defclass analog-action (action)
   ((action-data :accessor action-data :initform (make-instance 'input-analog-action-data))))
 
-@export
+
 (defclass haptic-action (action)
   ())
 
-@export
+
 (defclass pose-action (action)
   ((action-data :accessor action-data :initform (make-instance 'input-pose-action-data))))
 
-@export
+
 (defclass skeletal-action (action)
   ((action-data :accessor action-data :initform (make-instance 'input-skeletal-action-data))
    (bones :accessor bones :initarg :bones)))
 
-@export
+
 (defclass bone ()
   ((name :accessor name :initarg :name)
    (index :accessor index :initarg :index)
@@ -398,12 +398,12 @@
     (format stream "3B-OPENVR::BONE ~a ~a" (name object) (index object))))
 
 
-@export
+
 (defun load-manifest (manifest-name)
   "Decodes a OpenVR action manifest file at the given pathname specifier."
   (cl-json:decode-json-from-source (pathname manifest-name)))
 
-@export
+
 (defun manifest-actions (manifest-name)
   "Returns a vector of actions that are contained in the manifest file."
   (map 'vector (lambda (entry)
@@ -443,7 +443,7 @@
   (format t "a")
   action)
 
-@export
+
 (defun update-action-set (action-set-name)
   (update-action-state (vector (make-instance 'active-action-set
                                               :action-set-handle (action-set action-set-name)
@@ -454,7 +454,7 @@
                                               :priority 1
                                               :padding 0))))
 
-@export
+
 (defgeneric update-data (action))
 
 (defmethod update-data ((action digital-action))
@@ -476,11 +476,11 @@
   ;(setf (action-data action) (skeletal-bone-data (handle action) :parent :out-controller))
   ) ;do nothing
 
-@export
+
 (defmethod trigger-action ((action haptic-action) from-now duration frequency amplitude)
   (trigger-haptic-vibration-action (handle action) from-now duration frequency amplitude +invalid-input-value-handle+))
 
-@export
+
 (defmethod skeletal-tracking-level ((action skeletal-action))
   (skeletal-tracking-level-for-handle (handle action)))
 

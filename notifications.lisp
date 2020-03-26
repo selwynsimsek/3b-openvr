@@ -7,14 +7,14 @@
 
 (in-package 3b-openvr)
 
-(annot:enable-annot-syntax)
+
 
 (defmacro with-notification-error (&rest body)
   (let ((error-name (gensym "error-value")))
     `(let ((,error-name (progn ,@body)))
        (if (eq ,error-name :ok) t (error "VR overlay error: ~a" ,error-name)))))
 
-@export
+
 (defclass notification ()
   ((id :initarg :id :accessor id)
    (removed-p :initarg :removed-p :accessor removed-p :initform nil)
@@ -25,14 +25,14 @@
    (style :initarg :style :accessor style)
    (image :initarg :image :accessor image)))
 
-@export
+
 (defclass notification-bitmap ()
   ((width :initarg :width :accessor width)
    (height :initarg :height :accessor height)
    (bytes-per-pixel :initarg :bytes-per-pixel :accessor bytes-per-pixel)
    (image-buffer :initarg :image-buffer :accessor image-buffer)))
 
-@export
+
 (defun create-notification (overlay-handle user-value type text style image &key (notifications *notifications*))
   "Create a notification and enqueue it to be shown to the user.
    An overlay handle is required to create a notification, as otherwise it would be impossible for a user to act on it.
@@ -60,7 +60,7 @@
                                  :overlay-handle overlay-handle :user-value user-value :notification-type type
                                  :text text :style style :image image)))
 
-@export
+
 (defun remove-notification (notification &key (notifications *notifications*))
   "Destroy a notification, hiding it first if it currently shown to the user."
   (with-notification-error

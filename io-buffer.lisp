@@ -13,9 +13,9 @@
 
 (in-package 3b-openvr)
 
-(annot:enable-annot-syntax)
 
-@export
+
+
 (defclass io-buffer () ; gray streams for this one? no, too slow
   ((handle :initarg :handle :accessor handle)
    (path :initarg :path :accessor path)
@@ -24,7 +24,7 @@
    (number-of-elements :initarg :number-of-elements :accessor number-of-elements)
    (closed-p :initarg :closed-p :accessor closed-p)))
 
-@export
+
 (defun open-io-buffer (path mode element-size number-of-elements &key (io-buffer *io-buffer*))
   (cffi:with-foreign-object (pointer 'obuffer-handle-t)
     (let ((error-code
@@ -39,14 +39,14 @@
                      :closed-p nil
                      :number-of-elements number-of-elements))))
 
-@export
+
 (defun close-io-buffer (buffer &key (io-buffer *io-buffer*))
   (let ((error-code (%close (table io-buffer) (handle buffer))))
     (if (eq error-code :none)
         (setf (closed-p buffer) t)
         (error "IO Buffer error: ~a" error-code))))
 
-@export
+
 (defun read-from-buffer (buffer destination number-of-bytes &key (io-buffer *io-buffer*))
   "reads up to number-of-bytes from buffer into destination, returning the number of bytes read.
    destination must be a shareable byte vector."
@@ -58,7 +58,7 @@
               (cffi:mem-ref unread :uint32)
               (error "IO Buffer error: ~a" error-code)))))))
 
-@export
+
 (defun write-to-buffer (buffer source number-of-bytes &key (io-buffer *io-buffer*))
   "Writes number-of-bytes of data from source into a buffer. source must be a shareable byte vector."
   (unless (closed-p buffer)
@@ -69,12 +69,12 @@
             (error "IO Buffer error: ~a" error-code))))))
 
 
-@export
+
 (defun property-container (buffer &key (io-buffer *io-buffer*))
   "Retrieves the property container of an buffer."
   (%property-container (table io-buffer) (handle buffer)))
 
-@export
+
 (defun has-readers-p (buffer &key (io-buffer *io-buffer*))
   "Inexpensively checks for readers to allow writers to fast-fail potentially expensive copies and writes."
   (%has-readers (table io-buffer) (handle buffer)))

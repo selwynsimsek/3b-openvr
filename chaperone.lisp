@@ -5,15 +5,15 @@
 
 (in-package :3b-openvr)
 
-(annot:enable-annot-syntax)
 
-@export
+
+
 (defun calibration-state (&key (chaperone *chaperone*))
   "Get the current state of Chaperone calibration. This state can change at any time during a 
    session due to physical base station changes."
   (%get-calibration-state (table chaperone))) ; works
 
-@export
+
 (defun play-area-size (&key (chaperone *chaperone*))
   "Returns the width and depth of the Play Area."
   (cffi:with-foreign-objects ((x :float)
@@ -21,14 +21,14 @@
     (%get-play-area-size (table chaperone) x z)
     (values (cffi:mem-ref x :float) (cffi:mem-ref z :float)))) ; works
 
-@export
+
 (defun play-area-rect (&key (chaperone *chaperone*))
   "Returns the 4 corner positions of the Play Area."
   (cffi:with-foreign-object (pointer '(:struct hmd-quad-t))
     (%get-play-area-rect (table chaperone) pointer)
     (cffi:mem-ref pointer '(:struct hmd-quad-t)))) ; works
 
-@export
+
 (defun reload-chaperone-info (&key (chaperone *chaperone*))
   "Reload Chaperone data from the .vrchap file on disk."
   (%reload-info (table chaperone))) ; apparently works
@@ -37,7 +37,7 @@
                       (g g)
                       (b b)
                       (a a)))
-@export
+
 (defun set-scene-color (color &key (chaperone *chaperone*))
   "Optionally give the chaperone system a hint about the color and brightness in the scene."
   (cffi:with-foreign-object (color-pointer '(:struct hmd-color-t))
@@ -63,12 +63,12 @@
   (print-unreadable-object (object stream)
     (format stream "r ~a g ~a b ~a a ~a" (r object) (g object) (b object) (a object))))
 
-@export
+
 (defun bounds-visible-p (&key (chaperone *chaperone*))
   "Determine whether the bounds are showing right now."
   (%are-bounds-visible (table chaperone))) ; works
 
-@export
+
 (defun force-bounds-visible (bounds-visible-p &key (chaperone *chaperone*))
   "Force the bounds to show, mostly for utilities."
   (%force-bounds-visible (table chaperone) bounds-visible-p)) ; works

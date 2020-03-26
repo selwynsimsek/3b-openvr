@@ -4,10 +4,10 @@
 
 (in-package 3b-openvr)
 
-(annot:enable-annot-syntax)
 
 
-@export
+
+
 (defclass render-model ()
   ((name :initarg :name :accessor name)
    (vertices :initarg :vertices :accessor vertices :initform nil)
@@ -17,7 +17,7 @@
    (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer :initform nil)
    (components :initarg :components :accessor components :initform nil)))
 
-@export
+
 (defclass texture-map ()
   ((handle :initarg :handle :accessor handle :initform nil)
    (width :initarg :width :accessor width :initform nil)
@@ -26,14 +26,14 @@
    (loaded-p :initarg :loaded-p :accessor loaded-p :initform nil)
    (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer :initform nil)))
 
-@export
+
 (defclass component ()
   ((button-mask :initarg :button-mask :accessor button-mask :initform nil)
    (name :initarg :name :accessor name :initform nil)
    (render-model-name :initarg :render-model-name :accessor render-model-name :initform nil)
    (state :initarg :state :accessor state :initform nil)))
 
-@export
+
 (defun load-render-model (name &key (render-models *render-models*))
   "Loads and returns a render model for use in the application. name should be a 
    render model name from the Prop_RenderModelName_String property or an absolute path name to a
@@ -42,13 +42,13 @@
     (try-to-load-model render-model :render-models *render-models*)
     render-model))
 
-@export
+
 (defun wait-until-loaded (render-model &key (render-models *render-models*) (sleep-time 0.1))
   "Blocks until the render model is loaded or until an error occurs."
   (loop while (not (try-to-load-model render-model :render-models render-models))
         do (sleep sleep-time)))
 
-@export
+
 (defun try-to-load-model (render-model-name &key (render-models *render-models*) (o1 0) (o2 0))
   "Tries to load the model asynchronously. Returns T on success and NIL if still loading."
   
@@ -78,7 +78,7 @@
                            :indices index-data
                            :vertices vertex-data))))))) ; appears to work? check more.
 
-@export
+
 (defun try-to-load-texture-map (texture-map &key (render-models *render-models*))
   "Loads the texture map asynchronously. Returns T on success and NIL if still loading."
   (or (loaded-p texture-map) 
@@ -101,7 +101,7 @@
               (cffi:foreign-free foreign-pointer)
               t))))))
 
-@export
+
 (defun render-model-names ( &key (render-models *render-models*))
   "Returns an array of available render models. The index used in the array does not necessarily
    correspond to a tracked device index."
@@ -112,7 +112,7 @@
                (setf (aref names i) (cffi:foreign-string-to-lisp foreign-string)))
           finally (return names)))) ; works
 
-@export
+
 (defun update-component-states-for-device (render-model
                                            input-device
                                            &key (render-models *render-models*)
@@ -121,7 +121,7 @@
    For dynamic controller components (ex: trigger) values will reflect component motions."
   (error "implement me"))
 
-@export
+
 (defun thumbnail-url (render-model &key (render-models *render-models*))
   "Returns the URL of the thumbnail image for render-model."
   (cffi:with-foreign-string (foreign-string (make-string 512))
@@ -136,7 +136,7 @@
           (cffi:foreign-string-to-lisp foreign-string)
           (error "Render model error: ~a" (cffi:mem-ref error-pointer 'vr-render-model-error))))))
 
-@export
+
 (defun original-render-model (render-model &key (render-models *render-models*))
   "Provides the unskinned model if the name of render-model has been replaced by the user. If the 
    name hasn't been replaced the returned render-model will still be valid."

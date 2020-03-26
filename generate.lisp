@@ -353,13 +353,8 @@
                  (asdf:system-relative-pathname '3b-openvr "low-level.lisp")
                  :direction :output :if-exists :supersede
                  :if-does-not-exist :create)
-  (format t ";;; generated file, do not edit~%") ;
-                 (format t "(defpackage ~a~%  (:use :cl)~%" *package-name*)
-                 (format t "  (:import-from #:cffi~{~%    #:~a~})"
-                         '(defcenum defcfun defctype defcstruct defcunion
-                           defbitfield null-pointer
-                           foreign-funcall-pointer))
-                 (format t ")~%(in-package ~a)~%~%" *package-name*)
+  (format t ";;; generated file, do not edit~%") 
+                 (format t "~%(in-package ~a)~%~%" *package-name*)
                  (format t "~%~%")
   ;; some opaque types from other APIs
                  (loop for i in '(vk-device-t vk-physical-device-t vk-instance-t vk-queue-t

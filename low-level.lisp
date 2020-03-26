@@ -1,15 +1,5 @@
 ;;; generated file, do not edit
-(defpackage 3b-openvr
-  (:use :cl)
-  (:import-from #:cffi
-    #:DEFCENUM
-    #:DEFCFUN
-    #:DEFCTYPE
-    #:DEFCSTRUCT
-    #:DEFCUNION
-    #:DEFBITFIELD
-    #:NULL-POINTER
-    #:FOREIGN-FUNCALL-POINTER))
+
 (in-package 3b-openvr)
 
 

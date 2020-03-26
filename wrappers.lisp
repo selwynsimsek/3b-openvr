@@ -1,6 +1,6 @@
 (in-package 3b-openvr)
 
-(annot:enable-annot-syntax)
+
 
 (defvar *%init*)
 (defvar *system*)
@@ -225,7 +225,7 @@
      :vendor-specific-reserved-start nil
      :vendor-specific-reserved-end nil)))
 
-@export
+
 (defclass vr-event ()
   ((event-type :initarg :event-type :accessor event-type)
    (tracked-device-index :initarg :tracked-device-index :accessor tracked-device-index)
@@ -291,7 +291,7 @@
 
 (alexandria:define-constant +function-table-prefix+ "FnTable:" :test 'string=)
 
-@export
+
 (defun vr-init (application-type)
   (cffi:with-foreign-object (pe 'vr-init-error)
     (let ((r (%vr-init-internal pe application-type))
@@ -318,7 +318,7 @@
       (format t " = #x~x~%" r)
       (cffi:make-pointer r))))
 
-@export
+
 (defun clear ()
   (setf *system* nil
         *chaperone* nil
@@ -339,160 +339,160 @@
         *debug* nil
         *notifications* nil))
 
-@export
+
 (defun check-clear ()
   (unless (eql *%init* (vr-get-init-token))
     (clear)
     (setf *%init* (vr-get-init-token))))
 
-@export
+
 (defun vr-system ()
   (check-clear)
   (unless *system*
     (setf *system* (make-instance 'vr-system)))
   *system*)
 
-@export
+
 (defun vr-input ()
   (check-clear)
   (unless *input*
     (setf *input* (make-instance 'vr-input)))
   *input*)
 
-@export
+
 (defun vr-chaperone ()
   (check-clear)
   (unless *chaperone*
     (setf *chaperone* (make-instance 'vr-chaperone)))
   *chaperone*)
 
-@export
+
 (defun vr-chaperone-setup ()
   (check-clear)
   (unless *chaperone-setup*
     (setf *chaperone-setup* (make-instance 'vr-chaperone-setup)))
   *chaperone-setup*)
 
-@export
+
 (defun vr-compositor ()
   (check-clear)
   (unless *compositor*
     (setf *compositor* (make-instance 'vr-compositor)))
   *compositor*)
 
-@export
+
 (defun vr-overlay ()
   (check-clear)
   (unless *overlay*
     (setf *overlay* (make-instance 'vr-overlay)))
   *overlay*)
 
-@export
+
 (defun vr-resources ()
   (check-clear)
   (unless *overlay*
     (setf *overlay* (make-instance 'vr-resources)))
   *overlay*)
 
-@export
+
 (defun vr-render-models ()
   (check-clear)
   (unless *render-models*
     (setf *render-models* (make-instance 'vr-render-models)))
   *render-models*)
 
-@export
+
 (defun vr-extended-display ()
   (check-clear)
   (unless *extended-display*
     (setf *extended-display* (make-instance 'vr-extended-display)))
   *extended-display*)
 
-@export
+
 (defun vr-settings ()
   (check-clear)
   (unless *settings*
     (setf *settings* (make-instance 'vr-settings)))
   *settings*)
 
-@export
+
 (defun vr-applications ()
   (check-clear)
   (unless *applications*
     (setf *applications* (make-instance 'vr-applications)))
   *applications*)
 
-@export
+
 (defun vr-tracked-camera ()
   (check-clear)
   (unless *tracked-camera*
     (setf *tracked-camera* (make-instance 'vr-tracked-camera)))
   *tracked-camera*)
 
-@export
+
 (defun vr-resources ()
   (check-clear)
   (unless *resources*
     (setf *resources* (make-instance 'vr-resources)))
   *resources*)
 
-@export
+
 (defun vr-screenshots ()
   (check-clear)
   (unless *screenshots*
     (setf *screenshots* (make-instance 'vr-screenshots)))
   *screenshots*)
 
-@export
+
 (defun vr-driver-manager ()
   (check-clear)
   (unless *driver-manager*
     (setf *driver-manager* (make-instance 'vr-driver-manager)))
   *driver-manager*)
 
-@export
+
 (defun vr-input ()
   (check-clear)
   (unless *input*
     (setf *input* (make-instance 'vr-input)))
   *input*)
 
-@export
+
 (defun vr-io-buffer ()
   (check-clear)
   (unless *io-buffer*
     (setf *io-buffer* (make-instance 'vr-iobuffer)))
   *io-buffer*)
 
-@export
+
 (defun vr-spatial-anchors ()
   (check-clear)
   (unless *spatial-anchors*
     (setf *spatial-anchors* (make-instance 'vr-spatial-anchors)))
   *spatial-anchors*)
 
-@export
+
 (defun vr-debug ()
   (check-clear)
   (unless *debug*
     (setf *debug* (make-instance 'vr-debug)))
   *debug*)
 
-@export
+
 (defun vr-headset-view ()
   (check-clear)
   (unless *headset-view*
     (setf *headset-view* (make-instance 'vr-headset-view)))
   *headset-view*)
 
-@export
+
 (defun vr-notifications ()
   (check-clear)
   (unless *notifications*
     (setf *notifications* (make-instance 'vr-notifications)))
   *notifications*)
 
-@export
+
 (defmacro with-vr ((&key (application-type :scene)) &body body)
   `(let ((*%init* (vr-init ,application-type))
          (*system* nil)
