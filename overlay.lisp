@@ -424,11 +424,11 @@
                                      intersection-origin &key (overlay *overlay*))
   (cffi:with-foreign-objects ((foreign-params '(:struct vr-overlay-intersection-params-t))
                               (foreign-results '(:struct vr-overlay-intersection-results-t)))
-    (cffi:with-foreign-slots ((source direction origin) foreign-params '(:struct vr-overlay-intersection-params-t))
+    (cffi:with-foreign-slots ((source direction origin) foreign-params (:struct vr-overlay-intersection-params-t))
       (setf source intersection-source direction intersection-direction origin intersection-origin)
       (when (%compute-overlay-intersection (table overlay) overlay-handle foreign-params foreign-results)
         (cffi:with-foreign-slots ((point normal uvs distance) foreign-results
-                                  '(:struct vr-overlay-intersection-results-t))
+                                  (:struct vr-overlay-intersection-results-t))
           (values point normal uvs distance))))))
 
 

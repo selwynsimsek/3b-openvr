@@ -60,7 +60,7 @@
   (cffi:with-foreign-object (foreign-keys '(:struct app-override-keys-t) (length app-override-keys))
     (loop for i from 0 below (length app-override-keys) do
           (let ((key (cffi:mem-aref foreign-keys '(:struct app-override-keys-t) i)))
-            (cffi:with-foreign-slots ((key value) key '(:struct app-override-keys-t))
+            (cffi:with-foreign-slots ((key value) key (:struct app-override-keys-t))
               (setf key (key (aref app-override-keys i))
                     value (value (aref app-override-keys i))))))
     (%launch-template-application (table applications) template-application-key new-application-key
