@@ -179,6 +179,7 @@
    #:overlay-texture-bounds
    #:overlay-transform-type
    #:overlay-transform-absolute
+   #:set-overlay-transform-absolute
    #:show-overlay
    #:hide-overlay
    #:overlay-visible-p

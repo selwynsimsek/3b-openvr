@@ -88,10 +88,10 @@
            (video-stream-frame-buffer-header camera frame-type :tracked-camera tracked-camera))
          (shared-vector
            (cffi:make-shareable-byte-vector
-            (* (width header) (height header) (bytes-per-pixel header))))))
-  (cffi:with-pointer-to-vector-data (pointer shared-vector)
-    (%get-video-stream-frame-buffer
-     (table tracked-camera) camera frame-type pointer (length pointer) (cffi:null-pointer) 0)))
+            (* (width header) (height header) (bytes-per-pixel header)))))
+    (cffi:with-pointer-to-vector-data (pointer shared-vector)
+      (%get-video-stream-frame-buffer
+       (table tracked-camera) camera frame-type pointer (length shared-vector) (cffi:null-pointer) 0))))
 
 
 (defun video-stream-texture-size (tracked-device frame-type &key (tracked-camera *tracked-camera*))

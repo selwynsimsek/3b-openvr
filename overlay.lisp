@@ -252,7 +252,7 @@
   (cffi:with-foreign-object (transform '(:struct hmd-matrix-34-t))
     (setf (cffi:mem-ref transform '(:struct hmd-matrix-34-t)) tracking-origin-to-overlay-transform)
     (with-overlay-error
-        (%set-overlay-transform-absolute (table overlay) overlay-handle origin transform))))
+        (%set-overlay-transform-absolute (table overlay) overlay-handle origin transform)))) ; works
 
 
 (defun overlay-transform-absolute (overlay-handle origin &key (overlay *overlay*))

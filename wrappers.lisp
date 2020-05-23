@@ -35,8 +35,8 @@
 (defmethod cffi:translate-into-foreign-memory (value (type hmd-matrix-34-t-tclass) pointer)
   (loop for j below 4
         do (loop for i below 3
-                 do (setf (cffi:mem-ref pointer :float (+ (* i 4) j))
-                          (aref value (+ (* j 4) i))))))
+                 do (setf (cffi:mem-ref pointer :float (* 4  (+ (* i 4) j)))
+                          (aref value (+ (* i 4) j))))))
 
 (defmethod cffi:translate-into-foreign-memory (value (type hmd-vector-2-t-tclass) pointer)
   (setf (cffi:mem-aref pointer :float) (aref value 0)
@@ -429,14 +429,6 @@
     (setf *tracked-camera* (make-instance 'vr-tracked-camera)))
   *tracked-camera*)
 
-
-(defun vr-resources ()
-  (check-clear)
-  (unless *resources*
-    (setf *resources* (make-instance 'vr-resources)))
-  *resources*)
-
-
 (defun vr-screenshots ()
   (check-clear)
   (unless *screenshots*
@@ -450,12 +442,6 @@
     (setf *driver-manager* (make-instance 'vr-driver-manager)))
   *driver-manager*)
 
-
-(defun vr-input ()
-  (check-clear)
-  (unless *input*
-    (setf *input* (make-instance 'vr-input)))
-  *input*)
 
 
 (defun vr-io-buffer ()
