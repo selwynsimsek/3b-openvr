@@ -78,14 +78,17 @@
 (defmethod transform-type ((overlay overlay)) (overlay-transform-type (handle overlay)))
 
 (defmethod transform ((overlay overlay) &key (origin :standing))
-  (let ((type transform-type))
+  (let ((type (transform-type overlay)))
     (cond ((eq :absolute type)
            (values type (overlay-transform-absolute (handle overlay) origin)))
           ((eq :tracked-device-relative type)
-           (values type (overlay-transform-tracked-device-relative (handle overlay))))
+           (apply #'values
+                  (cons type
+                        (multiple-value-list (overlay-transform-tracked-device-relative (handle overlay))))))
           ((eq :tracked-component type)
            (apply #'values
-                  (cons type (overlay-transform-tracked-device-component (handle overlay)))))
+                  (cons type
+                        (multiple-value-list (overlay-transform-tracked-device-component (handle overlay))))))
           ((eq :cursor type)
            (values type (overlay-transform-cursor (handle overlay)))))))
 

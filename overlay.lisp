@@ -281,9 +281,11 @@
                                                       tracked-device-to-overlay-transform
                                                       &key (overlay *overlay*))
   "Sets the transform to relative to the transform of the specified tracked device."
-  (with-overlay-error
-      (%set-overlay-transform-tracked-device-relative
-       (table overlay) overlay-handle tracked-device tracked-device-to-overlay-transform)))
+  (cffi:with-foreign-object (transform '(:struct hmd-matrix-34-t))
+    (setf (cffi:mem-ref transform '(:struct hmd-matrix-34-t)) tracked-device-to-overlay-transform)
+    (with-overlay-error
+        (%set-overlay-transform-tracked-device-relative
+         (table overlay) overlay-handle tracked-device transform))))
 
 
 (defun overlay-transform-tracked-device-relative (overlay-handle
