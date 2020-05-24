@@ -202,6 +202,53 @@
    #:hide-keyboard
    #:show-message-overlay
    #:close-message-overlay)
+  ;;overlay-interface.lisp
+  (:export
+   #:overlay
+   #:key
+   #:handle
+   #:name
+   #:image-data
+   #:rendering-pid
+   #:flag
+   #:flags
+   #:color
+   #:alpha
+   #:texel-aspect
+   #:sort-order
+   #:width-in-meters
+   #:curvature
+   #:texture-color-space
+   #:texture-bounds
+   #:transform-type
+   #:transform
+   #:origin
+   #:tracked-device
+   #:device-index
+   #:component-name
+   #:location
+   #:show
+   #:hide
+   #:visible-p
+   #:transform-for-coordinates
+   #:poll-device
+   #:input-method
+   #:mouse-scale
+   #:compute-intersection
+   #:hover-target-p
+   #:set-intersection-mask
+   #:trigger-laser-mouse-haptic-vibration
+   #:cursor
+   #:cursor-position-override
+   #:texture
+   #:raw
+   #:from-file
+   #:texture-size
+   #:dashboard-overlay
+   #:active-p
+   #:scene-process
+   #:keyboard-show
+   #:keyboard-position)
   ;;pragma.lisp
   ;;render-models.lisp
   (:export
