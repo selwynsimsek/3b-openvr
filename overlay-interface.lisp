@@ -69,8 +69,11 @@
 (defmethod texture-bounds ((overlay overlay)) (overlay-texture-bounds (handle overlay)))
 
 (defun (setf texture-bounds) (bounds overlay)
-  (set-overlay-texture-bounds (handle overlay) (aref bounds 0) (aref bounds 1)  (aref bounds 2)
-                              (aref bounds 3)))
+  (set-overlay-texture-bounds (handle overlay)
+                              (coerce (aref bounds 0) 'single-float)
+                              (coerce (aref bounds 1) 'single-float)
+                              (coerce (aref bounds 2) 'single-float)
+                              (coerce (aref bounds 3) 'single-float)))
 
 (defmethod transform-type ((overlay overlay)) (overlay-transform-type (handle overlay)))
 
