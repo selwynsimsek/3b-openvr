@@ -5,15 +5,12 @@
 
 (in-package :3b-openvr)
 
-
-
 (defmacro with-overlay-error (&rest body)
   (let ((error-name (gensym "error-value")))
     `(let ((,error-name (progn ,@body)))
        (if (eq ,error-name :none) t (error "VR overlay error: ~a" ,error-name)))))
 
 ;; overlay management methods
-
 
 (defun find-overlay (overlay-key &key (overlay *overlay*))
   "Finds an existing overlay with the specified key."
@@ -22,7 +19,6 @@
         (%find-overlay (table overlay) overlay-key handle))
     (cffi:mem-ref handle 'vr-overlay-handle-t))) ; works
 
-
 (defun create-overlay (overlay-key overlay-friendly-name &key (overlay *overlay*))
   "Creates a new named overlay. All overlays start hidden and with default settings."
   (cffi:with-foreign-object (handle 'vr-overlay-handle-t)
@@ -30,12 +26,10 @@
         (%create-overlay (table overlay) overlay-key overlay-friendly-name handle))
     (cffi:mem-ref handle 'vr-overlay-handle-t))) ; works
 
-
 (defun destroy-overlay (overlay-handle &key (overlay *overlay*))
   "Destroys the specified overlay. When an application calls VR_Shutdown all overlays created by that app
    are automatically destroyed."
   (with-overlay-error (%destroy-overlay (table overlay) overlay-handle))) ; works
-
 
 (defun overlay-key (overlay-handle &key (overlay *overlay*))
   "Returns the string key of the overlay."
@@ -89,7 +83,7 @@
       (%set-overlay-rendering-pid (table overlay) overlay-handle pid))) ; works
 
 
-(defun overlay-rendering-pid (overlay-handle &key (overlay *overlay*))
+(defun get-overlay-rendering-pid (overlay-handle &key (overlay *overlay*))
   "Gets the pid that is allowed to render to this overlay."
   (%get-overlay-rendering-pid (table overlay) overlay-handle)) ; works
 
@@ -100,20 +94,38 @@
       (%set-overlay-flag (table overlay) overlay-handle flag enabled-p))) ; works
 
 
-(defun overlay-flag (overlay-handle flag &key (overlay *overlay*))
+(defun get-overlay-flag (overlay-handle flag &key (overlay *overlay*))
   "Gets flag setting for a given overlay."
   (cffi:with-foreign-object (pointer :bool)
     (with-overlay-error
         (%get-overlay-flag (table overlay) overlay-handle flag pointer))
     (cffi:mem-ref pointer :bool))) ; works
 
+(cffi:defbitfield overlay-flags-bitfield
+  (:no-dashboard-tab 8)
+  (:send-vr-discrete-scroll-events 64)
+  (:send-vr-touchpad-events 128)
+  (:show-touch-pad-scroll-wheel 256)
+  (:transfer-ownership-to-internal-process 512)
+  (:side-by-side-parallel 1024)
+  (:side-by-side-crossed 2048)
+  (:panorama 4096)
+  (:stereo-panorama 8192)
+  (:sort-with-non-scene-overlays 16384)
+  (:visible-in-dashboard 32768)
+  (:make-overlays-interactive-if-visible 65536)
+  (:send-vr-smooth-scroll-events 131072)
+  (:protected-content 262144)
+  (:hide-laser-intersection 524288)
+  (:wants-modal-behavior 1048576)
+  (:is-premultiplied 2097152))
 
 (defun overlay-flags (overlay-handle &key (overlay *overlay*))
   "Gets all the flags for a given overlay."
   (cffi:with-foreign-object (pointer :uint32)
     (with-overlay-error
         (%get-overlay-flags (table overlay) overlay-handle pointer))
-    (cffi:mem-ref pointer :uint32))) ; works - replace with list?
+    (cffi:foreign-bitfield-symbols 'overlay-flags-bitfield (cffi:mem-ref pointer :uint32)))) ; works
 
 
 (defun set-overlay-color (overlay-handle red green blue &key (overlay *overlay*))
@@ -127,7 +139,7 @@
                               (green :float)
                               (blue :float))
     (with-overlay-error (%get-overlay-color (table overlay) overlay-handle red green blue))
-    (values (cffi:mem-ref red :float) (cffi:mem-ref green :float) (cffi:mem-ref blue :float)))) ; works
+    (vector (cffi:mem-ref red :float) (cffi:mem-ref green :float) (cffi:mem-ref blue :float)))) ; works
 
 
 (defun set-overlay-alpha (overlay-handle alpha &key (overlay *overlay*))
@@ -233,7 +245,7 @@
   (cffi:with-foreign-object (texture-bounds '(:struct vr-texture-bounds-t))
     (with-overlay-error
         (%get-overlay-texture-bounds (table overlay) overlay-handle texture-bounds))
-    (values (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-min)
+    (vector (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-min)
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-min)
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'u-max)
             (cffi:foreign-slot-value texture-bounds '(:struct vr-texture-bounds-t) 'v-max)))) ; works
@@ -301,7 +313,7 @@
     (cffi:with-foreign-string (foreign-string (make-string buffer-size))
       (with-overlay-error (%get-overlay-transform-tracked-device-component
                            (table overlay) overlay-handle device foreign-string buffer-size))
-      (values (cffi:mem-ref device 'tracked-device-index-t)
+      (list (cffi:mem-ref device 'tracked-device-index-t)
               (cffi:foreign-string-to-lisp foreign-string)))))
 
 
@@ -445,7 +457,7 @@
     (setf (cffi:mem-ref foreign-center '(:struct hmd-vector-2-t)) center)
     (with-overlay-error
       (%set-overlay-dual-analog-transform (table overlay) overlay-handle which foreign-center radius))))
-
+ ; no longer supported
 
 (defun overlay-dual-analog-transform (overlay-handle which &key (overlay *overlay*))
   "Gets the analog input to Dual Analog coordinate scale for the specified overlay."
@@ -455,7 +467,7 @@
         (%get-overlay-dual-analog-transform (table overlay) overlay-handle which foreign-center foreign-radius))
     (values (cffi:mem-ref foreign-center '(:struct hmd-vector-2-t))
             (cffi:mem-ref foreign-radius :float))))
-
+ ; no longer supported
 
 (defun set-overlay-intersection-mask (overlay-handle mask-primitives &key (overlay *overlay*))
   "Sets a list of primitives to be used for controller ray intersection
@@ -472,7 +484,7 @@
                                          '(:struct vr-overlay-intersection-mask-primitive-t))))))
 
 
-(defun trigger-laser-mouse-haptic-vibration (overlay-handle duration-in-seconds frequency amplitude
+(defun do-trigger-laser-mouse-haptic-vibration (overlay-handle duration-in-seconds frequency amplitude
                                              &key (overlay *overlay*))
   "Triggers a haptic event on the laser mouse controller for the specified overlay."
   (with-overlay-error
@@ -608,6 +620,7 @@
 (defun show-keyboard-for-overlay (overlay-handle input-mode line-input-mode description max-char
                                   existing-text use-minimal-mode-p user-value
                                   &key (overlay *overlay*))
+  "Show the virtual keyboard to accept input for an overlay."
   (with-overlay-error
       (%show-keyboard-for-overlay (table overlay) overlay-handle input-mode line-input-mode description
                                   max-char existing-text use-minimal-mode-p user-value))) ; works

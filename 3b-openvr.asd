@@ -29,4 +29,5 @@
                (:file "io-buffer")
                (:file "spatial-anchors")
                (:file "debug")
-               (:file "notifications")))
+               (:file "notifications")
+               (:file "overlay-interface")))
