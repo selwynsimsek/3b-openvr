@@ -4,7 +4,8 @@
 (in-package :3b-openvr)
 
 (defun overlay-key ()
-  "Returns unique overlay keys each time. Not a good idea to rebind *gensym-counter* between calls to this."
+  "Returns unique overlay keys each time. Not a good idea to rebind *gensym-counter* between calls
+   to this."
   (symbol-name (gensym "3B-OPENVR-OVERLAY")))
 
 (defclass overlay ()
@@ -75,35 +76,69 @@
                               (coerce (aref bounds 2) 'single-float)
                               (coerce (aref bounds 3) 'single-float)))
 
+(defclass transform () ())
+
+(defclass absolute-transform (transform)
+  ((origin :initarg :origin :accessor origin)
+   (matrix :initarg :matrix :accessor matrix)))
+
+(defclass tracked-device-relative-transform (transform)
+  ((tracked-device :initarg :tracked-device :accessor tracked-device)
+   (matrix :initarg :transform :accessor matrix)))
+
+(defclass tracked-component-transform (transform)
+  ((device-index :initarg :device-index :accessor device-index)
+   (component-name :initarg :component-name :accessor component-name)))
+
+(defclass cursor-transform (transform)
+  ((hotspot :initarg :hotspot :accessor hotspot)))
+
 (defmethod transform-type ((overlay overlay)) (overlay-transform-type (handle overlay)))
 
 (defmethod transform ((overlay overlay) &key (origin :standing))
   (let ((type (transform-type overlay)))
     (cond ((eq :absolute type)
-           (values type (overlay-transform-absolute (handle overlay) origin)))
+           (values
+            (multiple-value-bind (origin matrix)
+                (overlay-transform-absolute (handle overlay) origin)
+              (make-instance 'absolute-transform
+                             :origin origin
+                             :matrix matrix))
+            t))
           ((eq :tracked-device-relative type)
-           (apply #'values
-                  (cons type
-                        (multiple-value-list (overlay-transform-tracked-device-relative (handle overlay))))))
+           (multiple-value-bind (tracked-device transform)
+               (overlay-transform-tracked-device-relative (handle overlay))
+             (values
+              (make-instance 'tracked-device-relative-transform
+                             :matrix transform
+                             :tracked-device tracked-device)
+              t)))
           ((eq :tracked-component type)
-           (apply #'values
-                  (cons type
-                        (multiple-value-list (overlay-transform-tracked-device-component (handle overlay))))))
+           (multiple-value-bind (device name)
+               (overlay-transform-tracked-device-component (handle overlay))
+             (values
+              (make-instance
+               'tracked-component-transform :component-name name :device-index device)
+              t)))
           ((eq :cursor type)
-           (values type (overlay-transform-cursor (handle overlay)))))))
+           (values
+            (make-instance 'cursor-transform :hotspot (overlay-transform-cursor (handle overlay)))
+            t))
+          (t (values type nil)))))
 
-(defun (setf transform) (transform overlay type &key (origin :standing) (tracked-device 0)
-                                                     (device-index 0) (component-name))
-  (cond ((eq :absolute type)
-         (set-overlay-transform-absolute (handle overlay) origin transform))
-        ((eq :tracked-device-relative type)
-         (set-overlay-transform-tracked-device-relative
-          (handle overlay) tracked-device transform))
-        ((eq :tracked-component type)
-         (set-overlay-transform-tracked-device-component (handle overlay) device-index
-                                                         transform))
-        ((eq :cursor type)
-         (set-overlay-transform-cursor (handle overlay) transform))))
+(defmethod (setf transform) ((transform absolute-transform) (overlay overlay))
+  (set-overlay-transform-absolute (handle overlay) (origin transform) (matrix transform)))
+
+(defmethod (setf transform) ((transform tracked-device-relative-transform) (overlay overlay))
+  (set-overlay-transform-tracked-device-relative
+   (handle overlay) (tracked-device transform) (matrix transform)))
+
+(defmethod (setf transform) ((transform tracked-component-transform) (overlay overlay))
+  (set-overlay-tracked-device-component
+   (handle overlay) (device-index transform) (component-name transform)))
+
+(defmethod (setf transform) ((transform cursor-transform) (overlay overlay))
+  (set-overlay-transform-cursor (handle overlay) (hotspot transform)))
 
 (defun (setf location) (position overlay)
   (set-overlay-transform-absolute
@@ -141,8 +176,8 @@
 
 (defmethod trigger-laser-mouse-haptic-vibration ((overlay overlay) duration-in-seconds frequency
                                                  amplitude)
-  (do-trigger-laser-mouse-haptic-vibration (handle overlay) duration-in-seconds frequency
-    amplitude))
+  (do-trigger-laser-mouse-haptic-vibration
+      (handle overlay) duration-in-seconds frequency amplitude))
 
 (defun (setf cursor) (cursor overlay)
   (set-overlay-cursor (handle overlay) cursor))
@@ -193,7 +228,6 @@ the texture set for this overlay."
                           existing-text use-minimal-mode-p user-value)
   (show-keyboard-for-overlay (handle overlay) input-mode line-input-mode description max-char
                              existing-text use-minimal-mode-p user-value))
-
 
 (defun (setf keyboard-position) (avoid-rect overlay)
   (set-keyboard-position-for-overlay (handle overlay) avoid-rect))
