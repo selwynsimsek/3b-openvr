@@ -272,7 +272,8 @@
    #:remove-section
    #:remove-key-in-section
    #:settings-set
-   #:settings-get)
+   #:settings-get
+   #:settings)
   ;;spatial-anchors.lisp
   (:export
    )

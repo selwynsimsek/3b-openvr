@@ -30,7 +30,8 @@
       ((eq type :float)
        (%set-float (table settings) section settings-key value error-pointer))
       ((or (eq type :boolean) (eq type :bool))
-       (%set-bool (table settings) section settings-key value error-pointer))
+       (progn (print type)
+              (%set-bool (table settings) section settings-key value error-pointer)))
       ((eq type :string)
        (%set-string (table settings) section settings-key value error-pointer)))
     (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
@@ -56,3 +57,22 @@
       (let ((error-code (cffi:mem-ref error-pointer 'vr-settings-error)))
         (unless (eq error-code :none)
           (error "Settings error: ~a" error-code)))))) ; works
+
+(defun settings (section settings-key &key (settings *settings*))
+  (handler-case (settings-get section settings-key :int :settings settings)
+    (t () (handler-case (settings-get section settings-key :float :settings settings)
+            (t () (handler-case (settings-get section settings-key :boolean :settings settings)
+                    (t () (settings-get section settings-key :string :settings settings))))))))
+; works
+
+(defmethod (setf settings) ((value integer) section settings-key &key (settings *settings*))
+  (settings-set section settings-key value :int :settings settings))
+
+(defmethod (setf settings) ((value float) section settings-key &key (settings *settings*))
+  (settings-set section settings-key value :float :settings settings))
+
+(defmethod (setf settings)  ((value symbol) section settings-key &key (settings *settings*))
+  (settings-set section settings-key value :boolean :settings settings))
+
+(defmethod (setf settings) ((value string) section settings-key &key (settings *settings*))
+  (settings-set section settings-key value :string :settings settings))
