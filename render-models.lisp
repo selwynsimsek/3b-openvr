@@ -14,7 +14,6 @@
    (indices :initarg :indices :accessor indices :initform nil)
    (diffuse-texture :initarg :diffuse-texture :accessor diffuse-texture :initform nil)
    (loaded-p :initarg :loaded-p :accessor loaded-p :initform nil)
-   (foreign-pointer :initarg :foreign-pointer :accessor foreign-pointer :initform nil)
    (components :initarg :components :accessor components :initform nil)))
 
 

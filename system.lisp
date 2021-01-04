@@ -72,12 +72,14 @@
   (%is-display-on-desktop (table system)))
 
 
-(defun set-display-visibility (visibile-on-desktop &key (system *system*))
+(defun set-display-visibility (visible-on-desktop &key (system *system*))
   "Set the display visibility (true = extended, false = direct mode).
    Return value of T indicates that the change was successful."
-  (%set-display-visibility (table system) visibile-on-desktop))
+  (%set-display-visibility (table system) visible-on-desktop))
 
-(defun device-to-absolute-tracking-pose ())
+(defun device-to-absolute-tracking-pose (origin predicted-seconds-to-photons-from-now &key (system *system*))
+  ;idk
+  )
 
 
 (defun reset-seated-zero-pose (&key (system *system*))
@@ -114,7 +116,8 @@
   "Returns the level of activity on the device."
   (%get-tracked-device-activity-level (table system) device-id))
 
-(defun apply-transform ())
+(defun apply-transform ()
+  (error "Not implementing this, it is a convenience utility"))
 
 
 (defun tracked-device-index-for-controller-role (role &key (system *system*))
@@ -216,10 +219,16 @@
   (cffi:with-foreign-object (ev '(:struct vr-event-t))
     (when (%poll-next-event (table system) ev (cffi:foreign-type-size
                                                '(:struct vr-event-t)))
-      (ignore-errors
-       (cffi:mem-ref ev '(:struct vr-event-t))))))
+      (ignore-errors (cffi:mem-ref ev '(:struct vr-event-t))))))
 
-(defun poll-next-event-with-pose ())
+(defun poll-next-event-with-pose (origin &key (system *system*))
+  (cffi:with-foreign-objects ((ev '(:struct vr-event-t))
+                              (pose '(:struct tracked-device-pose-t)))
+    (when (%poll-next-event-with-pose (table system) origin ev (cffi:foreign-type-size '(:struct vr-event-t)) pose)
+      (ignore-errors
+       (let ((event (cffi:mem-ref ev '(:struct vr-event-t))))
+         (setf (tracked-device-pose event) (cffi:mem-ref pose '(:struct tracked-device-pose-t)))
+         event)))))
 
 
 (defun hidden-area-mesh (eye type &key (system *system*))

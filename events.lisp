@@ -9,7 +9,8 @@
 (defclass vr-event ()
   ((event-type :initarg :event-type :accessor event-type)
    (tracked-device-index :initarg :tracked-device-index :accessor tracked-device-index)
-   (event-age :initarg :event-age :accessor event-age)))
+   (event-age :initarg :event-age :accessor event-age)
+   (tracked-device-pose :accessor tracked-device-pose :initarg :tracked-device-pose)))
 
 (defun make-bare-event (event-type tracked-device-index data-pointer event-age-seconds)
   (declare (ignore data-pointer))
