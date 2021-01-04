@@ -216,16 +216,8 @@
   (cffi:with-foreign-object (ev '(:struct vr-event-t))
     (when (%poll-next-event (table system) ev (cffi:foreign-type-size
                                                '(:struct vr-event-t)))
-      (let ((R (multiple-value-list
-                (ignore-errors
-                 (cffi:mem-ref ev '(:struct vr-event-t))))))
-        (when (second r)
-          (format t "~&~a?~%" (second r))
-          (loop for i below 40
-                do (format t " #~2,'0x" (cffi:mem-aref ev :uint8 i))
-                when (zerop (mod (1+ i) 8))
-                do (format t "~%")))
-        (first r)))))
+      (ignore-errors
+       (cffi:mem-ref ev '(:struct vr-event-t))))))
 
 (defun poll-next-event-with-pose ())
 

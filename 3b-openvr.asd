@@ -30,4 +30,5 @@
                (:file "spatial-anchors")
                (:file "debug")
                (:file "notifications")
-               (:file "overlay-interface")))
+               (:file "overlay-interface")
+               (:file "events")))
